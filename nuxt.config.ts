@@ -18,4 +18,5 @@ export default defineNuxtConfig({
 			appBaseURL: process.env.APP_BASE_URL,
 		},
 	},
+	ssr: false,
 })
