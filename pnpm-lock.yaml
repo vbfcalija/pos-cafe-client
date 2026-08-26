@@ -51,6 +51,15 @@ importers:
       '@iconify-json/ph':
         specifier: ^1.2.2
         version: 1.2.2
+      '@vueform/multiselect':
+        specifier: ^2.6.11
+        version: 2.6.11
+      moment:
+        specifier: ^2.30.1
+        version: 2.30.1
+      vue-flatpickr-component:
+        specifier: ^12.0.0
+        version: 12.0.0(vue@3.5.41)
 
 packages:
 
@@ -1084,6 +1093,9 @@ packages:
   '@vue/shared@3.5.41':
     resolution: {integrity: sha512-IOnwSCma8j+9xJT6b8H0dEYidC80NsYmNMlZxRsukYcSoGaDBohog5hDxzeUXdFeGWFA++vWvxqOmrr96VlqMA==}
 
+  '@vueform/multiselect@2.6.11':
+    resolution: {integrity: sha512-iG4TGfqE3baftbSGF0PhoS+xZOCnV0ChkDo9rwhJ/Qi2YlCdb6tyQCjvyug3jnzncga8+d85kx0WvG7rDYFqiA==}
+
   '@vuelidate/core@2.0.3':
     resolution: {integrity: sha512-AN6l7KF7+mEfyWG0doT96z+47ljwPpZfi9/JrNMkOGLFv27XVZvKzRLXlmDPQjPl/wOB1GNnHuc54jlCLRNqGA==}
     peerDependencies:
@@ -1787,6 +1799,9 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
+  flatpickr@4.6.13:
+    resolution: {integrity: sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==}
+
   fnv1a-64@0.1.2:
     resolution: {integrity: sha512-mJbcILTPybAR1jdOwt/lVv8N2cffeJFFP+gVbSAwLEx1ujXH27RpPd8Rokec/KX9c76UYIB6Co+H4lQzxPnJfA==}
 
@@ -2370,6 +2385,9 @@ packages:
 
   mocked-exports@0.1.1:
     resolution: {integrity: sha512-aF7yRQr/Q0O2/4pIXm6PZ5G+jAd7QS4Yu8m+WEeEHGnbo+7mE36CbLSDQiXYV8bVL3NfmdeqPJct0tUlnjVSnA==}
+
+  moment@2.30.1:
+    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -3605,6 +3623,12 @@ packages:
 
   vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
+
+  vue-flatpickr-component@12.0.0:
+    resolution: {integrity: sha512-CJ5jrgTaeD66Z4mjEocSTAdB/n6IGSlUICwdBanpyCI8hswq5rwXvEYQ5IKA3K3uVjP5pBlY9Rg6o3xoszTPpA==}
+    engines: {node: '>=14.13.0'}
+    peerDependencies:
+      vue: ^3.2.0
 
   vue-router@5.2.0:
     resolution: {integrity: sha512-QAC5i0LEb1GLG0LXDQmHu8L7FX12j0KwU/JTKmLQUJMrn04gQdKP6Du+p0QwpHb3iy71vBlqnHQ8WAfOSAWhqw==}
@@ -5012,6 +5036,8 @@ snapshots:
 
   '@vue/shared@3.5.41': {}
 
+  '@vueform/multiselect@2.6.11': {}
+
   '@vuelidate/core@2.0.3(vue@3.5.41)':
     dependencies:
       vue: 3.5.41
@@ -5662,6 +5688,8 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
+  flatpickr@4.6.13: {}
+
   fnv1a-64@0.1.2: {}
 
   foreground-child@3.3.1:
@@ -6247,6 +6275,8 @@ snapshots:
       ufo: 1.6.4
 
   mocked-exports@0.1.1: {}
+
+  moment@2.30.1: {}
 
   mrmime@2.0.1: {}
 
@@ -7622,6 +7652,11 @@ snapshots:
       vue: 3.5.41
 
   vue-devtools-stub@0.1.0: {}
+
+  vue-flatpickr-component@12.0.0(vue@3.5.41):
+    dependencies:
+      flatpickr: 4.6.13
+      vue: 3.5.41
 
   vue-router@5.2.0(@vue/compiler-sfc@3.5.41)(esbuild@0.28.2)(pinia@4.0.3(@vue/devtools-api@8.2.1)(vue@3.5.41))(rolldown@1.2.5)(rollup@4.62.5)(vite@8.2.2(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0))(vue@3.5.41):
     dependencies:
