@@ -14,6 +14,7 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			appName: process.env.APP_NAME,
+			appVersion: process.env.APP_VERSION,
 			apiBaseURL: process.env.API_BASE_URL,
 			appBaseURL: process.env.APP_BASE_URL,
 		},

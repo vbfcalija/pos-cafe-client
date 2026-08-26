@@ -304,7 +304,7 @@ async function login() {
         if (response.data) {
             localStorage.setItem("_token", response.data?.token)
             userStore.setUser(response?.data?.user)
-            await navigateTo('/dashboard')
+            await navigateTo('/overview')
         }
     } catch (error: any) {
         state.error = error

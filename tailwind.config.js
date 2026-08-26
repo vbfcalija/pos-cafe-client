@@ -20,6 +20,9 @@ export default {
           900: "#243a7a",
         },
       },
+      fontSize: {
+        xxs: ['10px', '12px'],
+      }
     },
   },
   plugins: [],
