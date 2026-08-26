@@ -22,7 +22,10 @@ export default {
       },
       fontSize: {
         xxs: ['10px', '12px'],
-      }
+      },
+      boxShadow: {
+        'dropdown': '0 10px 40px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.05)',
+      },
     },
   },
   plugins: [],
