@@ -18,7 +18,7 @@ class BranchService extends BaseAPIService {
     }
 
     async updateBranch(branchUuid: any, params: object): Promise<any> {
-        return await this.request(`/user/branches/${branchUuid}/update`, 'POST', params)
+        return await this.request(`/user/branches/${branchUuid}`, 'PUT', params)
     }
 
     async deleteBranch(branchUuid: any): Promise<any> {

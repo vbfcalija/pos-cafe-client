@@ -342,7 +342,12 @@
 
             <main class="py-8">
                 <div class="px-4 sm:px-6 lg:px-8">
-                    <slot />
+                    <div>
+                        <slot name="breadcrumb"></slot>
+                    </div>
+                    <div class="mt-4">
+                        <slot />
+                    </div>
                 </div>
             </main>
         </div>

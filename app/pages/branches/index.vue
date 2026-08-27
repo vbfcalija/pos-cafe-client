@@ -79,7 +79,8 @@
                                                     </FormButton>
                                                 </Tooltip>
                                                 <Tooltip text="Delete">
-                                                    <FormButton type="button" buttonStyle="danger" @click="">
+                                                    <FormButton type="button" buttonStyle="danger"
+                                                        @click="deleteBrancheConfirmation(branch)">
                                                         <Icon name="ph:trash" class="size-4" />
                                                     </FormButton>
                                                 </Tooltip>
@@ -93,19 +94,25 @@
                     </div>
                 </div>
             </div>
+            <DialogConfirmation :isModalOpen="state.modal.isDeleteBranchOpen"
+                message="Are you sure you want to delete this branch?" @close="state.modal.isDeleteBranchOpen = false"
+                @confirm="deleteBranch" />
         </NuxtLayout>
     </div>
 </template>
 
 <script setup lang="ts">
 import { branchService } from '@/components/api/user/BranchService'
+import { useAlert } from '@/composables/alert'
 import { useBranchStore } from '@/store/branch'
 import type { Error } from '@/types'
 
 const runtimeConfig = useRuntimeConfig()
 const branchStore = useBranchStore() as any
+const { successAlert } = useAlert()
 
 const state = reactive({
+    branches: [] as any,
     columnHeaders: [
         { name: 'Name', sorter: true, key: 'name' },
         { name: 'Address' },
@@ -118,9 +125,11 @@ const state = reactive({
     dataFilter: {
         search: ''
     },
-    branches: [] as any,
     error: {} as Error,
     isTableLoading: false,
+    modal: {
+        isDeleteBranchOpen: false,
+    },
     selectedBranch: {} as any,
 })
 
@@ -179,5 +188,26 @@ function changePageLength(event: any) {
     branchStore.setCurrentPageNumber(1)
     branchStore.setCurrentPageLength(event.target.value)
     fetchBranches()
+}
+
+
+function deleteBrancheConfirmation(branch: any) {
+    state.selectedBranch = branch
+    state.modal.isDeleteBranchOpen = true
+}
+
+async function deleteBranch() {
+    state.error = {}
+    state.isTableLoading = true
+    try {
+        const response = await branchService.deleteBranch(state.selectedBranch.uuid)
+        if (response?.message === 'Success.') {
+            successAlert('Success!', 'Branch successfully deleted.')
+            fetchBranches()
+        }
+    } catch (error: any) {
+        state.error = error
+    }
+    state.isTableLoading = false
 }
 </script>

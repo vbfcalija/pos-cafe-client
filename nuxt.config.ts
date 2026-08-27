@@ -11,6 +11,9 @@ export default defineNuxtConfig({
 		'@pinia/nuxt',
 		'pinia-plugin-persistedstate/nuxt',
 	],
+	plugins: [
+		'@/plugins/vue-notification.ts',
+	],
 	runtimeConfig: {
 		public: {
 			appName: process.env.APP_NAME,
