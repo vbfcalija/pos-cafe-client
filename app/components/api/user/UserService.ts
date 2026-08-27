@@ -18,7 +18,7 @@ class UserService extends BaseAPIService {
     }
 
     async updateUser(userUuid: any, params: object): Promise<any> {
-        return await this.request(`/user/users/${userUuid}/update`, 'POST', params)
+        return await this.request(`/user/users/${userUuid}`, 'PUT', params)
     }
     async deleteUser(userUuid: any): Promise<any> {
         return await this.request(`/user/users/${userUuid}`, 'DELETE')

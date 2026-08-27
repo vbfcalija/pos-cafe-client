@@ -13,15 +13,10 @@
                     <div class="flex-none lg:flex justify-between items-center space-y-3 mb-5">
                         <div class="flex items-center gap-x-1">
                             <span>Entriers per page:</span>
-                            <select class="focus:outline-none bg-transparent" @change="changePageLength"
-                                id="usersPageLength">
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                                <option value="40">40</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="500">500</option>
+                            <select id="pageLength" class="bg-transparent focus:outline-none"
+                                :value="userStore.getCurrentPageLength" @change="changePageLength">
+                                <option v-for="length in pageLengths" :key="length" :value="length">{{ length }}
+                                </option>
                             </select>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
@@ -49,21 +44,26 @@
                                                 </span>
                                             </div>
                                         </td>
-                                        <td width="20%">
+                                        <td width="30%">
                                             <span>{{ user?.email }}</span>
                                         </td>
                                         <td width="20%">
+                                            <Badge class="w-fit" :type="user?.is_active ? 'active' : 'inactive'">
+                                                <p class="text-xs">{{ user?.is_active ? 'Active' : 'Inactive' }}</p>
+                                            </Badge>
+                                        </td>
+                                        <td width="20%">
                                             <div class="flex items-end gap-2">
-                                                <Tooltip text="View">
-                                                    <FormButton type="button" buttonStyle="action"
-                                                        @click="navigateTo(`/users/${user.uuid}/view-details`)">
-                                                        <Icon name="ph:eye" class="size-4" />
-                                                    </FormButton>
-                                                </Tooltip>
                                                 <Tooltip text="Edit">
                                                     <FormButton type="button" buttonStyle="action"
                                                         @click="navigateTo(`/users/${user.uuid}/edit`)">
                                                         <Icon name="ph:pencil-simple" class="size-4" />
+                                                    </FormButton>
+                                                </Tooltip>
+                                                <Tooltip text="Delete">
+                                                    <FormButton type="button" buttonStyle="danger"
+                                                        @click="deleteUserConfirmation(user)">
+                                                        <Icon name="ph:trash" class="size-4" />
                                                     </FormButton>
                                                 </Tooltip>
                                             </div>
@@ -76,30 +76,40 @@
                     </div>
                 </div>
             </div>
+            <DialogConfirmation :isModalOpen="state.modal.isDeleteUserOpen"
+                message="Are you sure you want to delete this user?" @close="state.modal.isDeleteUserOpen = false"
+                @confirm="deleteUser" />
         </NuxtLayout>
     </div>
 </template>
 
 <script setup lang="ts">
 import { userService } from '@/components/api/user/UserService'
+import { useAlert } from '@/composables/alert'
 import { useUserStore } from '@/store/user'
 import type { Error } from '@/types'
 
 const runtimeConfig = useRuntimeConfig()
 const userStore = useUserStore() as any
+const pageLengths = [10, 20, 30, 40, 50, 100, 500]
+const { successAlert } = useAlert()
 
 const state = reactive({
     columnHeaders: [
         { name: 'Name', sorter: true, key: 'firstname' },
         { name: 'Email', sorter: true, key: 'email' },
+        { name: 'Status', sorter: true, key: 'is_active' },
         { name: '' },
     ],
     dataFilter: {
-        search: ''
+        search: [] as string[]
     },
     users: [] as any,
     error: {} as Error,
     isTableLoading: false,
+    modal: {
+        isDeleteUserOpen: false,
+    },
     selectedUser: {} as any,
 })
 
@@ -158,5 +168,25 @@ function changePageLength(event: any) {
     userStore.setCurrentPageNumber(1)
     userStore.setCurrentPageLength(event.target.value)
     fetchUsers()
+}
+
+function deleteUserConfirmation(user: any) {
+    state.selectedUser = user
+    state.modal.isDeleteUserOpen = true
+}
+
+async function deleteUser() {
+    state.error = {}
+    state.isTableLoading = true
+    try {
+        const response = await userService.deleteUser(state.selectedUser.uuid)
+        if (response?.message) {
+            successAlert('Success!', 'User successfully deleted.')
+            fetchUsers()
+        }
+    } catch (error: any) {
+        state.error = error
+    }
+    state.isTableLoading = false
 }
 </script>

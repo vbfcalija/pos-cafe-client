@@ -47,7 +47,7 @@ const state = reactive({
         name: '',
         percentage: ''
     },
-    isPageLoading: false
+    isPageLoading: false,
 })
 
 async function saveTaxRate(taxRateDetails: any) {
