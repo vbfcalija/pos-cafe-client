@@ -105,7 +105,8 @@ async function updateBranch(branchDetails: any) {
         }
     } catch (error: any) {
         state.error = error
+    } finally {
+        state.isPageLoading = false
     }
-    state.isPageLoading = false
 }
 </script>

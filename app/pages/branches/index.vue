@@ -13,15 +13,10 @@
                     <div class="flex-none lg:flex justify-between items-center space-y-3 mb-5">
                         <div class="flex items-center gap-x-1">
                             <span>Entriers per page:</span>
-                            <select class="focus:outline-none bg-transparent" @change="changePageLength"
-                                id="branchesPageLength">
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                                <option value="40">40</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="500">500</option>
+                            <select id="pageLength" class="bg-transparent focus:outline-none"
+                                :value="branchStore.getCurrentPageLength" @change="changePageLength">
+                                <option v-for="length in pageLengths" :key="length" :value="length">{{ length }}
+                                </option>
                             </select>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
@@ -39,29 +34,19 @@
                                 <template #body v-if="!(state.isTableLoading || (state.branches?.data?.length === 0))">
                                     <tr v-for="(branch, index) in state.branches?.data" :key="index">
                                         <td width="20%">
-                                            <p>
-                                                {{ branch?.name }}
-                                            </p>
+                                            <p>{{ branch?.name }}</p>
                                         </td>
                                         <td width="20%">
-                                            <p>
-                                                {{ branch?.address }}
-                                            </p>
+                                            <p>{{ branch?.address || '-' }}</p>
                                         </td>
                                         <td width="10%">
-                                            <p>
-                                                {{ branch?.phone }}
-                                            </p>
+                                            <p>{{ branch?.phone }}</p>
                                         </td>
                                         <td width="10%">
-                                            <p>
-                                                {{ branch?.alternate_phone }}
-                                            </p>
+                                            <p>{{ branch?.alternate_phone }}</p>
                                         </td>
                                         <td width="10%">
-                                            <p>
-                                                {{ branch?.email }}
-                                            </p>
+                                            <p>{{ branch?.email }}</p>
                                         </td>
                                         <td width="10%">
                                             <Badge class="w-fit" :type="branch?.is_active ? 'active' : 'inactive'">
@@ -109,6 +94,7 @@ import type { Error } from '@/types'
 
 const runtimeConfig = useRuntimeConfig()
 const branchStore = useBranchStore() as any
+const pageLengths = [10, 20, 30, 40, 50, 100, 500]
 const { successAlert } = useAlert()
 
 const state = reactive({
@@ -189,7 +175,6 @@ function changePageLength(event: any) {
     branchStore.setCurrentPageLength(event.target.value)
     fetchBranches()
 }
-
 
 function deleteBrancheConfirmation(branch: any) {
     state.selectedBranch = branch

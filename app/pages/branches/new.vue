@@ -75,7 +75,8 @@ async function saveBranch(branchDetails: any) {
         }
     } catch (error: any) {
         state.error = error
+    } finally {
+        state.isPageLoading = false
     }
-    state.isPageLoading = false
 }
 </script>
