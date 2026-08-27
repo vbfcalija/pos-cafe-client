@@ -1,11 +1,17 @@
 <template>
     <div>
-        <Head><Title>New product variant - {{ runtimeConfig?.public?.appName }}</Title></Head>
+
+        <Head>
+            <Title>New product variant - {{ runtimeConfig?.public?.appName }}</Title>
+        </Head>
         <NuxtLayout name="user">
-            <template #breadcrumb><Breadcrumb :links="breadcrumbLinks" /></template>
+            <template #breadcrumb>
+                <Breadcrumb :links="breadcrumbLinks" />
+            </template>
             <template #header>New product variant</template>
             <div class="bg-white rounded-md p-5">
-                <NuxtLink class="text-gray-700 hover:text-gray-900 flex items-center gap-x-2 mb-3 max-w-fit hover:cursor-pointer"
+                <NuxtLink
+                    class="text-gray-700 hover:text-gray-900 flex items-center gap-x-2 mb-3 max-w-fit hover:cursor-pointer"
                     to="/product-variants">
                     <Icon name="ph:arrow-left" size="20" /><span>Back</span>
                 </NuxtLink>
@@ -30,9 +36,16 @@ const breadcrumbLinks = [
     { name: 'New product variant', href: '/product-variants/new' },
 ]
 const { successAlert } = useAlert()
+
 const state = reactive({
     error: {} as Error,
-    formProductVariant: { product_uuid: '', name: '', price: '', cost: '', is_active: false },
+    formProductVariant: {
+        product_uuid: '',
+        name: '',
+        price: '',
+        cost: '',
+        is_active: false
+    },
     isPageLoading: false,
 })
 
@@ -54,7 +67,8 @@ async function saveProductVariant(productVariantDetails: any) {
         }
     } catch (error: any) {
         state.error = error
+    } finally {
+        state.isPageLoading = false
     }
-    state.isPageLoading = false
 }
 </script>

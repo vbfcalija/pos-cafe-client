@@ -106,25 +106,15 @@ watch(() => props.selectedBranch, (newValue: any) => {
     }
 })
 
-const rules = computed(() => {
-    return {
-        formBranch: {
-            name: {
-                required: helpers.withMessage('This field is required.', required),
-            },
-            address: {
-                required: helpers.withMessage('This field is required.', required),
-            },
-            phone: {
-                required: helpers.withMessage('This field is required.', required),
-            },
-            email: {
-                required: helpers.withMessage('This field is required.', required),
-            },
-        },
-    }
-})
-
+const requiredField = helpers.withMessage('This field is required.', required)
+const rules = computed(() => ({
+    formBranch: {
+        name: { required: requiredField },
+        address: { required: requiredField },
+        phone: { required: requiredField },
+        email: { required: requiredField },
+    },
+}))
 const v$ = useVuelidate(rules, state)
 
 function submitForm() {

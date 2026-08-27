@@ -19,16 +19,14 @@
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="value" label="Value" />
-                    <FormNumberField name="value" placeholder="Value" :min="0"
-                        v-model="state.formDiscount.value" />
+                    <FormNumberField name="value" placeholder="Value" :min="0" v-model="state.formDiscount.value" />
                     <FormError :error="v$?.formDiscount?.value?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.value?.[0]" />
                 </div>
             </div>
             <div class="mt-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <FormButton type="button" buttonStyle="cancel" class="rounded-md"
-                        @click="navigateTo('/discounts')">
+                    <FormButton type="button" buttonStyle="cancel" class="rounded-md" @click="navigateTo('/discounts')">
                         Cancel
                     </FormButton>
                     <FormButton type="submit" buttonStyle="primary" class="rounded-md">
@@ -87,23 +85,17 @@ watch(() => props.selectedDiscount, (newValue: any) => {
     }
 })
 
-const rules = computed(() => {
-    return {
-        formDiscount: {
-            name: {
-                required: helpers.withMessage('This field is required.', required),
-            },
-            type: {
-                required: helpers.withMessage('This field is required.', required),
-            },
-            value: {
-                required: helpers.withMessage('This field is required.', required),
-                minValue: helpers.withMessage('Value must be at least 0.', minValue(0)),
-            },
+const requiredField = helpers.withMessage('This field is required.', required)
+const rules = computed(() => ({
+    formDiscount: {
+        name: { required: requiredField },
+        type: { required: requiredField },
+        value: {
+            required: requiredField,
+            minValue: helpers.withMessage('Value must be at least 0.', minValue(0)),
         },
-    }
-})
-
+    },
+}))
 const v$ = useVuelidate(rules, state)
 
 function submitForm() {

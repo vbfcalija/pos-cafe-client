@@ -12,8 +12,7 @@
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="name" label="Name" />
-                    <FormTextField id="name" name="name" placeholder="Name"
-                        v-model="state.formProductVariant.name" />
+                    <FormTextField id="name" name="name" placeholder="Name" v-model="state.formProductVariant.name" />
                     <FormError :error="v$?.formProductVariant?.name?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.name?.[0]" />
                 </div>
@@ -26,8 +25,7 @@
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="cost" label="Cost" />
-                    <FormNumberField name="cost" placeholder="Cost" :min="0"
-                        v-model="state.formProductVariant.cost" />
+                    <FormNumberField name="cost" placeholder="Cost" :min="0" v-model="state.formProductVariant.cost" />
                     <FormError :error="v$?.formProductVariant?.cost?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.cost?.[0]" />
                 </div>
@@ -40,7 +38,9 @@
             <div class="mt-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <FormButton type="button" buttonStyle="cancel" class="rounded-md"
-                        @click="navigateTo('/product-variants')">Cancel</FormButton>
+                        @click="navigateTo('/product-variants')">
+                        Cancel
+                    </FormButton>
                     <FormButton type="submit" buttonStyle="primary" class="rounded-md">
                         {{ props.formType === 'create' ? 'Save' : 'Update' }}
                     </FormButton>
@@ -61,15 +61,26 @@ const props = defineProps({
     formType: { type: String, required: true },
     selectedProductVariant: { type: Object, required: false },
 })
+
 const emit = defineEmits(['isPageLoading', 'submitForm'])
+
 const state = reactive({
     error: {} as Error,
-    formProductVariant: { product_uuid: '', name: '', price: '', cost: '', is_active: false } as any,
+    formProductVariant: {
+        product_uuid: '',
+        name: '',
+        price: '',
+        cost: '',
+        is_active: false
+    } as any,
     isPageLoading: false,
     productOptions: [] as any[],
 })
 
-onMounted(() => { fetchProducts() })
+onMounted(() => {
+    fetchProducts()
+})
+
 watch(() => props.selectedProductVariant, (newValue: any) => {
     if (newValue != null) {
         state.formProductVariant = {
@@ -106,8 +117,11 @@ async function fetchProducts() {
 }
 function submitForm() {
     v$.value.$validate()
-    if (!v$.value.$error) emit('submitForm', state.formProductVariant)
+    if (!v$.value.$error) {
+        emit('submitForm', state.formProductVariant)
+    }
 }
+
 function changeIsActive() {
     state.formProductVariant.is_active = !state.formProductVariant.is_active
 }

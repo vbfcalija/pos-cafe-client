@@ -46,8 +46,9 @@
 </template>
 
 <script setup lang="ts">
-import { useVuelidate } from '@vuelidate/core'
-import { helpers, required } from '@vuelidate/validators'
+import { useVuelidate } from "@vuelidate/core"
+import { required, helpers } from '@vuelidate/validators'
+import type { Error } from '@/types'
 
 const props = defineProps({
     error: { type: Object, required: false },
@@ -55,38 +56,41 @@ const props = defineProps({
     selectedCustomer: { type: Object, required: false },
 })
 
-const emit = defineEmits(['submitForm'])
+const emit = defineEmits(['isPageLoading', 'submitForm'])
 const state = reactive({
-    isPageLoading: false,
+    error: {} as Error,
     formCustomer: {
         name: '',
         tin: '',
         address: '',
         contact_number: '',
-    },
+    } as any,
+    isPageLoading: false,
 })
 
-watch(() => props.selectedCustomer, (customer: any) => {
-    if (!customer) return
-    state.formCustomer = {
-        name: customer.name ?? '',
-        tin: customer.tin ?? '',
-        address: customer.address ?? '',
-        contact_number: customer.contact_number ?? '',
+watch(() => props.selectedCustomer, (newValue: any) => {
+    if (newValue != null) {
+        state.formCustomer = {
+            name: newValue.name,
+            tin: newValue.tin,
+            address: newValue.address,
+            contact_number: newValue.contact_number,
+        }
     }
-}, { immediate: true })
+})
 
+const requiredField = helpers.withMessage('This field is required.', required)
 const rules = computed(() => ({
     formCustomer: {
-        name: {
-            required: helpers.withMessage('This field is required.', required),
-        },
+        name: { required: requiredField },
     },
 }))
 const v$ = useVuelidate(rules, state)
 
-async function submitForm() {
-    const isValid = await v$.value.$validate()
-    if (isValid) emit('submitForm', state.formCustomer)
+function submitForm() {
+    v$.value.$validate()
+    if (!v$.value.$error) {
+        emit('submitForm', state.formCustomer)
+    }
 }
 </script>
