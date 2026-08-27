@@ -2,69 +2,63 @@
     <div>
 
         <Head>
-            <Title>New shift - {{ runtimeConfig?.public?.appName }}</Title>
+            <Title>New tax rate - {{ runtimeConfig?.public?.appName }}</Title>
         </Head>
         <NuxtLayout name="user">
             <template #breadcrumb>
                 <Breadcrumb :links="breadcrumbLinks" />
             </template>
-            <template #header>New shift</template>
+            <template #header>New tax rate</template>
             <div class="bg-white rounded-md p-5">
                 <NuxtLink
                     class="text-gray-700 hover:text-gray-900 flex items-center gap-x-2 mb-3 max-w-fit hover:cursor-pointer"
-                    to="/shifts">
+                    to="/tax-rates">
                     <Icon name="ph:arrow-left" size="20" /><span>Back</span>
                 </NuxtLink>
                 <LoadingSpinner :isActive="state.isPageLoading">
-                    <ModulesShiftForm formType="create" :selectedShift="state.formShift" :error="state.error"
-                        @isPageLoading="(value: boolean) => state.isPageLoading = value" @submitForm="saveShift" />
+                    <ModulesTaxRateForm formType="create" :selectedTaxRate="state.formTaxRate" :error="state.error"
+                        @isPageLoading="(value: boolean) => state.isPageLoading = value" @submitForm="saveTaxRate" />
                 </LoadingSpinner>
             </div>
         </NuxtLayout>
     </div>
 </template>
-
 <script setup lang="ts">
-import { shiftService } from '@/components/api/user/ShiftService'
+import { taxRateService } from '@/components/api/user/TaxRateService'
 import { useAlert } from '@/composables/alert'
 import type { Error } from '@/types'
 
 const runtimeConfig = useRuntimeConfig()
 const breadcrumbLinks = [
     {
-        name: 'Shifts',
-        href: '/shifts'
+        name: 'Tax rates',
+        href: '/tax-rates'
     },
     {
-        name: 'New shift',
-        href: '/shifts/new'
+        name: 'New tax rate',
+        href: '/tax-rates/new'
     }
 ]
 const { successAlert } = useAlert()
 
 const state = reactive({
     error: {} as Error,
-    formShift: {
-        date: '',
+    formTaxRate: {
         name: '',
-        starting_cash: ''
+        percentage: ''
     },
-    isPageLoading: false,
+    isPageLoading: false
 })
 
-async function saveShift(shiftDetails: any) {
+async function saveTaxRate(taxRateDetails: any) {
     state.error = {}
     state.isPageLoading = true
     try {
-        const params = {
-            date: shiftDetails.date,
-            name: shiftDetails.name,
-            starting_cash: shiftDetails.starting_cash,
-        }
-        const response = await shiftService.saveShift(params)
+        const params = { name: taxRateDetails.name, percentage: taxRateDetails.percentage }
+        const response = await taxRateService.saveTaxRate(params)
         if (response.data) {
-            successAlert('Success', 'Shift successfully saved.')
-            navigateTo('/shifts')
+            successAlert('Success', 'Tax rate successfully saved.')
+            navigateTo('/tax-rates')
         }
     } catch (error: any) {
         state.error = error
