@@ -17,7 +17,7 @@ const props = defineProps({
         default: null
     },
     options: {
-        type: Object,
+        type: [Array, Object],
         required: true,
     },
     searchable: {

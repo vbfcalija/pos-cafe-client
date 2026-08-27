@@ -15,7 +15,8 @@
                             <span>Entriers per page:</span>
                             <select id="pageLength" class="bg-transparent focus:outline-none"
                                 :value="branchStore.getCurrentPageLength" @change="changePageLength">
-                                <option v-for="length in pageLengths" :key="length" :value="length">{{ length }}
+                                <option v-for="length in pageLengths" :key="length" :value="length">
+                                    {{ length }}
                                 </option>
                             </select>
                         </div>

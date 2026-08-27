@@ -13,7 +13,9 @@
                         <span>Entries per page:</span>
                         <select id="pageLength" class="bg-transparent focus:outline-none"
                             :value="customerStore.getCurrentPageLength" @change="changePageLength">
-                            <option v-for="length in pageLengths" :key="length" :value="length">{{ length }}</option>
+                            <option v-for="length in pageLengths" :key="length" :value="length">
+                                {{ length }}
+                            </option>
                         </select>
                     </div>
                     <div class="flex flex-wrap items-center gap-3">
@@ -30,19 +32,19 @@
                             :isLoading="state.isTableLoading" :sortData="customerStore.getSortData" @sort="sort">
                             <template #body v-if="!state.isTableLoading && state.customers?.data?.length">
                                 <tr v-for="customer in state.customers.data" :key="customer.uuid">
-                                    <td>
+                                    <td width="20%">
                                         <p>{{ customer.name }}</p>
                                     </td>
-                                    <td>
+                                    <td width="20%">
                                         <p>{{ customer.tin || '—' }}</p>
                                     </td>
-                                    <td>
+                                    <td width="20%">
                                         <p>{{ customer.address || '—' }}</p>
                                     </td>
-                                    <td>
+                                    <td width="20%">
                                         <p>{{ customer.contact_number || '—' }}</p>
                                     </td>
-                                    <td>
+                                    <td width="20%">
                                         <div class="flex items-end gap-2">
                                             <Tooltip text="Edit">
                                                 <FormButton type="button" buttonStyle="action"
