@@ -466,6 +466,18 @@ const settings: SidebarNavigationItem[] = [
         ],
     },
     {
+        id: 'product-categories',
+        label: 'Product categories',
+        href: '/product-categories',
+        icon: 'ph:folder-open',
+        routes: [
+            'product-categories',
+            'product-categories-create',
+            'product-categories-id',
+            'product-categories-id-edit',
+        ],
+    },
+    {
         id: 'product-variants',
         label: 'Product variants',
         href: '/product-variants',

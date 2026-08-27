@@ -57,9 +57,18 @@ import { productService } from '@/components/api/user/ProductService'
 import type { Error } from '@/types'
 
 const props = defineProps({
-    error: { type: Object, required: false },
-    formType: { type: String, required: true },
-    selectedProductVariant: { type: Object, required: false },
+    error: {
+        type: Object,
+        required: false
+    },
+    formType: {
+        type: String,
+        required: true
+    },
+    selectedProductVariant: {
+        type: Object,
+        required: false
+    },
 })
 
 const emit = defineEmits(['isPageLoading', 'submitForm'])

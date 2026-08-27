@@ -51,9 +51,18 @@ import { required, helpers } from '@vuelidate/validators'
 import type { Error } from '@/types'
 
 const props = defineProps({
-    error: { type: Object, required: false },
-    formType: { type: String, required: true },
-    selectedCustomer: { type: Object, required: false },
+    error: {
+        type: Object,
+        required: false
+    },
+    formType: {
+        type: String,
+        required: true
+    },
+    selectedCustomer: {
+        type: Object,
+        required: false
+    },
 })
 
 const emit = defineEmits(['isPageLoading', 'submitForm'])

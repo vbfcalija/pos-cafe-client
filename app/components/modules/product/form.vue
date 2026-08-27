@@ -73,9 +73,18 @@ import { taxRateService } from '@/components/api/user/TaxRateService'
 import type { Error } from '@/types'
 
 const props = defineProps({
-    error: { type: Object, required: false },
-    formType: { type: String, required: true },
-    selectedProduct: { type: Object, required: false },
+    error: {
+        type: Object,
+        required: false
+    },
+    formType: {
+        type: String,
+        required: true
+    },
+    selectedProduct: {
+        type: Object,
+        required: false
+    },
 })
 const emit = defineEmits(['isPageLoading', 'submitForm'])
 const state = reactive({
