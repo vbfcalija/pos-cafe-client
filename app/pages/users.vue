@@ -90,8 +90,8 @@ const userStore = useUserStore() as any
 
 const state = reactive({
     columnHeaders: [
-        { name: 'Name', key: 'firstname' },
-        { name: 'Email', key: 'email' },
+        { name: 'Name', sorter: true, key: 'firstname' },
+        { name: 'Email', sorter: true, key: 'email' },
         { name: '' },
     ],
     dataFilter: {
