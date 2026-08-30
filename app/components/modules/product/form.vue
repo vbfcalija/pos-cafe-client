@@ -35,12 +35,21 @@
                     <FormError :error="props?.error?.errors?.cost?.[0]" />
                 </div>
                 <div class="space-y-1">
-                    <FormLabel for="color" label="Color" />
-                    <FormColorPicker id="color" v-model="state.formProduct.color" />
+                    <div class="flex items-center gap-x-2">
+                        <FormLabel for="color" label="Color" />
+                        <FormColorPicker id="color" v-model="state.formProduct.color" />
+                    </div>
                     <FormError :error="props?.error?.errors?.color?.[0]" />
                 </div>
                 <div class="space-y-1">
-                    <FormLabel for="category_uuid" label="Category" />
+                    <div class="flex items-center justify-between">
+                        <FormLabel for="category_uuid" label="Category" />
+                        <button type="button"
+                            class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                            @click="state.isCreateCategoryOpen = true">
+                            <Icon name="ph:plus" class="size-4" /> Create new category
+                        </button>
+                    </div>
                     <FormSelect :options="state.categoryOptions" v-model="state.formProduct.category_uuid" />
                     <FormError :error="v$?.formProduct?.category_uuid?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.category_uuid?.[0]" />
@@ -62,6 +71,8 @@
                 </div>
             </div>
         </form>
+        <ModulesProductCategoryCreateModal :show="state.isCreateCategoryOpen"
+            @close="state.isCreateCategoryOpen = false" @created="handleCategoryCreated" />
     </LoadingSpinner>
 </template>
 
@@ -102,6 +113,7 @@ const state = reactive({
     isPageLoading: false,
     categoryOptions: [] as any[],
     taxRateOptions: [] as any[],
+    isCreateCategoryOpen: false,
 })
 
 onMounted(() => {
@@ -156,5 +168,13 @@ function submitForm() {
     if (!v$.value.$error) {
         emit('submitForm', state.formProduct)
     }
+}
+
+function handleCategoryCreated(category: any) {
+    if (!state.categoryOptions.some((option: any) => option.value === category.uuid)) {
+        state.categoryOptions.unshift({ label: category.name, value: category.uuid })
+    }
+    state.formProduct.category_uuid = category.uuid
+    state.isCreateCategoryOpen = false
 }
 </script>

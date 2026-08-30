@@ -23,11 +23,11 @@
                 </div>
             </div>
             <div class="mt-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <FormButton type="button" buttonStyle="cancel" class="rounded-md"
+                <div class="grid grid-cols-1 gap-3" :class="props.showCancel && 'md:grid-cols-2'">
+                    <FormButton v-if="props.showCancel" type="button" buttonStyle="cancel" class="rounded-md"
                         @click="navigateTo('/product-categories')">Cancel</FormButton>
                     <FormButton type="submit" buttonStyle="primary" class="rounded-md">
-                        {{ props.formType === 'create' ? 'Save' : 'Update' }}
+                        {{ props.submitLabel || (props.formType === 'create' ? 'Save' : 'Update') }}
                     </FormButton>
                 </div>
             </div>
@@ -53,6 +53,16 @@ const props = defineProps({
         type: Object,
         required: false
     },
+    showCancel: {
+        type: Boolean,
+        required: false,
+        default: true,
+    },
+    submitLabel: {
+        type: String,
+        required: false,
+        default: '',
+    },
 })
 const emit = defineEmits(['isPageLoading', 'submitForm'])
 
@@ -74,7 +84,7 @@ watch(() => props.selectedProductCategory, (newValue: any) => {
             color: newValue.color || '#000000',
         }
     }
-})
+}, { immediate: true })
 
 const requiredField = helpers.withMessage('This field is required.', required)
 const rules = computed(() => ({
