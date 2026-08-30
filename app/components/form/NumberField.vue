@@ -1,11 +1,16 @@
 <template>
-    <input type="number" step="any" :name="props.name" :maxlength="props.maxLength" :autocomplete="props.name"
+    <input type="number" step="any" :id="props.id" :name="props.name" :maxlength="props.maxLength"
+        :autocomplete="props.name"
         class="appearance-none block w-full px-3 h-11 border border-gray-200 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
         :placeholder="props.placeholder" :value="props.modelValue" :min="props.min" @input="updateValue($event)" />
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
+    id: {
+        type: String,
+        required: false,
+    },
     name: {
         type: String,
         required: true,

@@ -6,7 +6,7 @@
             <div class="space-y-3">
                 <div class="space-y-1">
                     <div class="flex items-center justify-between">
-                        <FormLabel for="branch_uuid" label="Branch" />
+                        <p class="text-sm text-gray-600">Branch</p>
                         <button type="button"
                             class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                             @click="state.isCreateBranchOpen = true">
@@ -32,7 +32,7 @@
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="starting_cash" label="Starting cash" />
-                    <FormNumberField name="starting_cash" placeholder="Starting cash" :min="0"
+                    <FormNumberField id="starting_cash" name="starting_cash" placeholder="Starting cash" :min="0"
                         v-model="state.formShift.starting_cash" />
                     <FormError :error="v$?.formShift?.starting_cash?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.starting_cash?.[0]" />

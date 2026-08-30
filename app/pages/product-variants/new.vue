@@ -17,7 +17,8 @@
                 </NuxtLink>
                 <LoadingSpinner :isActive="state.isPageLoading">
                     <ModulesProductVariantForm formType="create" :selectedProductVariant="state.formProductVariant"
-                        :error="state.error" @isPageLoading="(value: boolean) => state.isPageLoading = value"
+                        :error="state.error" :showCreateProduct="true"
+                        @isPageLoading="(value: boolean) => state.isPageLoading = value"
                         @submitForm="saveProductVariant" />
                 </LoadingSpinner>
             </div>

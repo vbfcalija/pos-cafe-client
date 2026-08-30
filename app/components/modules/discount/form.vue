@@ -11,15 +11,16 @@
                     <FormError :error="props?.error?.errors?.name?.[0]" />
                 </div>
                 <div class="space-y-1">
-                    <FormLabel for="type" label="Type" />
-                    <FormSelect :options="discountTypes" :searchable="false" :canClear="false"
+                    <p class="text-sm text-gray-600">Type</p>
+                    <FormSelect aria-label="Type" :options="discountTypes" :searchable="false" :canClear="false"
                         v-model="state.formDiscount.type" />
                     <FormError :error="v$?.formDiscount?.type?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.type?.[0]" />
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="value" label="Value" />
-                    <FormNumberField name="value" placeholder="Value" :min="0" v-model="state.formDiscount.value" />
+                    <FormNumberField id="value" name="value" placeholder="Value" :min="0"
+                        v-model="state.formDiscount.value" />
                     <FormError :error="v$?.formDiscount?.value?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.value?.[0]" />
                 </div>

@@ -155,12 +155,14 @@
 
                         <div class="mt-5 space-y-3 border-t border-gray-200 pt-5">
                             <div class="space-y-1">
-                                <FormLabel for="customer" label="Customer (optional)" />
+                                <p class="text-sm text-gray-600">
+                                    Customer (optional)
+                                </p>
                                 <FormSelect :options="customerOptions" v-model="state.customer_uuid" />
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="space-y-1">
-                                    <FormLabel for="payment_method" label="Payment" />
+                                    <p class="text-sm text-gray-600">Payment</p>
                                     <FormSelect :options="paymentMethodOptions" :searchable="false" :canClear="false"
                                         v-model="state.payment_method" />
                                 </div>

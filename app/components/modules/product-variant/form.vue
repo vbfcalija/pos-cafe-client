@@ -5,7 +5,14 @@
                 v-if="props.error?.message && props.error.message.length > 0" />
             <div class="space-y-3">
                 <div class="space-y-1">
-                    <FormLabel for="product_uuid" label="Product" />
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm text-gray-600">Product</p>
+                        <button v-if="props.showCreateProduct" type="button"
+                            class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                            @click="state.isCreateProductOpen = true">
+                            <Icon name="ph:plus" class="size-4" /> Create new product
+                        </button>
+                    </div>
                     <FormSelect :options="state.productOptions" v-model="state.formProductVariant.product_uuid" />
                     <FormError :error="v$?.formProductVariant?.product_uuid?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.product_uuid?.[0]" />
@@ -18,14 +25,15 @@
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="price" label="Price" />
-                    <FormNumberField name="price" placeholder="Price" :min="0"
+                    <FormNumberField id="price" name="price" placeholder="Price" :min="0"
                         v-model="state.formProductVariant.price" />
                     <FormError :error="v$?.formProductVariant?.price?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.price?.[0]" />
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="cost" label="Cost" />
-                    <FormNumberField name="cost" placeholder="Cost" :min="0" v-model="state.formProductVariant.cost" />
+                    <FormNumberField id="cost" name="cost" placeholder="Cost" :min="0"
+                        v-model="state.formProductVariant.cost" />
                     <FormError :error="v$?.formProductVariant?.cost?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.cost?.[0]" />
                 </div>
@@ -47,6 +55,8 @@
                 </div>
             </div>
         </form>
+        <ModulesProductCreateModal v-if="props.showCreateProduct" :show="state.isCreateProductOpen"
+            @close="state.isCreateProductOpen = false" @created="handleProductCreated" />
     </LoadingSpinner>
 </template>
 
@@ -69,6 +79,11 @@ const props = defineProps({
         type: Object,
         required: false
     },
+    showCreateProduct: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
 })
 
 const emit = defineEmits(['isPageLoading', 'submitForm'])
@@ -84,6 +99,7 @@ const state = reactive({
     } as any,
     isPageLoading: false,
     productOptions: [] as any[],
+    isCreateProductOpen: false,
 })
 
 onMounted(() => {
@@ -133,5 +149,13 @@ function submitForm() {
 
 function changeIsActive() {
     state.formProductVariant.is_active = !state.formProductVariant.is_active
+}
+
+function handleProductCreated(product: any) {
+    if (!state.productOptions.some((option: any) => option.value === product.uuid)) {
+        state.productOptions.unshift({ label: product.name, value: product.uuid })
+    }
+    state.formProductVariant.product_uuid = product.uuid
+    state.isCreateProductOpen = false
 }
 </script>

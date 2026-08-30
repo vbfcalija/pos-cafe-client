@@ -24,13 +24,15 @@
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="price" label="Price" />
-                    <FormNumberField name="price" placeholder="Price" :min="0" v-model="state.formProduct.price" />
+                    <FormNumberField id="price" name="price" placeholder="Price" :min="0"
+                        v-model="state.formProduct.price" />
                     <FormError :error="v$?.formProduct?.price?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.price?.[0]" />
                 </div>
                 <div class="space-y-1">
                     <FormLabel for="cost" label="Cost" />
-                    <FormNumberField name="cost" placeholder="Cost" :min="0" v-model="state.formProduct.cost" />
+                    <FormNumberField id="cost" name="cost" placeholder="Cost" :min="0"
+                        v-model="state.formProduct.cost" />
                     <FormError :error="v$?.formProduct?.cost?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.cost?.[0]" />
                 </div>
@@ -43,8 +45,8 @@
                 </div>
                 <div class="space-y-1">
                     <div class="flex items-center justify-between">
-                        <FormLabel for="category_uuid" label="Category" />
-                        <button type="button"
+                        <p class="text-sm text-gray-600">Category</p>
+                        <button v-if="props.showCreateCategory" type="button"
                             class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                             @click="state.isCreateCategoryOpen = true">
                             <Icon name="ph:plus" class="size-4" /> Create new category
@@ -55,23 +57,24 @@
                     <FormError :error="props?.error?.errors?.category_uuid?.[0]" />
                 </div>
                 <div class="space-y-1">
-                    <FormLabel for="tax_rate_uuid" label="Tax rate" />
+                    <p class="text-sm text-gray-600">Tax rate</p>
                     <FormSelect :options="state.taxRateOptions" v-model="state.formProduct.tax_rate_uuid" />
                     <FormError :error="v$?.formProduct?.tax_rate_uuid?.$errors[0]?.$message.toString()" />
                     <FormError :error="props?.error?.errors?.tax_rate_uuid?.[0]" />
                 </div>
             </div>
             <div class="mt-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <FormButton type="button" buttonStyle="cancel" class="rounded-md" @click="navigateTo('/products')">
+                <div class="grid grid-cols-1 gap-3" :class="props.showCancel && 'md:grid-cols-2'">
+                    <FormButton v-if="props.showCancel" type="button" buttonStyle="cancel" class="rounded-md"
+                        @click="navigateTo('/products')">
                         Cancel</FormButton>
                     <FormButton type="submit" buttonStyle="primary" class="rounded-md">
-                        {{ props.formType === 'create' ? 'Save' : 'Update' }}
+                        {{ props.submitLabel || (props.formType === 'create' ? 'Save' : 'Update') }}
                     </FormButton>
                 </div>
             </div>
         </form>
-        <ModulesProductCategoryCreateModal :show="state.isCreateCategoryOpen"
+        <ModulesProductCategoryCreateModal v-if="props.showCreateCategory" :show="state.isCreateCategoryOpen"
             @close="state.isCreateCategoryOpen = false" @created="handleCategoryCreated" />
     </LoadingSpinner>
 </template>
@@ -96,7 +99,22 @@ const props = defineProps({
         type: Object,
         required: false
     },
-})
+    showCreateCategory: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+    showCancel: {
+        type: Boolean,
+        required: false,
+        default: true,
+    },
+    submitLabel: {
+        type: String,
+        required: false,
+        default: '',
+    },
+}, { immediate: true })
 const emit = defineEmits(['isPageLoading', 'submitForm'])
 const state = reactive({
     error: {} as Error,
