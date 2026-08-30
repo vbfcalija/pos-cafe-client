@@ -17,7 +17,8 @@
                 </NuxtLink>
                 <LoadingSpinner :isActive="state.isPageLoading">
                     <ModulesShiftForm formType="create" :selectedShift="state.formShift" :error="state.error"
-                        @isPageLoading="(value: boolean) => state.isPageLoading = value" @submitForm="saveShift" />
+                        :showCreateBranch="true" @isPageLoading="(value: boolean) => state.isPageLoading = value"
+                        @submitForm="saveShift" />
                 </LoadingSpinner>
             </div>
         </NuxtLayout>
@@ -45,9 +46,11 @@ const { successAlert } = useAlert()
 const state = reactive({
     error: {} as Error,
     formShift: {
+        branch_uuid: '',
         date: '',
         name: '',
-        starting_cash: ''
+        starting_cash: '',
+        is_open: true,
     },
     isPageLoading: false,
 })
@@ -57,9 +60,11 @@ async function saveShift(shiftDetails: any) {
     state.isPageLoading = true
     try {
         const params = {
+            branch_uuid: shiftDetails.branch_uuid,
             date: shiftDetails.date,
             name: shiftDetails.name,
             starting_cash: shiftDetails.starting_cash,
+            is_open: shiftDetails.is_open,
         }
         const response = await shiftService.saveShift(params)
         if (response.data) {

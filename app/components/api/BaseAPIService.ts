@@ -35,6 +35,8 @@ class BaseAPIService {
                 case 400:
                     throw new APIError(error.response._data)
                 case 404:
+                case 409:
+                    throw new APIError(error.response._data)
                 case 422:
                     throw new APIError(error.response._data)
                 case 429:

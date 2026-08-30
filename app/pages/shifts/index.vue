@@ -28,19 +28,27 @@
                             :isLoading="state.isTableLoading" :sortData="shiftStore.getSortData" @sort="sort">
                             <template #body v-if="!(state.isTableLoading || (state.shifts?.data?.length === 0))">
                                 <tr v-for="(shift, index) in state.shifts?.data" :key="index">
-                                    <td width="20%">
-                                        <p>{{ shift?.date }}</p>
-                                    </td>
-                                    <td width="25%">
-                                        <p>{{ shift?.name }}</p>
-                                    </td>
-                                    <td width="20%">
-                                        <p>{{ Number(shift?.starting_cash).toFixed(2) }}</p>
-                                    </td>
-                                    <td width="20%">
-                                        <p>{{ shift?.user?.firstname }} {{ shift?.user?.lastname }}</p>
+                                    <td width="15%">
+                                        <p>{{ shift?.branch?.name || '-' }}</p>
                                     </td>
                                     <td width="15%">
+                                        <p>{{ formatDateToReadable(shift?.date) }}</p>
+                                    </td>
+                                    <td width="20%">
+                                        <p>{{ shift?.name }}</p>
+                                    </td>
+                                    <td width="15%">
+                                        <p>{{ Number(shift?.starting_cash).toFixed(2) }}</p>
+                                    </td>
+                                    <td width="15%">
+                                        <p>{{ shift?.user?.firstname }} {{ shift?.user?.lastname }}</p>
+                                    </td>
+                                    <td width="10%">
+                                        <Badge class="w-fit" :type="shift?.is_open ? 'active' : 'inactive'">
+                                            <p class="text-xs">{{ shift?.is_open ? 'Open' : 'Closed' }}</p>
+                                        </Badge>
+                                    </td>
+                                    <td width="10%">
                                         <div class="flex items-end gap-2">
                                             <Tooltip text="Edit">
                                                 <FormButton type="button" buttonStyle="action"
@@ -80,14 +88,17 @@ const runtimeConfig = useRuntimeConfig()
 const shiftStore = useShiftStore() as any
 const pageLengths = [10, 20, 30, 40, 50, 100, 500]
 const { successAlert } = useAlert()
+const { formatDateToReadable } = useDatetimeFormatter()
 
 const state = reactive({
     shifts: [] as any,
     columnHeaders: [
+        { name: 'Branch', sorter: true, key: 'branch_id' },
         { name: 'Date', sorter: true, key: 'date' },
         { name: 'Name', sorter: true, key: 'name' },
         { name: 'Starting cash', sorter: true, key: 'starting_cash' },
         { name: 'User', sorter: true, key: 'user_id' },
+        { name: 'Status', sorter: true, key: 'is_open' },
         { name: '' },
     ],
     dataFilter: {

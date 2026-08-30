@@ -47,9 +47,11 @@ const breadcrumbLinks = [
 const state = reactive({
     error: {} as Error,
     formShift: {
+        branch_uuid: '',
         date: '',
         name: '',
-        starting_cash: ''
+        starting_cash: '',
+        is_open: true,
     },
     isPageLoading: false,
 })
@@ -66,9 +68,11 @@ async function fetchShift() {
         const response = await shiftService.getShift(shiftUuid)
         if (response) {
             state.formShift = {
+                branch_uuid: response?.data?.branch?.uuid ?? '',
                 date: response?.data?.date ?? '',
                 name: response?.data?.name ?? '',
                 starting_cash: response?.data?.starting_cash?.toString() ?? '',
+                is_open: response?.data?.is_open ? true : false,
             }
         }
     } catch (error: any) {
@@ -82,9 +86,11 @@ async function updateShift(shiftDetails: any) {
     state.isPageLoading = true
     try {
         const params = {
+            branch_uuid: shiftDetails.branch_uuid,
             date: shiftDetails.date,
             name: shiftDetails.name,
             starting_cash: shiftDetails.starting_cash,
+            is_open: shiftDetails.is_open,
         }
         const response = await shiftService.updateShift(shiftUuid, params)
         if (response.data) {
