@@ -37,7 +37,9 @@
                         <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h2 class="text-lg font-semibold text-gray-900">Products</h2>
-                                <p class="text-sm text-gray-500">Select an active variant to add it to the order.</p>
+                                <p class="text-sm text-gray-500">
+                                    Choose a product, select its variant, then add it to the order.
+                                </p>
                             </div>
                             <div class="relative w-full sm:max-w-sm">
                                 <Icon name="ph:magnifying-glass" class="absolute left-3 top-3 size-5 text-gray-400" />
@@ -47,46 +49,91 @@
                             </div>
                         </div>
 
-                        <div v-if="groupedVariants.length" class="space-y-7">
-                            <section v-for="category in groupedVariants" :key="category.uuid">
+                        <div v-if="groupedProducts.length" class="space-y-8">
+                            <section v-for="category in groupedProducts" :key="category.uuid">
                                 <div class="mb-3 flex items-center gap-2">
                                     <span class="size-3 rounded-full border border-gray-200"
                                         :style="{ backgroundColor: category.color }" />
                                     <h3 class="font-semibold text-gray-900">{{ category.name }}</h3>
-                                    <span class="text-xs text-gray-400">{{ category.variants.length }}</span>
+                                    <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                                        {{ category.products.length }} product{{ category.products.length === 1 ? '' :
+                                            's' }}
+                                    </span>
                                 </div>
-                                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                                    <button v-for="variant in category.variants" :key="variant.uuid" type="button"
-                                        class="group rounded-xl border border-gray-200 p-4 text-left transition hover:border-primary hover:shadow-sm"
-                                        :disabled="!hasOpenShift" @click="addToCart(variant)">
-                                        <div class="mb-3 flex items-start justify-between gap-3">
-                                            <span
-                                                class="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
-                                                {{ variant.product?.sku || 'Product' }}
-                                            </span>
-                                            <span class="size-4 rounded-full border border-gray-200"
-                                                :style="{ backgroundColor: variant.product?.color || '#e5e7eb' }" />
+                                <div class="grid gap-4 sm:grid-cols-2">
+                                    <article v-for="product in category.products" :key="product.uuid"
+                                        class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
+                                        <div class="h-1.5" :style="{ backgroundColor: product.color || '#dbeafe' }" />
+                                        <div class="p-4">
+                                            <div class="mb-4 flex items-start justify-between gap-3">
+                                                <div class="flex min-w-0 items-center gap-3">
+                                                    <div
+                                                        class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                                        <Icon name="ph:package" class="size-6" />
+                                                    </div>
+                                                    <div class="min-w-0">
+                                                        <h4 class="truncate font-semibold text-gray-900">
+                                                            {{ product.name }}
+                                                        </h4>
+                                                        <p class="truncate text-xs text-gray-500">
+                                                            {{ product.sku || 'No SKU' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="shrink-0 rounded-full bg-gray-100 px-2 py-1 text-[11px] font-medium text-gray-600">
+                                                    {{ product.variants.length }} variant{{ product.variants.length ===
+                                                        1 ? '' : 's'
+                                                    }}
+                                                </span>
+                                            </div>
+
+                                            <template v-if="product.variants.length">
+                                                <div class="space-y-1">
+                                                    <p class="text-xs font-medium text-gray-500">Product variant</p>
+                                                    <div class="flex flex-wrap gap-2" role="group"
+                                                        :aria-label="`${product.name} variants`">
+                                                        <button v-for="variant in product.variants" :key="variant.uuid"
+                                                            type="button"
+                                                            class="rounded-lg border px-3 py-2 text-left text-xs transition"
+                                                            :class="state.selectedVariantByProduct[product.uuid] === variant.uuid
+                                                                ? 'border-primary bg-blue-50 text-primary ring-1 ring-primary/20'
+                                                                : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:bg-gray-50'"
+                                                            :aria-pressed="state.selectedVariantByProduct[product.uuid] === variant.uuid"
+                                                            @click="state.selectedVariantByProduct[product.uuid] = variant.uuid">
+                                                            <span class="block font-semibold">{{ variant.name }}</span>
+                                                            <span class="mt-0.5 block opacity-75">{{
+                                                                money(variant.price) }}</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-4 flex items-center justify-between gap-3">
+                                                    <div>
+                                                        <p class="text-xs text-gray-500">Price</p>
+                                                        <p class="text-lg font-bold text-gray-900">{{
+                                                            money(selectedVariant(product)?.price || product.price) }}
+                                                        </p>
+                                                    </div>
+                                                    <FormButton buttonStyle="primary" buttonSize="xs"
+                                                        :disabled="!hasOpenShift || !state.selectedVariantByProduct[product.uuid]"
+                                                        @click="addSelectedProduct(product)">
+                                                        <Icon name="ph:plus" class="size-4" /> Add
+                                                    </FormButton>
+                                                </div>
+                                            </template>
+                                            <div v-else
+                                                class="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-3 py-5 text-center">
+                                                <Icon name="ph:warning-circle" class="mx-auto size-5 text-gray-400" />
+                                                <p class="mt-1 text-xs text-gray-500">No active variants available</p>
+                                            </div>
                                         </div>
-                                        <p class="font-semibold text-gray-900">
-                                            {{ variant.product?.name }}
-                                        </p>
-                                        <p class="mt-0.5 text-sm text-gray-500">
-                                            {{ variant.name }}
-                                        </p>
-                                        <div class="mt-4 flex items-center justify-between">
-                                            <span class="font-bold text-primary">
-                                                {{ money(variant.price) }}
-                                            </span>
-                                            <Icon name="ph:plus-circle-fill"
-                                                class="size-6 text-primary opacity-70 group-hover:opacity-100" />
-                                        </div>
-                                    </button>
+                                    </article>
                                 </div>
                             </section>
                         </div>
                         <div v-else
                             class="rounded-xl border border-dashed border-gray-300 py-16 text-center text-sm text-gray-500">
-                            No active product variants found.
+                            No products found.
                         </div>
                     </section>
 
@@ -251,33 +298,42 @@
 import { customerService } from '@/components/api/user/CustomerService'
 import { discountService } from '@/components/api/user/DiscountService'
 import { orderService } from '@/components/api/user/OrderService'
+import { productService } from '@/components/api/user/ProductService'
 import { productVariantService } from '@/components/api/user/ProductVariantService'
 import { shiftService } from '@/components/api/user/ShiftService'
 import { useUserStore } from '@/store/user'
-import type { Error } from '@/types'
-
-type CartLine = {
-    product_variant_uuid: string
-    product_name: string
-    variant_name: string
-    price: number
-    tax_percentage: number
-    quantity: number
-    discount_uuid: string
-}
+import type { CartLine, Error } from '@/types'
 
 const noDiscountValue = '__none__'
 
 const runtimeConfig = useRuntimeConfig()
 const userStore = useUserStore() as any
 const { formatDateToReadable } = useDatetimeFormatter()
+
 const state = reactive({
-    shifts: [] as any[], customers: [] as any[], discounts: [] as any[],
-    productVariants: [] as any[], cart: [] as CartLine[], shift_uuid: '', customer_uuid: '',
-    payment_method: 'cash', reference: '', cash_tender: '', productSearch: '', error: {} as Error,
-    isPageLoading: false, isSubmitting: false, isSuccessOpen: false, completedOrder: null as any,
-    completedChange: 0, completedPaymentMethod: '', isShiftModalOpen: false,
-    isCloseShiftConfirmationOpen: false, isClosingShift: false,
+    shifts: [] as any[],
+    customers: [] as any[],
+    discounts: [] as any[],
+    products: [] as any[],
+    productVariants: [] as any[],
+    selectedVariantByProduct: {} as Record<string, string>,
+    cart: [] as CartLine[],
+    shift_uuid: '',
+    customer_uuid: '',
+    payment_method: 'cash',
+    reference: '',
+    cash_tender: '',
+    productSearch: '',
+    error: {} as Error,
+    isPageLoading: false,
+    isSubmitting: false,
+    isSuccessOpen: false,
+    completedOrder: null as any,
+    completedChange: 0,
+    completedPaymentMethod: '',
+    isShiftModalOpen: false,
+    isCloseShiftConfirmationOpen: false,
+    isClosingShift: false,
 })
 
 onMounted(() => { fetchPosData() })
@@ -287,10 +343,12 @@ const openShifts = computed(() => state.shifts.filter((shift: any) => {
     return shift.is_open && belongsToUser
 }))
 const currentShift = computed(() => openShifts.value.find((shift: any) => shift.uuid === state.shift_uuid))
+
 const customerOptions = computed(() => state.customers.map((customer: any) => ({
     label: customer.name,
     value: customer.uuid,
 })))
+
 const discountOptions = computed(() => [
     { label: 'No discount', value: noDiscountValue },
     ...state.discounts.map((discount: any) => ({
@@ -298,41 +356,50 @@ const discountOptions = computed(() => [
         value: discount.uuid,
     })),
 ])
+
 const paymentMethodOptions = [
     { label: 'Cash', value: 'cash' },
     { label: 'Card', value: 'card' },
     { label: 'GCash', value: 'gcash' },
     { label: 'GoTyme', value: 'gotyme' },
 ]
+
 const hasOpenShift = computed(() => Boolean(state.shift_uuid && openShifts.value.some(
     (shift: any) => shift.uuid === state.shift_uuid
 )))
-const filteredVariants = computed(() => {
+
+const filteredProducts = computed(() => {
     const search = state.productSearch.trim().toLowerCase()
-    return state.productVariants.filter((variant: any) => {
-        if (!variant.is_active) return false
+    return state.products.map((product: any) => ({
+        ...product,
+        variants: state.productVariants.filter((variant: any) => variant.is_active && variant.product?.uuid === product.uuid),
+    })).filter((product: any) => {
         if (!search) return true
-        return `${variant.name} ${variant.product?.name} ${variant.product?.sku} ${variant.product?.barcode}`.toLowerCase().includes(search)
+        const variants = product.variants.map((variant: any) => variant.name).join(' ')
+        return `${product.name} ${product.sku} ${product.barcode} ${variants}`.toLowerCase().includes(search)
     })
 })
-const groupedVariants = computed(() => {
-    const groups = new Map<string, { uuid: string, name: string, color: string, variants: any[] }>()
 
-    filteredVariants.value.forEach((variant: any) => {
-        const category = variant.product?.category
+const groupedProducts = computed(() => {
+    const groups = new Map<string, { uuid: string, name: string, color: string, products: any[] }>()
+
+    filteredProducts.value.forEach((product: any) => {
+        const category = product.category
         const uuid = category?.uuid ?? 'uncategorized'
         if (!groups.has(uuid)) {
             groups.set(uuid, {
                 uuid,
                 name: category?.name ?? 'Uncategorized',
                 color: category?.color || '#e5e7eb',
-                variants: [],
+                products: [],
             })
         }
-        groups.get(uuid)?.variants.push(variant)
+        groups.get(uuid)?.products.push(product)
     })
 
-    return Array.from(groups.values()).sort((a, b) => a.name.localeCompare(b.name))
+    return Array.from(groups.values())
+        .map(category => ({ ...category, products: category.products.sort((a, b) => a.name.localeCompare(b.name)) }))
+        .sort((a, b) => a.name.localeCompare(b.name))
 })
 const cartQuantity = computed(() => state.cart.reduce((total, line) => total + line.quantity, 0))
 const subtotal = computed(() => state.cart.reduce((total, line) => total + line.price * line.quantity, 0))
@@ -354,16 +421,19 @@ async function fetchPosData() {
     state.isPageLoading = true
     const params = { page: 1, page_length: 500, sortField: 'name', sortOrder: 'ascend', search: [] }
     try {
-        const [shifts, customers, discounts, productVariants] = await Promise.all([
+        const [shifts, customers, discounts, products, productVariants] = await Promise.all([
             shiftService.getShifts({ ...params, sortField: 'date', sortOrder: 'descend' }),
             customerService.getCustomers(params),
             discountService.getDiscounts(params),
+            productService.getProducts(params),
             productVariantService.getProductVariants(params),
         ])
         state.shifts = shifts?.data ?? []
         state.customers = customers?.data ?? []
         state.discounts = discounts?.data ?? []
+        state.products = products?.data ?? []
         state.productVariants = productVariants?.data ?? []
+        initializeProductVariants()
         selectLatestOpenShift()
         state.isShiftModalOpen = !hasOpenShift.value
     } catch (error: any) {
@@ -413,24 +483,58 @@ function addToCart(variant: any) {
         quantity: 1, discount_uuid: noDiscountValue,
     })
 }
+
+function initializeProductVariants() {
+    state.products.forEach((product: any) => {
+        const firstVariant = state.productVariants.find((variant: any) => variant.is_active && variant.product?.uuid === product.uuid)
+        state.selectedVariantByProduct[product.uuid] = firstVariant?.uuid ?? ''
+    })
+}
+
+function selectedVariant(product: any) {
+    return product.variants.find((variant: any) => variant.uuid === state.selectedVariantByProduct[product.uuid])
+}
+
+function addSelectedProduct(product: any) {
+    const variant = selectedVariant(product)
+    if (variant) {
+        addToCart({ ...variant, product })
+    }
+}
+
 function decreaseQuantity(line: CartLine) {
     if (line.quantity > 1) line.quantity--
     else removeLine(line.product_variant_uuid)
 }
-function removeLine(uuid: string) { state.cart = state.cart.filter(line => line.product_variant_uuid !== uuid) }
-function clearCart() { state.cart = [] }
-function selectedDiscount(line: CartLine) { return state.discounts.find(discount => discount.uuid === line.discount_uuid) }
+
+function removeLine(uuid: string) {
+    state.cart = state.cart.filter(line => line.product_variant_uuid !== uuid)
+}
+
+function clearCart() {
+    state.cart = []
+}
+
+function selectedDiscount(line: CartLine) {
+    return state.discounts.find(discount => discount.uuid === line.discount_uuid)
+}
+
 function lineDiscount(line: CartLine) {
     const discount = selectedDiscount(line)
     if (!discount) return 0
     const gross = line.price * line.quantity
     return discount.type === 'percentage' ? gross * Number(discount.value) / 100 : Math.min(gross, Number(discount.value))
 }
+
 function lineTotal(line: CartLine) {
     const taxable = Math.max(0, line.price * line.quantity - lineDiscount(line))
     return taxable + taxable * (line.tax_percentage / 100)
 }
-function discountLabel(discount: any) { return discount.type === 'percentage' ? `${discount.value}%` : money(discount.value) }
+
+function discountLabel(discount: any) {
+    return discount.type === 'percentage' ? `${discount.value}%` : money(discount.value)
+}
+
 function money(value: number | string) {
     return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(value || 0))
 }
