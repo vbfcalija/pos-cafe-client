@@ -26,10 +26,20 @@
                             </div>
 
                             <div class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-                                <div class="flex h-16 shrink-0 items-center">
-                                    <img class="h-8 w-auto"
-                                        src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=blue&shade=600"
-                                        alt="Your Company" />
+                                <div class="flex h-16 shrink-0 items-center gap-3">
+                                    <svg viewBox="0 0 40 40" class="size-9 shrink-0" role="img" aria-label="Cafe POS">
+                                        <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9"
+                                            stroke-width="1" />
+                                        <circle cx="20" cy="20" r="12" fill="#42AED9" stroke="#ffffff"
+                                            stroke-width="0.75" />
+                                        <circle cx="20" cy="20" r="4" fill="#ffffff" fill-opacity="0.9" />
+                                    </svg>
+                                    <div class="leading-tight">
+                                        <p class="font-bold text-gray-900">
+                                            {{ runtimeConfig?.public?.appName || 'Cafe POS' }}
+                                        </p>
+                                        <p class="text-[10px] uppercase tracking-wider text-gray-400">Point of Sale</p>
+                                    </div>
                                 </div>
 
                                 <nav class="flex flex-1 flex-col">
@@ -130,9 +140,19 @@
                 class="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-gray-200 bg-white lg:flex lg:flex-col">
                 <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6">
                     <div class="flex h-16 shrink-0 items-center justify-between">
-                        <img class="h-8 w-auto"
-                            src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=blue&shade=600"
-                            alt="Your Company" />
+                        <div class="flex items-center gap-3">
+                            <svg viewBox="0 0 40 40" class="size-9 shrink-0" role="img" aria-label="Cafe POS">
+                                <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9" stroke-width="1" />
+                                <circle cx="20" cy="20" r="12" fill="#42AED9" stroke="#ffffff" stroke-width="0.75" />
+                                <circle cx="20" cy="20" r="4" fill="#ffffff" fill-opacity="0.9" />
+                            </svg>
+                            <div class="leading-tight">
+                                <p class="font-bold text-gray-900">
+                                    {{ runtimeConfig?.public?.appName || 'Cafe POS' }}
+                                </p>
+                                <p class="text-[10px] uppercase tracking-wider text-gray-400">Point of Sale</p>
+                            </div>
+                        </div>
 
                         <button type="button"
                             class="flex items-center rounded-md p-2 text-gray-400 transition-colors hover:bg-primary-50 hover:text-primary-600"
