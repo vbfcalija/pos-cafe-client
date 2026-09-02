@@ -49,8 +49,6 @@ const state = reactive({
         sku: '',
         barcode: '',
         name: '',
-        price: '',
-        cost: '',
         color: '#000000',
         category_uuid: '',
         tax_rate_uuid: ''
@@ -65,8 +63,6 @@ async function saveProduct(productDetails: any) {
             sku: productDetails.sku,
             barcode: productDetails.barcode,
             name: productDetails.name,
-            price: productDetails.price,
-            cost: productDetails.cost,
             color: productDetails.color,
             category_uuid: productDetails.category_uuid,
             tax_rate_uuid: productDetails.tax_rate_uuid,

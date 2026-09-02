@@ -1,11 +1,18 @@
 <template>
     <div>
-        <Head><Title>Edit product - {{ runtimeConfig?.public?.appName }}</Title></Head>
+
+        <Head>
+            <Title>Edit product - {{ runtimeConfig?.public?.appName }}</Title>
+        </Head>
         <NuxtLayout name="user">
-            <template #breadcrumb><Breadcrumb :links="breadcrumbLinks" /></template>
+            <template #breadcrumb>
+                <Breadcrumb :links="breadcrumbLinks" />
+            </template>
             <template #header>Edit product</template>
             <div>
-                <NuxtLink class="text-gray-700 hover:text-gray-900 flex items-center gap-x-2 mb-3 max-w-fit hover:cursor-pointer" to="/products">
+                <NuxtLink
+                    class="text-gray-700 hover:text-gray-900 flex items-center gap-x-2 mb-3 max-w-fit hover:cursor-pointer"
+                    to="/products">
                     <Icon name="ph:arrow-left" size="20" /><span>Back</span>
                 </NuxtLink>
                 <LoadingSpinner :isActive="state.isPageLoading">
@@ -29,7 +36,7 @@ const productUuid = router?.currentRoute?.value?.params?.product_uuid
 const breadcrumbLinks = [{ name: 'Products', href: '/products' }, { name: 'Edit product', href: `/products/${productUuid}/edit` }]
 const state = reactive({
     error: {} as Error,
-    formProduct: { sku: '', barcode: '', name: '', price: '', cost: '', color: '#000000', category_uuid: '', tax_rate_uuid: '' },
+    formProduct: { sku: '', barcode: '', name: '', color: '#000000', category_uuid: '', tax_rate_uuid: '' },
     isPageLoading: false,
 })
 onMounted(() => { fetchProduct() })
@@ -41,7 +48,6 @@ async function fetchProduct() {
         if (response) {
             state.formProduct = {
                 sku: response?.data?.sku ?? '', barcode: response?.data?.barcode ?? '', name: response?.data?.name ?? '',
-                price: response?.data?.price?.toString() ?? '', cost: response?.data?.cost?.toString() ?? '',
                 color: response?.data?.color || '#000000', category_uuid: response?.data?.category?.uuid ?? '',
                 tax_rate_uuid: response?.data?.tax_rate?.uuid ?? '',
             }
@@ -57,8 +63,6 @@ async function updateProduct(productDetails: any) {
             sku: productDetails.sku,
             barcode: productDetails.barcode,
             name: productDetails.name,
-            price: productDetails.price,
-            cost: productDetails.cost,
             color: productDetails.color,
             category_uuid: productDetails.category_uuid,
             tax_rate_uuid: productDetails.tax_rate_uuid,

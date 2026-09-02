@@ -23,20 +23,6 @@
                     <FormError :error="props?.error?.errors?.name?.[0]" />
                 </div>
                 <div class="space-y-1">
-                    <FormLabel for="price" label="Price" />
-                    <FormNumberField id="price" name="price" placeholder="Price" :min="0"
-                        v-model="state.formProduct.price" />
-                    <FormError :error="v$?.formProduct?.price?.$errors[0]?.$message.toString()" />
-                    <FormError :error="props?.error?.errors?.price?.[0]" />
-                </div>
-                <div class="space-y-1">
-                    <FormLabel for="cost" label="Cost" />
-                    <FormNumberField id="cost" name="cost" placeholder="Cost" :min="0"
-                        v-model="state.formProduct.cost" />
-                    <FormError :error="v$?.formProduct?.cost?.$errors[0]?.$message.toString()" />
-                    <FormError :error="props?.error?.errors?.cost?.[0]" />
-                </div>
-                <div class="space-y-1">
                     <div class="flex items-center gap-x-2">
                         <FormLabel for="color" label="Color" />
                         <FormColorPicker id="color" v-model="state.formProduct.color" />
@@ -81,7 +67,7 @@
 
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core"
-import { required, helpers, minValue } from '@vuelidate/validators'
+import { required, helpers } from '@vuelidate/validators'
 import { categoryService } from '@/components/api/user/CategoryService'
 import { taxRateService } from '@/components/api/user/TaxRateService'
 import type { Error } from '@/types'
@@ -122,8 +108,6 @@ const state = reactive({
         sku: '',
         barcode: '',
         name: '',
-        price: '',
-        cost: '',
         color: '#000000',
         category_uuid: '',
         tax_rate_uuid: '',
@@ -144,8 +128,6 @@ watch(() => props.selectedProduct, (newValue: any) => {
             sku: newValue.sku,
             barcode: newValue.barcode,
             name: newValue.name,
-            price: newValue.price,
-            cost: newValue.cost,
             color: newValue.color || '#000000',
             category_uuid: newValue.category_uuid,
             tax_rate_uuid: newValue.tax_rate_uuid,
@@ -158,8 +140,6 @@ const rules = computed(() => ({
     formProduct: {
         sku: { required: requiredField },
         name: { required: requiredField },
-        price: { required: requiredField, minValue: helpers.withMessage('Price must be at least 0.', minValue(0)) },
-        cost: { required: requiredField, minValue: helpers.withMessage('Cost must be at least 0.', minValue(0)) },
         category_uuid: { required: requiredField },
         tax_rate_uuid: { required: requiredField },
     },

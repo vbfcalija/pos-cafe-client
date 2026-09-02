@@ -41,12 +41,6 @@
                                         <td>
                                             <p>{{ product?.name }}</p>
                                         </td>
-                                        <td>
-                                            <p>{{ Number(product?.price).toFixed(2) }}</p>
-                                        </td>
-                                        <td>
-                                            <p>{{ Number(product?.cost).toFixed(2) }}</p>
-                                        </td>
                                         <td><span class="inline-block size-6 rounded border"
                                                 :style="{ backgroundColor: product?.color }" /></td>
                                         <td>
@@ -103,8 +97,6 @@ const state = reactive({
         { name: 'SKU', sorter: true, key: 'sku' },
         { name: 'Barcode', sorter: true, key: 'barcode' },
         { name: 'Name', sorter: true, key: 'name' },
-        { name: 'Price', sorter: true, key: 'price' },
-        { name: 'Cost', sorter: true, key: 'cost' },
         { name: 'Color', sorter: true, key: 'color' },
         { name: 'Category', sorter: true, key: 'category_id' },
         { name: 'Tax rate', sorter: true, key: 'tax_rate_id' },

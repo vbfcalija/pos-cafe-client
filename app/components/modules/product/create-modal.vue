@@ -20,7 +20,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'created'])
 
 const emptyProduct = () => ({
-    sku: '', barcode: '', name: '', price: '', cost: '', color: '#000000',
+    sku: '', barcode: '', name: '', color: '#000000',
     category_uuid: '', tax_rate_uuid: '',
 })
 const state = reactive({
