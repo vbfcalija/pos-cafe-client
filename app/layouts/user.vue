@@ -108,10 +108,6 @@
                                                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                                                     alt="" />
 
-                                                <span class="sr-only">
-                                                    Your profile
-                                                </span>
-
                                                 <span aria-hidden="true">
                                                     Tom Cook
                                                 </span>
@@ -299,7 +295,7 @@
                                 leave-from-class="scale-100 opacity-100" leave-to-class="scale-95 opacity-0">
                                 <MenuItems
                                     class="absolute right-0 z-50 mt-2.5 w-48 origin-top-right rounded-lg bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                                    <MenuItem v-slot="{ active }">
+                                    <!-- <MenuItem v-slot="{ active }">
                                         <button type="button" :class="[
                                             active
                                                 ? 'bg-primary-50 text-primary-600'
@@ -308,9 +304,9 @@
                                         ]" @click="navigateTo('/profile')">
                                             Your profile
                                         </button>
-                                    </MenuItem>
+                                    </MenuItem> -->
 
-                                    <MenuItem v-slot="{ active }">
+                                    <!-- <MenuItem v-slot="{ active }">
                                         <button type="button" :class="[
                                             active
                                                 ? 'bg-primary-50 text-primary-600'
@@ -319,9 +315,9 @@
                                         ]" @click="navigateTo('/settings')">
                                             Settings
                                         </button>
-                                    </MenuItem>
+                                    </MenuItem> -->
 
-                                    <div class="my-1 border-t border-gray-100" />
+                                    <!-- <div class="my-1 border-t border-gray-100" /> -->
 
                                     <MenuItem v-slot="{ active }">
                                         <button type="button" :class="[
