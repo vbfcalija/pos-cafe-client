@@ -89,32 +89,54 @@
                                             </div>
 
                                             <template v-if="product.variants.length">
-                                                <div class="space-y-1">
-                                                    <p class="text-xs font-medium text-gray-500">Product variant</p>
-                                                    <div class="flex flex-wrap gap-2" role="group"
+                                                <div class="space-y-2">
+                                                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                                        Choose a variant
+                                                    </p>
+                                                    <div class="grid grid-cols-2 gap-2" role="group"
                                                         :aria-label="`${product.name} variants`">
                                                         <button v-for="variant in product.variants" :key="variant.uuid"
                                                             type="button"
-                                                            class="rounded-lg border px-3 py-2 text-left text-xs transition"
+                                                            class="group relative flex min-h-16 items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition"
                                                             :class="state.selectedVariantByProduct[product.uuid] === variant.uuid
-                                                                ? 'border-primary bg-blue-50 text-primary ring-1 ring-primary/20'
-                                                                : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:bg-gray-50'"
+                                                                ? 'border-primary bg-blue-50 text-primary ring-1 ring-primary/20 shadow-sm'
+                                                                : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:bg-blue-50/40'"
                                                             :aria-pressed="state.selectedVariantByProduct[product.uuid] === variant.uuid"
                                                             @click="state.selectedVariantByProduct[product.uuid] = variant.uuid">
-                                                            <span class="block font-semibold">{{ variant.name }}</span>
-                                                            <span class="mt-0.5 block opacity-75">{{
-                                                                money(variant.price) }}</span>
+                                                            <span class="flex size-8 shrink-0 items-center justify-center rounded-lg"
+                                                                :class="variantIconClass(variant)">
+                                                                <Icon :name="variantIcon(variant)" class="size-4" />
+                                                            </span>
+                                                            <span class="min-w-0 flex-1">
+                                                                <span class="block truncate text-xs font-semibold text-gray-900">
+                                                                    {{ variantDisplayName(variant) }}
+                                                                </span>
+                                                                <span class="mt-0.5 flex items-center justify-between gap-2 text-[11px] font-medium text-gray-500">
+                                                                    <span>{{ variantSize(variant) || 'Regular' }}</span>
+                                                                    <span>{{ money(variant.price) }}</span>
+                                                                </span>
+                                                            </span>
+                                                            <Icon v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
+                                                                name="ph:check-circle-fill"
+                                                                class="absolute right-2 top-2 size-4 text-primary" />
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <div class="mt-4 flex items-center justify-between gap-3">
+                                                <div class="mt-4 grid grid-cols-[minmax(0,1fr)_auto_auto] items-end gap-4 border-t border-gray-100 pt-4">
+                                                    <div class="min-w-0">
+                                                        <p class="text-[11px] text-gray-500">Selected variant</p>
+                                                        <p class="truncate text-sm font-semibold text-gray-900">
+                                                            {{ selectedVariant(product)?.name || 'Select a variant' }}
+                                                        </p>
+                                                    </div>
                                                     <div>
-                                                        <p class="text-xs text-gray-500">Price</p>
-                                                        <p class="text-lg font-bold text-gray-900">{{
-                                                            money(selectedVariant(product)?.price || product.price) }}
+                                                        <p class="text-[11px] text-gray-500">Price</p>
+                                                        <p class="text-lg font-bold text-gray-900">
+                                                            {{ money(selectedVariant(product)?.price || product.price) }}
                                                         </p>
                                                     </div>
                                                     <FormButton buttonStyle="primary" buttonSize="xs"
+                                                        class="shrink-0"
                                                         :disabled="!hasOpenShift || !state.selectedVariantByProduct[product.uuid]"
                                                         @click="addSelectedProduct(product)">
                                                         <Icon name="ph:plus" class="size-4" /> Add
@@ -493,6 +515,35 @@ function initializeProductVariants() {
 
 function selectedVariant(product: any) {
     return product.variants.find((variant: any) => variant.uuid === state.selectedVariantByProduct[product.uuid])
+}
+
+function isColdVariant(variant: any) {
+    return /iced|cold|frozen|chilled/i.test(variant.name)
+}
+
+function isHotVariant(variant: any) {
+    return /hot|warm|heated/i.test(variant.name)
+}
+
+function variantIcon(variant: any) {
+    if (isColdVariant(variant)) return 'ph:snowflake'
+    if (isHotVariant(variant)) return 'ph:coffee'
+    return 'ph:plus-circle'
+}
+
+function variantIconClass(variant: any) {
+    if (isColdVariant(variant)) return 'bg-sky-100 text-sky-600'
+    if (isHotVariant(variant)) return 'bg-orange-100 text-orange-600'
+    return 'bg-emerald-100 text-emerald-600'
+}
+
+function variantSize(variant: any) {
+    return variant.name.match(/\b\d+(?:\.\d+)?\s*(?:oz|ml|l)\b/i)?.[0] ?? ''
+}
+
+function variantDisplayName(variant: any) {
+    const size = variantSize(variant)
+    return size ? variant.name.replace(size, '').trim() : variant.name
 }
 
 function addSelectedProduct(product: any) {
