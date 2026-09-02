@@ -1,5 +1,5 @@
 <template>
-    <flat-pickr v-model="state.dateValue" :id="props.id" :name="props.name" @on-change="updateValue"
+    <flat-pickr v-model="state.dateValue" :id="props.id" :name="props.name" :config="{ mode: 'range' }" @on-change="updateValue"
         :placeholder="props.placeholder"
         class="appearance-none block w-full px-3 py-2.5 border border-gray-200 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" />
 </template>
