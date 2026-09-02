@@ -90,7 +90,8 @@
 
                                             <template v-if="product.variants.length">
                                                 <div class="space-y-2">
-                                                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                                    <p
+                                                        class="text-xs font-semibold uppercase tracking-wide text-gray-500">
                                                         Choose a variant
                                                     </p>
                                                     <div class="grid grid-cols-2 gap-2" role="group"
@@ -103,26 +104,31 @@
                                                                 : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:bg-blue-50/40'"
                                                             :aria-pressed="state.selectedVariantByProduct[product.uuid] === variant.uuid"
                                                             @click="state.selectedVariantByProduct[product.uuid] = variant.uuid">
-                                                            <span class="flex size-8 shrink-0 items-center justify-center rounded-lg"
+                                                            <span
+                                                                class="flex size-8 shrink-0 items-center justify-center rounded-lg"
                                                                 :class="variantIconClass(variant)">
                                                                 <Icon :name="variantIcon(variant)" class="size-4" />
                                                             </span>
                                                             <span class="min-w-0 flex-1">
-                                                                <span class="block truncate text-xs font-semibold text-gray-900">
+                                                                <span
+                                                                    class="block truncate text-xs font-semibold text-gray-900">
                                                                     {{ variantDisplayName(variant) }}
                                                                 </span>
-                                                                <span class="mt-0.5 flex items-center justify-between gap-2 text-[11px] font-medium text-gray-500">
+                                                                <span
+                                                                    class="mt-0.5 flex items-center justify-between gap-2 text-[11px] font-medium text-gray-500">
                                                                     <span>{{ variantSize(variant) || 'Regular' }}</span>
                                                                     <span>{{ money(variant.price) }}</span>
                                                                 </span>
                                                             </span>
-                                                            <Icon v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
+                                                            <Icon
+                                                                v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
                                                                 name="ph:check-circle-fill"
                                                                 class="absolute right-2 top-2 size-4 text-primary" />
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <div class="mt-4 grid grid-cols-[minmax(0,1fr)_auto_auto] items-end gap-4 border-t border-gray-100 pt-4">
+                                                <div
+                                                    class="mt-4 grid grid-cols-[minmax(0,1fr)_auto_auto] items-end gap-4 border-t border-gray-100 pt-4">
                                                     <div class="min-w-0">
                                                         <p class="text-[11px] text-gray-500">Selected variant</p>
                                                         <p class="truncate text-sm font-semibold text-gray-900">
@@ -132,11 +138,11 @@
                                                     <div>
                                                         <p class="text-[11px] text-gray-500">Price</p>
                                                         <p class="text-lg font-bold text-gray-900">
-                                                            {{ money(selectedVariant(product)?.price || product.price) }}
+                                                            {{ money(selectedVariant(product)?.price || product.price)
+                                                            }}
                                                         </p>
                                                     </div>
-                                                    <FormButton buttonStyle="primary" buttonSize="xs"
-                                                        class="shrink-0"
+                                                    <FormButton buttonStyle="primary" buttonSize="xs" class="shrink-0"
                                                         :disabled="!hasOpenShift || !state.selectedVariantByProduct[product.uuid]"
                                                         @click="addSelectedProduct(product)">
                                                         <Icon name="ph:plus" class="size-4" /> Add
@@ -290,7 +296,8 @@
                 </div>
             </LoadingSpinner>
 
-            <ModulesShiftStartModal :show="state.isShiftModalOpen" @created="handleShiftCreated" />
+            <ModulesShiftStartModal :show="state.isShiftModalOpen" :computerId="state.computer_id"
+                @created="handleShiftCreated" />
 
             <DialogConfirmation :isModalOpen="state.isCloseShiftConfirmationOpen" title="Close shift"
                 message="Are you sure you want to close the current shift?"
@@ -340,6 +347,7 @@ const state = reactive({
     productVariants: [] as any[],
     selectedVariantByProduct: {} as Record<string, string>,
     cart: [] as CartLine[],
+    computer_id: '',
     shift_uuid: '',
     customer_uuid: '',
     payment_method: 'cash',
@@ -358,11 +366,14 @@ const state = reactive({
     isClosingShift: false,
 })
 
-onMounted(() => { fetchPosData() })
+onMounted(() => {
+    state.computer_id = getComputerId()
+    fetchPosData()
+})
 
 const openShifts = computed(() => state.shifts.filter((shift: any) => {
     const belongsToUser = !userStore.getUser?.uuid || shift.user?.uuid === userStore.getUser.uuid
-    return shift.is_open && belongsToUser
+    return shift.is_open && belongsToUser && shift.computer_id === state.computer_id
 }))
 const currentShift = computed(() => openShifts.value.find((shift: any) => shift.uuid === state.shift_uuid))
 
@@ -466,6 +477,16 @@ async function fetchPosData() {
 
 function selectLatestOpenShift() {
     state.shift_uuid = openShifts.value[0]?.uuid ?? ''
+}
+
+function getComputerId() {
+    const storageKey = 'cafe_pos_computer_id'
+    let computerId = localStorage.getItem(storageKey)
+    if (!computerId) {
+        computerId = crypto.randomUUID()
+        localStorage.setItem(storageKey, computerId)
+    }
+    return computerId
 }
 
 function handleShiftCreated(shift: any) {

@@ -18,6 +18,10 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
+    computerId: {
+        type: String,
+        required: true,
+    },
 })
 const emit = defineEmits(['created'])
 
@@ -43,6 +47,7 @@ async function saveShift(shiftDetails: any) {
             date: shiftDetails.date,
             name: shiftDetails.name,
             starting_cash: shiftDetails.starting_cash,
+            computer_id: props.computerId,
             is_open: true,
         })
         if (response?.data) emit('created', response.data)
