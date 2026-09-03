@@ -42,10 +42,10 @@
                                             <p>{{ productVariant?.name }}</p>
                                         </td>
                                         <td width="15%">
-                                            <p>{{ Number(productVariant?.price).toFixed(2) }}</p>
+                                            <p>{{ money(productVariant?.price) }}</p>
                                         </td>
                                         <td width="15%">
-                                            <p>{{ Number(productVariant?.cost).toFixed(2) }}</p>
+                                            <p>{{ money(productVariant?.cost) }}</p>
                                         </td>
                                         <td width="10%">
                                             <Badge class="w-fit"
@@ -98,6 +98,13 @@ const runtimeConfig = useRuntimeConfig()
 const productVariantStore = useProductVariantStore() as any
 const pageLengths = [10, 20, 30, 40, 50, 100, 500]
 const { successAlert } = useAlert()
+
+function money(value: number | string) {
+    return new Intl.NumberFormat('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+    }).format(Number(value || 0))
+}
 
 const state = reactive({
     productVariants: [] as any,

@@ -182,7 +182,8 @@
                             </button>
                         </div>
 
-                        <div class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 lg:max-h-none lg:min-h-[110px] lg:flex-1">
+                        <div
+                            class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 lg:max-h-none lg:min-h-[110px] lg:flex-1">
                             <div v-for="line in state.cart" :key="line.product_variant_uuid"
                                 class="rounded-lg border border-gray-200 p-3">
                                 <div class="flex items-start justify-between gap-3">
@@ -236,7 +237,8 @@
                                 </p>
                                 <FormSelect :options="customerOptions" v-model="state.customer_uuid" />
                             </div>
-                            <div class="grid gap-2" :class="state.payment_method === 'cash' ? 'grid-cols-1' : 'grid-cols-2'">
+                            <div class="grid gap-2"
+                                :class="state.payment_method === 'cash' ? 'grid-cols-1' : 'grid-cols-2'">
                                 <div class="space-y-1">
                                     <p class="text-sm text-gray-600">Payment</p>
                                     <FormSelect :options="paymentMethodOptions" :searchable="false" :canClear="false"

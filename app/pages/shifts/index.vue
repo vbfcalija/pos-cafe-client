@@ -38,7 +38,7 @@
                                         <p>{{ shift?.name }}</p>
                                     </td>
                                     <td width="15%">
-                                        <p>{{ Number(shift?.starting_cash).toFixed(2) }}</p>
+                                        <p>{{ money(shift?.starting_cash) }}</p>
                                     </td>
                                     <td width="15%">
                                         <p>{{ shift?.user?.firstname }} {{ shift?.user?.lastname }}</p>
@@ -89,6 +89,13 @@ const shiftStore = useShiftStore() as any
 const pageLengths = [10, 20, 30, 40, 50, 100, 500]
 const { successAlert } = useAlert()
 const { formatDateToReadable } = useDatetimeFormatter()
+
+function money(value: number | string) {
+    return new Intl.NumberFormat('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+    }).format(Number(value || 0))
+}
 
 const state = reactive({
     shifts: [] as any,

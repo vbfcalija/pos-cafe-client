@@ -1,4 +1,5 @@
 <template>
+    {{ props.data.links.next }}
     <div class="mt-8 flex flex-col-reverse md:grid md:grid-cols-3 items-center gap-y-3"
         v-if="props.data && props.data.links">
         <div class="grow flex flex-row gap-x-3">
