@@ -10,7 +10,7 @@
             <Alert v-if="state.error?.message" type="danger" :text="state.error.message" class="mb-4" />
 
             <LoadingSpinner :isActive="state.isPageLoading">
-                <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
+                <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
                     <section class="min-w-0 rounded-xl bg-white p-5 shadow-sm">
                         <div v-if="hasOpenShift"
                             class="mb-5 flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
@@ -166,8 +166,8 @@
                     </section>
 
                     <aside
-                        class="rounded-xl bg-white p-5 shadow-sm xl:sticky xl:top-20 xl:flex xl:max-h-[calc(100vh-7rem)] xl:flex-col xl:overflow-y-auto xl:self-start">
-                        <div class="mb-4 flex items-center justify-between xl:shrink-0">
+                        class="rounded-xl bg-white p-5 shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:overflow-y-auto lg:self-start">
+                        <div class="mb-3 flex items-center justify-between lg:shrink-0">
                             <div>
                                 <h2 class="text-lg font-semibold text-gray-900">
                                     Current order
@@ -182,7 +182,7 @@
                             </button>
                         </div>
 
-                        <div class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 xl:max-h-none xl:min-h-0 xl:flex-1">
+                        <div class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 lg:max-h-none lg:min-h-[110px] lg:flex-1">
                             <div v-for="line in state.cart" :key="line.product_variant_uuid"
                                 class="rounded-lg border border-gray-200 p-3">
                                 <div class="flex items-start justify-between gap-3">
@@ -223,26 +223,26 @@
                                 </div>
                             </div>
                             <div v-if="!state.cart.length"
-                                class="rounded-xl border border-dashed border-gray-300 py-12 text-center">
-                                <Icon name="ph:shopping-cart-simple" class="mx-auto size-9 text-gray-300" />
-                                <p class="mt-2 text-sm text-gray-500">Your cart is empty.</p>
+                                class="rounded-xl border border-dashed border-gray-300 py-3 text-center lg:py-2">
+                                <Icon name="ph:shopping-cart-simple" class="mx-auto size-6 text-gray-300 lg:hidden" />
+                                <p class="mt-1 text-sm text-gray-500 lg:mt-0">Your cart is empty.</p>
                             </div>
                         </div>
 
-                        <div class="mt-5 shrink-0 space-y-3 border-t border-gray-200 pt-5">
+                        <div class="mt-3 shrink-0 space-y-2 border-t border-gray-200 pt-3">
                             <div class="space-y-1">
                                 <p class="text-sm text-gray-600">
                                     Customer (optional)
                                 </p>
                                 <FormSelect :options="customerOptions" v-model="state.customer_uuid" />
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid gap-2" :class="state.payment_method === 'cash' ? 'grid-cols-1' : 'grid-cols-2'">
                                 <div class="space-y-1">
                                     <p class="text-sm text-gray-600">Payment</p>
                                     <FormSelect :options="paymentMethodOptions" :searchable="false" :canClear="false"
                                         v-model="state.payment_method" />
                                 </div>
-                                <div class="space-y-1">
+                                <div v-if="state.payment_method !== 'cash'" class="space-y-1">
                                     <FormLabel for="reference" label="Reference" />
                                     <input id="reference" v-model="state.reference" type="text" placeholder="Optional"
                                         class="pos-select px-3" />
@@ -259,7 +259,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-5 shrink-0 space-y-2 border-t border-gray-200 pt-4 text-sm">
+                        <div class="mt-3 shrink-0 space-y-1.5 border-t border-gray-200 pt-3 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-gray-500">Subtotal</span>
                                 <span>{{ money(subtotal) }}</span>
@@ -272,7 +272,7 @@
                                 <span class="text-gray-500">Tax</span>
                                 <span>{{ money(taxTotal) }}</span>
                             </div>
-                            <div class="flex justify-between border-t border-gray-200 pt-3 text-lg font-bold">
+                            <div class="flex justify-between border-t border-gray-200 pt-2 text-lg font-bold">
                                 <span>Total</span>
                                 <span>{{ money(grandTotal) }}</span>
                             </div>
@@ -288,7 +288,7 @@
                             </template>
                         </div>
 
-                        <FormButton buttonStyle="primary" class="mt-5 w-full shrink-0"
+                        <FormButton buttonStyle="primary" class="mt-3 w-full shrink-0"
                             :disabled="!canCheckout || state.isSubmitting" @click="checkout">
                             <Icon name="ph:check-circle" class="size-5" />
                             {{ state.isSubmitting ? 'Processing…' : `Charge ${money(grandTotal)}` }}
@@ -315,7 +315,14 @@
                             <p class="text-xs font-medium uppercase tracking-wide">Change to customer</p>
                             <p class="mt-1 text-2xl font-bold">{{ money(state.completedChange) }}</p>
                         </div>
-                        <FormButton buttonStyle="primary" class="mt-5 w-full" @click="state.isSuccessOpen = false">New
+                        <Alert type="danger" :text="state.printError" class="mt-4 text-left"
+                            v-if="state.printError && state.printError.length > 0" />
+                        <FormButton buttonStyle="action" class="mt-5 w-full" :disabled="state.isPrinting"
+                            @click="printReceipt">
+                            <Icon name="ph:printer" class="size-5" />
+                            {{ state.isPrinting ? 'Printing…' : 'Print receipt' }}
+                        </FormButton>
+                        <FormButton buttonStyle="primary" class="mt-3 w-full" @click="state.isSuccessOpen = false">New
                             order</FormButton>
                     </div>
                 </template>
@@ -362,6 +369,8 @@ const state = reactive({
     completedOrder: null as any,
     completedChange: 0,
     completedPaymentMethod: '',
+    isPrinting: false,
+    printError: '',
     isShiftModalOpen: false,
     isCloseShiftConfirmationOpen: false,
     isClosingShift: false,
@@ -436,13 +445,18 @@ const groupedProducts = computed(() => {
         .sort((a, b) => a.name.localeCompare(b.name))
 })
 const cartQuantity = computed(() => state.cart.reduce((total, line) => total + line.quantity, 0))
-const subtotal = computed(() => state.cart.reduce((total, line) => total + line.price * line.quantity, 0))
+// Prices are tax-inclusive: the listed price is what the customer pays, so
+// tax is backed out of it rather than added on top. grandTotal is simply the
+// sum of each line's post-discount (already tax-inclusive) amount; subtotal
+// and taxTotal are just that amount split into its net/tax parts for display.
 const discountTotal = computed(() => state.cart.reduce((total, line) => total + lineDiscount(line), 0))
+const grandTotal = computed(() => state.cart.reduce((total, line) => total + lineTotal(line), 0))
 const taxTotal = computed(() => state.cart.reduce((total, line) => {
-    const taxable = Math.max(0, line.price * line.quantity - lineDiscount(line))
-    return total + taxable * (line.tax_percentage / 100)
+    const afterDiscount = lineTotal(line)
+    const rate = line.tax_percentage / 100
+    return total + afterDiscount * rate / (1 + rate)
 }, 0))
-const grandTotal = computed(() => subtotal.value - discountTotal.value + taxTotal.value)
+const subtotal = computed(() => grandTotal.value - taxTotal.value)
 const cashChange = computed(() => Math.max(0, Number(state.cash_tender || 0) - grandTotal.value))
 const cashShortfall = computed(() => Math.max(0, grandTotal.value - Number(state.cash_tender || 0)))
 const hasSufficientPayment = computed(() => state.payment_method !== 'cash' || Number(state.cash_tender || 0) >= grandTotal.value)
@@ -600,8 +614,7 @@ function lineDiscount(line: CartLine) {
 }
 
 function lineTotal(line: CartLine) {
-    const taxable = Math.max(0, line.price * line.quantity - lineDiscount(line))
-    return taxable + taxable * (line.tax_percentage / 100)
+    return Math.max(0, line.price * line.quantity - lineDiscount(line))
 }
 
 function discountLabel(discount: any) {
@@ -610,6 +623,19 @@ function discountLabel(discount: any) {
 
 function money(value: number | string) {
     return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(value || 0))
+}
+
+async function printReceipt() {
+    if (state.isPrinting || !state.completedOrder?.uuid) return
+    state.isPrinting = true
+    state.printError = ''
+    try {
+        await orderService.printReceipt(state.completedOrder.uuid)
+    } catch (error: any) {
+        state.printError = error?.message || 'Printer not detected. Make sure a Bluetooth thermal printer is paired and try again.'
+    } finally {
+        state.isPrinting = false
+    }
 }
 
 async function checkout() {
@@ -631,6 +657,7 @@ async function checkout() {
             state.completedOrder = response.data
             state.completedPaymentMethod = state.payment_method
             state.completedChange = state.payment_method === 'cash' ? cashChange.value : 0
+            state.printError = ''
             state.cart = []
             state.customer_uuid = ''
             state.reference = ''

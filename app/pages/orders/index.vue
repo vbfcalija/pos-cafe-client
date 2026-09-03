@@ -60,11 +60,21 @@
                                         </p>
                                     </td>
                                     <td>
-                                        <Tooltip text="View">
-                                            <FormButton buttonStyle="action" buttonSize="xs" @click="viewOrder(order)">
-                                                <Icon name="ph:eye" class="size-4" />
-                                            </FormButton>
-                                        </Tooltip>
+                                        <div class="flex items-end gap-2">
+                                            <Tooltip text="View">
+                                                <FormButton buttonStyle="action" buttonSize="xs"
+                                                    @click="viewOrder(order)">
+                                                    <Icon name="ph:eye" class="size-4" />
+                                                </FormButton>
+                                            </Tooltip>
+                                            <Tooltip text="Print receipt">
+                                                <FormButton buttonStyle="action" buttonSize="xs"
+                                                    :disabled="state.printingUuid === order.uuid"
+                                                    @click="printOrder(order)">
+                                                    <Icon name="ph:printer" class="size-4" />
+                                                </FormButton>
+                                            </Tooltip>
+                                        </div>
                                     </td>
                                 </tr>
                             </template>
@@ -181,12 +191,14 @@
 
 <script setup lang="ts">
 import { orderService } from '@/components/api/user/OrderService'
+import { useAlert } from '@/composables/alert'
 import { useOrderStore } from '@/store/order'
 import type { Error } from '@/types'
 
 const runtimeConfig = useRuntimeConfig()
 const orderStore = useOrderStore() as any
 const { formatDateToReadable } = useDatetimeFormatter()
+const { successAlert, errorAlert } = useAlert()
 const pageLengths = [10, 20, 30, 40, 50, 100, 500]
 const state = reactive({
     orders: {} as any, selectedOrder: null as any,
@@ -207,6 +219,7 @@ const state = reactive({
     isTableLoading: false,
     isOrderLoading: false,
     isOrderModalOpen: false,
+    printingUuid: '' as string,
 })
 
 onMounted(fetchOrders)
@@ -226,6 +239,19 @@ async function fetchOrders() {
     }
     state.isTableLoading = false
 }
+async function printOrder(order: any) {
+    if (state.printingUuid) return
+    state.printingUuid = order.uuid
+    try {
+        await orderService.printReceipt(order.uuid)
+        successAlert('Success', 'Receipt sent to printer.')
+    } catch (error: any) {
+        errorAlert('Could not print', error?.message || 'Printer not detected. Make sure a Bluetooth thermal printer is paired and try again.')
+    } finally {
+        state.printingUuid = ''
+    }
+}
+
 async function viewOrder(order: any) {
     state.selectedOrder = order
     state.isOrderModalOpen = true
@@ -288,16 +314,21 @@ function lineDiscount(line: any) {
     return line.discount.type === 'percentage' ? gross(line) * Number(line.discount.value) / 100 : Math.min(gross(line), Number(line.discount.value))
 }
 
-function lineTax(line: any) {
-    return Math.max(0, gross(line) - lineDiscount(line)) * Number(line.tax_percentage) / 100
+// Prices are tax-inclusive: the listed price is what the customer pays, so
+// tax is backed out of the post-discount total rather than added on top.
+// orderSubtotal + orderTax == orderTotal; orderDiscount is informational
+// (how much was taken off the original gross to arrive at orderTotal).
+function lineTotal(line: any) {
+    return Math.max(0, gross(line) - lineDiscount(line))
 }
 
-function lineTotal(line: any) {
-    return gross(line) - lineDiscount(line) + lineTax(line)
+function lineTax(line: any) {
+    const rate = Number(line.tax_percentage) / 100
+    return lineTotal(line) * rate / (1 + rate)
 }
 
 function orderSubtotal(order: any) {
-    return order.details?.reduce((sum: number, line: any) => sum + gross(line), 0) || 0
+    return orderTotal(order) - orderTax(order)
 }
 
 function orderDiscount(order: any) {

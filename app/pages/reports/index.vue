@@ -335,9 +335,10 @@ function lineDiscount(line: any) {
     return discount.type === 'percentage' ? gross * Number(discount.value) / 100 : Math.min(gross, Number(discount.value))
 }
 
+// Prices are tax-inclusive, so a line's total is just its post-discount
+// amount — tax is backed out of that (see lineTax below), never added on top.
 function lineTotal(line: any) {
-    const taxable = Math.max(0, Number(line.price) * Number(line.quantity) - lineDiscount(line))
-    return taxable + taxable * Number(line.tax_percentage || 0) / 100
+    return Math.max(0, Number(line.price) * Number(line.quantity) - lineDiscount(line))
 }
 
 function orderTotal(order: any) {
@@ -450,8 +451,8 @@ function lineGross(line: any) {
 }
 
 function lineTax(line: any) {
-    const taxable = Math.max(0, lineGross(line) - lineDiscount(line))
-    return taxable * Number(line.tax_percentage || 0) / 100
+    const rate = Number(line.tax_percentage || 0) / 100
+    return lineTotal(line) * rate / (1 + rate)
 }
 
 function lineCost(line: any) {
