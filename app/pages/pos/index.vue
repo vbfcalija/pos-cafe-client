@@ -165,8 +165,9 @@
                         </div>
                     </section>
 
-                    <aside class="rounded-xl bg-white p-5 shadow-sm xl:sticky xl:top-20 xl:self-start">
-                        <div class="mb-4 flex items-center justify-between">
+                    <aside
+                        class="rounded-xl bg-white p-5 shadow-sm xl:sticky xl:top-20 xl:flex xl:max-h-[calc(100vh-7rem)] xl:flex-col xl:overflow-y-auto xl:self-start">
+                        <div class="mb-4 flex items-center justify-between xl:shrink-0">
                             <div>
                                 <h2 class="text-lg font-semibold text-gray-900">
                                     Current order
@@ -181,7 +182,7 @@
                             </button>
                         </div>
 
-                        <div class="max-h-[42vh] space-y-3 overflow-y-auto pr-1">
+                        <div class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 xl:max-h-none xl:min-h-0 xl:flex-1">
                             <div v-for="line in state.cart" :key="line.product_variant_uuid"
                                 class="rounded-lg border border-gray-200 p-3">
                                 <div class="flex items-start justify-between gap-3">
@@ -218,7 +219,7 @@
                                 </div>
                                 <div class="mt-3">
                                     <FormSelect :options="discountOptions" :searchable="false" :canClear="false"
-                                        v-model="line.discount_uuid" />
+                                        :appendToBody="true" :closeOnScroll="true" v-model="line.discount_uuid" />
                                 </div>
                             </div>
                             <div v-if="!state.cart.length"
@@ -228,7 +229,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-5 space-y-3 border-t border-gray-200 pt-5">
+                        <div class="mt-5 shrink-0 space-y-3 border-t border-gray-200 pt-5">
                             <div class="space-y-1">
                                 <p class="text-sm text-gray-600">
                                     Customer (optional)
@@ -258,7 +259,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-5 space-y-2 border-t border-gray-200 pt-4 text-sm">
+                        <div class="mt-5 shrink-0 space-y-2 border-t border-gray-200 pt-4 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-gray-500">Subtotal</span>
                                 <span>{{ money(subtotal) }}</span>
@@ -287,7 +288,7 @@
                             </template>
                         </div>
 
-                        <FormButton buttonStyle="primary" class="mt-5 w-full"
+                        <FormButton buttonStyle="primary" class="mt-5 w-full shrink-0"
                             :disabled="!canCheckout || state.isSubmitting" @click="checkout">
                             <Icon name="ph:check-circle" class="size-5" />
                             {{ state.isSubmitting ? 'Processing…' : `Charge ${money(grandTotal)}` }}

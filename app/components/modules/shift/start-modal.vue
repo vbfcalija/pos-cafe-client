@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { shiftService } from '@/components/api/user/ShiftService'
+import { useBranchStore } from '@/store/branch'
 import type { Error } from '@/types'
 
 const props = defineProps({
@@ -25,10 +26,12 @@ const props = defineProps({
 })
 const emit = defineEmits(['created'])
 
+const branchStore = useBranchStore() as any
+
 const state = reactive({
     error: {} as Error,
     formShift: {
-        branch_uuid: '',
+        branch_uuid: branchStore.getSelectedBranch?.uuid ?? '',
         date: currentDate(),
         name: '',
         starting_cash: '',
@@ -50,7 +53,10 @@ async function saveShift(shiftDetails: any) {
             computer_id: props.computerId,
             is_open: true,
         })
-        if (response?.data) emit('created', response.data)
+        if (response?.data) {
+            branchStore.setSelectedBranch({ uuid: shiftDetails.branch_uuid })
+            emit('created', response.data)
+        }
     } catch (error: any) {
         state.error = error
     } finally {

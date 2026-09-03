@@ -154,7 +154,8 @@ async function fetchBranches() {
             label: branch.name,
             value: branch.uuid,
         })) ?? []
-        if (!state.formShift.branch_uuid && state.branchOptions.length > 0) {
+        const hasValidBranch = state.branchOptions.some((option: any) => option.value === state.formShift.branch_uuid)
+        if (!hasValidBranch && state.branchOptions.length > 0) {
             state.formShift.branch_uuid = state.branchOptions[0].value
         }
     } catch (error: any) {
