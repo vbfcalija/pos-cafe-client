@@ -121,7 +121,7 @@
                                                     alt="" />
 
                                                 <span aria-hidden="true">
-                                                    Tom Cook
+                                                    {{ userStore.getUser.firstname }} {{ userStore.getUser.lastname }}
                                                 </span>
                                             </a>
                                         </li>
