@@ -1,1028 +1,259 @@
 <template>
+    <div class="min-h-screen overflow-hidden bg-cafe-paper font-cafe text-cafe-ink">
 
-    <Head>
-        <Title>Login - {{ runtimeConfig?.public?.appName }}</Title>
-    </Head>
+        <Head>
+            <Title>Brthrs Cafe — Coffee, comfort, and good company</Title>
+            <Meta name="description"
+                content="Brthrs Cafe in Bo. Obrero, Davao City. Open every day from 11 AM to midnight." />
+            <Link rel="preconnect" href="https://fonts.googleapis.com" />
+            <Link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+            <Link
+                href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap"
+                rel="stylesheet" />
+        </Head>
 
-    <main class="login-page">
-        <!-- Brand / Product panel -->
-        <section class="brand-panel">
-            <div class="brand-glow brand-glow--top"></div>
-            <div class="brand-glow brand-glow--bottom"></div>
-
-            <div class="brand-header">
-                <div class="brand">
-                    <div class="brand-mark">
-                        <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
-                            <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9" stroke-width="1" />
-                            <circle cx="20" cy="20" r="12" fill="#42AED9" stroke="#ffffff" stroke-width="0.75" />
-                            <circle cx="20" cy="20" r="4" fill="#ffffff" fill-opacity="0.9" />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <div class="brand-name">
-                            {{ runtimeConfig?.public?.appName || 'POS' }}
-                        </div>
-                        <div class="brand-label">
-                            Point of Sale
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="brand-content">
-                <div class="eyebrow">
-                    Welcome back
-                </div>
-
-                <h1>
-                    Your workspace is
-                    <span>ready when you are.</span>
-                </h1>
-
-                <p>
-                    Sign in to manage transactions, monitor operations,
-                    and continue your work securely.
-                </p>
-
-                <div class="feature-list">
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 6 9 17l-5-5" />
-                            </svg>
-                        </div>
-
-                        <div>
-                            <strong>Fast and simple</strong>
-                            <span>Get straight back to your workspace.</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
-                        </div>
-
-                        <div>
-                            <strong>Secure access</strong>
-                            <span>Your account and operational data stay protected.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="brand-footer">
-                <div class="status">
-                    <span class="status-dot"></span>
-                    <span>System operational</span>
-                </div>
-
-                <span>
-                    © {{ new Date().getFullYear() }}
-                    {{ runtimeConfig?.public?.appName || 'POS' }}
+        <header
+            class="relative z-10 flex h-[74px] items-center justify-between border-b border-cafe-ink/10 px-6 sm:h-[86px] sm:px-[6vw]">
+            <NuxtLink to="/" class="inline-flex items-center gap-3" aria-label="Brthrs Cafe home">
+                <span class="grid size-10 place-items-center rounded-full border-2 border-cafe-ink" aria-hidden="true">
+                    <Icon name="ph:coffee" class="size-5" />
                 </span>
-            </div>
-        </section>
-
-        <!-- Login panel -->
-        <section class="login-panel">
-            <div class="mobile-brand">
-                <div class="brand-mark brand-mark--small">
-                    <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
-                        <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9" stroke-width="1" />
-                        <circle cx="20" cy="20" r="12" fill="#42AED9" />
-                    </svg>
-                </div>
-
-                <span>
-                    {{ runtimeConfig?.public?.appName || 'POS' }}
+                <span class="flex flex-col leading-[.8]">
+                    <strong class="text-[22px] tracking-[-1px]">Brthrs</strong>
+                    <small class="mt-1 font-display text-sm italic text-cafe-brown">cafe</small>
                 </span>
-            </div>
+            </NuxtLink>
+            <nav class="hidden gap-9 md:flex" aria-label="Main navigation">
+                <a v-for="link in navigation" :key="link.href" :href="link.href"
+                    class="text-[13px] font-semibold transition hover:text-cafe-brown">
+                    {{ link.label }}
+                </a>
+            </nav>
+        </header>
 
-            <form class="login-card" @submit.prevent="login">
-                <header class="form-header">
-                    <div class="form-eyebrow">
-                        Account access
-                    </div>
-
-                    <h2>
-                        Welcome back
-                    </h2>
-
-                    <p>
-                        Enter your credentials to access your account.
+        <main>
+            <section class="grid min-h-[calc(100vh-74px)] lg:min-h-[calc(100vh-86px)] lg:grid-cols-[1.05fr_.95fr]">
+                <div
+                    class="flex min-h-[650px] flex-col justify-center px-6 py-16 sm:min-h-[720px] sm:px-[7vw] sm:py-[10vh]">
+                    <p
+                        class="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[2.2px] text-cafe-brown">
+                        <span class="h-px w-8 bg-cafe-brown"></span>Your neighborhood hidden space
                     </p>
-                </header>
-
-                <Alert v-if="
-                    state.error?.message &&
-                    state.error.message.length > 0
-                " type="danger" :text="state.error.message" class="alert" />
-
-                <div class="field">
-                    <label for="co-email">
-                        Email address
-                    </label>
-
-                    <div class="input-wrap">
-                        <div class="input-icon">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <rect width="20" height="16" x="2" y="4" rx="2" />
-                                <path d="m22 7-10 7L2 7" />
-                            </svg>
+                    <h1
+                        class="my-7 text-[53px] font-bold leading-[.92] tracking-[-3px] sm:text-[clamp(64px,7vw,104px)] sm:tracking-[-5px]">
+                        Good coffee.<br>
+                        <em class="font-display font-semibold text-cafe-brown">Better company.</em>
+                    </h1>
+                    <p class="max-w-xl text-[17px] leading-7 text-stone-600">
+                        A laid-back corner in Obrero for slow
+                        afternoons, late-night conversations, and coffee made for sharing.
+                    </p>
+                    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                        <a href="#visit"
+                            class="inline-flex items-center justify-center gap-2 rounded bg-cafe-ink px-5 py-3.5 text-[13px] font-bold text-white transition hover:bg-cafe-brown">Find
+                            our place
+                            <Icon name="ph:map-pin" class="size-4" />
+                        </a>
+                        <a href="#favorites"
+                            class="inline-flex items-center justify-center gap-2 rounded border border-cafe-ink/20 px-5 py-3.5 text-[13px] font-bold transition hover:bg-cafe-cream">Explore
+                            favorites
+                            <Icon name="ph:arrow-down" class="size-4" />
+                        </a>
+                    </div>
+                    <div class="mt-14 flex flex-col gap-5 border-t border-cafe-ink/10 pt-7 sm:flex-row sm:gap-11">
+                        <div v-for="fact in quickFacts" :key="fact.label" class="flex items-center gap-3">
+                            <Icon :name="fact.icon" class="size-6 text-cafe-brown" />
+                            <span class="flex flex-col">
+                                <small class="text-[10px] uppercase tracking-wider text-stone-500">
+                                    {{ fact.label }}
+                                </small>
+                                <strong class="mt-1 text-[13px]">{{ fact.value }}</strong>
+                            </span>
                         </div>
-
-                        <input id="co-email" v-model="state.formLogin.email" type="email" placeholder="you@example.com"
-                            autocomplete="email" inputmode="email" :disabled="state.isPageLoading" />
                     </div>
-
-                    <FormError :error="v$?.formLogin?.email
-                        ?.$errors[0]?.$message
-                        ?.toString()
-                        " />
-
-                    <FormError :error="state?.error?.errors?.email?.[0]" />
                 </div>
 
-                <div class="field">
-                    <div class="label-row">
-                        <label for="co-pw">
-                            Password
-                        </label>
+                <div class="relative min-h-[520px] overflow-hidden bg-cafe-clay p-7 text-white sm:min-h-[630px] sm:p-12"
+                    aria-label="Brthrs Cafe, brewed daily in Davao City">
+                    <div class="absolute -right-24 -top-24 size-80 rounded-full border border-white/20"></div>
+                    <div class="absolute -bottom-36 -left-20 size-96 rounded-full bg-cafe-ink/10"></div>
+                    <div
+                        class="absolute left-1/2 top-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cafe-sun/70 blur-3xl sm:size-96">
                     </div>
-
-                    <div class="input-wrap">
-                        <div class="input-icon">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
+                    <div class="relative z-10 flex h-full min-h-[466px] flex-col justify-between sm:min-h-[534px]">
+                        <div
+                            class="flex items-center justify-between border-b border-white/25 pb-5 text-[10px] font-bold uppercase tracking-[2px]">
+                            <span>Obrero · Davao City</span>
+                            <span>Open until midnight</span>
                         </div>
-
-                        <input id="co-pw" v-model="state.formLogin.password" :type="state.showPassword
-                            ? 'text'
-                            : 'password'
-                            " placeholder="Enter your password" autocomplete="current-password"
-                            :disabled="state.isPageLoading" />
-
-                        <button class="password-toggle" type="button" :aria-label="state.showPassword
-                            ? 'Hide password'
-                            : 'Show password'
-                            " :aria-pressed="state.showPassword" @click="
-                                state.showPassword =
-                                !state.showPassword
-                                ">
-                            <!-- Eye off -->
-                            <svg v-if="state.showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                aria-hidden="true">
-                                <path d="m2 2 20 20" />
-                                <path d="M6.71 6.71C3.78 8.27 2 12 2 12s3.5 7 10 7c1.58 0 2.96-.41 4.15-1.02" />
-                                <path d="M10.73 5.08A9.4 9.4 0 0 1 12 5c6.5 0 10 7 10 7a17.7 17.7 0 0 1-2.1 3.19" />
-                            </svg>
-
-                            <!-- Eye -->
-                            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path
-                                    d="M2.06 12.35C3.5 8.17 7.39 5 12 5s8.5 3.17 9.94 7.35a1 1 0 0 1 0 .65C20.5 17.17 16.61 20 12 20S3.5 17.17 2.06 13a1 1 0 0 1 0-.65Z" />
-                                <circle cx="12" cy="12.5" r="3" />
-                            </svg>
-                        </button>
+                        <div
+                            class="mx-auto flex size-64 flex-col items-center justify-center rounded-full border border-white/35 bg-cafe-paper/90 text-cafe-ink shadow-2xl sm:size-80">
+                            <Icon name="ph:coffee" class="mb-5 size-12 text-cafe-brown sm:size-16" />
+                            <strong class="text-5xl tracking-[-3px] sm:text-6xl">Brthrs</strong>
+                            <em class="mt-2 font-display text-3xl text-cafe-brown">cafe</em>
+                        </div>
+                        <div class="flex items-end justify-between gap-6">
+                            <p class="max-w-[16rem] font-display text-xl italic leading-snug sm:text-2xl">A hidden
+                                corner for coffee and company.</p>
+                            <Icon name="ph:arrow-down-right" class="size-8 shrink-0" />
+                        </div>
                     </div>
-
-                    <FormError :error="v$?.formLogin?.password
-                        ?.$errors[0]?.$message
-                        ?.toString()
-                        " />
-
-                    <FormError :error="state?.error?.errors?.password?.[0]
-                        " />
                 </div>
+            </section>
 
-                <button class="submit-button" type="submit" :disabled="state.isPageLoading">
-                    <span v-if="state.isPageLoading" class="spinner" aria-hidden="true"></span>
-
-                    <span>
-                        {{
-                            state.isPageLoading
-                                ? 'Signing in...'
-                                : 'Sign in'
-                        }}
-                    </span>
-
-                    <svg v-if="!state.isPageLoading" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        aria-hidden="true">
-                        <path d="M5 12h14" />
-                        <path d="m13 6 6 6-6 6" />
-                    </svg>
-                </button>
-
-                <div class="security-note">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z" />
-                        <path d="m9 12 2 2 4-4" />
-                    </svg>
-
-                    <span>
-                        Secure encrypted connection
-                    </span>
+            <section id="story"
+                class="grid gap-16 bg-cafe-cream px-6 py-20 sm:px-[7vw] sm:py-28 lg:grid-cols-2 lg:gap-[8vw]">
+                <div>
+                    <p class="text-[11px] font-bold tracking-[2.2px] text-cafe-brown">01 / OUR PLACE</p>
+                    <h2 class="my-6 text-[clamp(38px,4.6vw,67px)] font-bold leading-[1.05] tracking-[-2.5px]">
+                        Come as
+                        you are.<br>Stay as long as you like.
+                    </h2>
+                    <p class="max-w-xl leading-7 text-stone-600">
+                        Brthrs Cafe is the kind of place you discover, then
+                        keep to yourself for a while. Tucked beside Brotherr's Fried Chicken, our little space is made
+                        for catching up, getting work done, or simply enjoying a quiet cup.
+                    </p>
+                    <p class="mt-9 font-display text-xl italic text-cafe-brown">
+                        Your hidden corner in Obrero.
+                    </p>
                 </div>
-            </form>
-        </section>
-    </main>
+                <div class="grid min-h-[410px] gap-3 sm:min-h-[470px] sm:grid-cols-2 sm:grid-rows-2">
+                    <div
+                        class="flex min-h-44 flex-col justify-end gap-5 rounded bg-cafe-ink p-7 font-semibold text-white sm:row-span-2">
+                        <Icon name="ph:coffee" class="size-8" />
+                        <span>Carefully brewed</span>
+                    </div>
+                    <div class="rounded bg-cafe-gold p-7 font-display text-2xl italic">
+                        Late nights.<br>Warm
+                        lights.<br><strong>Good vibes.</strong>
+                    </div>
+                    <div class="flex flex-col justify-between rounded bg-stone-300 p-7 font-semibold text-cafe-brown">
+                        <Icon name="ph:users-three" class="size-8" />
+                        <span>Made for company</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="favorites" class="px-6 py-20 sm:px-[7vw] sm:py-28">
+                <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
+                    <div>
+                        <p class="text-[11px] font-bold tracking-[2.2px] text-cafe-brown">02 / CAFE FAVORITES</p>
+                        <h2 class="mt-5 text-[clamp(38px,4.6vw,67px)] font-bold leading-[1.05] tracking-[-2.5px]">
+                            Something for every mood.
+                        </h2>
+                    </div>
+                    <p class="max-w-sm leading-7 text-stone-600">
+                        From cold, creamy picks to comforting hot cups—find
+                        your usual or try something new.
+                    </p>
+                </div>
+                <div class="mt-10 grid gap-5 lg:mt-14 lg:grid-cols-3">
+                    <article v-for="item in favorites" :key="item.name"
+                        :class="['relative flex min-h-60 flex-col overflow-hidden rounded p-8 lg:min-h-[330px]', item.className]">
+                        <span class="mb-auto grid size-12 place-items-center rounded-full border border-current">
+                            <Icon :name="item.icon" class="size-6" />
+                        </span>
+                        <p class="text-[9px] font-bold tracking-[1.8px]">
+                            {{ item.kicker }}
+                        </p>
+                        <h3 class="my-2 font-display text-3xl italic">
+                            {{ item.name }}
+                        </h3>
+                        <span class="text-xs opacity-70">{{ item.note }}</span>
+                        <span
+                            class="absolute -bottom-14 -right-14 size-44 rounded-full border border-current opacity-10"></span>
+                    </article>
+                </div>
+                <p class="mt-8 text-center text-xs text-stone-500">
+                    <Icon name="ph:sparkle" class="mr-1 inline size-4 text-cafe-gold" />
+                    Ask our barista about today's
+                    recommendations and available add-ons.
+                </p>
+            </section>
+
+            <section id="visit"
+                class="grid gap-14 bg-cafe-forest px-6 py-20 text-white sm:px-[7vw] sm:py-28 lg:grid-cols-[1.05fr_.95fr] lg:gap-[9vw]">
+                <div>
+                    <p class="text-[11px] font-bold tracking-[2.2px] text-cafe-gold">03 / COME THROUGH</p>
+                    <h2 class="my-6 text-[clamp(38px,4.6vw,67px)] font-bold leading-[1.05] tracking-[-2.5px]">
+                        Your next
+                        coffee break is closer than you think.
+                    </h2>
+                    <p class="max-w-lg leading-7 text-emerald-100/60">
+                        Look for the hidden space of Brotherr's Fried
+                        Chicken near the USEP Obrero main gate.
+                    </p>
+                </div>
+                <div
+                    class="flex flex-col justify-center gap-11 border-t border-white/15 pt-12 lg:border-l lg:border-t-0 lg:pl-[8vw] lg:pt-0">
+                    <div v-for="detail in visitDetails" :key="detail.label" class="flex gap-5">
+                        <span
+                            class="grid size-12 shrink-0 place-items-center rounded-full border border-white/20 text-cafe-gold">
+                            <Icon :name="detail.icon" class="size-5" />
+                        </span>
+                        <div class="flex flex-col">
+                            <small class="mb-2 text-[9px] tracking-[2px] text-cafe-gold">
+                                {{ detail.label }}
+                            </small>
+                            <strong class="whitespace-pre-line text-xl leading-7">
+                                {{ detail.value }}
+                            </strong>
+                            <p class="mt-2 text-xs text-emerald-100/50">
+                                {{ detail.note }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer
+            class="flex flex-wrap items-center gap-7 border-t border-cafe-ink/10 px-6 py-9 text-[11px] text-stone-500 sm:px-[7vw]">
+            <div class="mr-auto inline-flex items-center gap-2 text-cafe-ink">
+                <span class="grid size-8 place-items-center rounded-full border-2 border-cafe-ink">
+                    <Icon name="ph:coffee" class="size-4" />
+                </span>
+                <strong class="text-lg">Brthrs Cafe</strong>
+            </div>
+            <p class="hidden sm:block">Good coffee, better company.</p>
+            <div class="flex items-center gap-2" aria-label="Brthrs Cafe social media">
+                <a v-for="social in socials" :key="social.label" :href="social.href" target="_blank"
+                    rel="noopener noreferrer" :aria-label="`Follow Brthrs Cafe on ${social.label}`"
+                    class="inline-flex items-center gap-1.5 rounded-full border border-cafe-ink/15 px-3 py-2 font-semibold text-cafe-ink transition hover:-translate-y-0.5 hover:border-cafe-brown/50 hover:bg-cafe-cream hover:text-cafe-brown">
+                    <Icon :name="social.icon" class="size-4" /> {{ social.label }}
+                </a>
+            </div>
+            <span>&copy; {{ new Date().getFullYear() }} Brthrs Cafe · Davao City</span>
+        </footer>
+    </div>
 </template>
 
 <script setup lang="ts">
-import { authService } from '@/components/api/user/AuthService'
-import { useVuelidate } from '@vuelidate/core'
-import { required, helpers } from '@vuelidate/validators'
-import { useUserStore } from '@/store/user'
-import type { Error } from '@/types'
+const navigation = [
+    { label: 'Our place', href: '#story' },
+    { label: 'Favorites', href: '#favorites' },
+    { label: 'Visit us', href: '#visit' }
+]
 
-const runtimeConfig = useRuntimeConfig()
-const userStore = useUserStore()
+const quickFacts = [
+    { label: 'Open every day', value: '11 AM — 12 Midnight', icon: 'ph:clock' },
+    { label: 'Find us in', value: 'Bo. Obrero, Davao City', icon: 'ph:map-pin' }
+]
 
-const state = reactive({
-    error: {} as Error,
-    formLogin: {
-        email: null as string | null,
-        password: null as string | null,
-    },
-    isPageLoading: false,
-    showPassword: false,
-})
+const favorites = [
+    { kicker: 'COOL & SMOOTH', name: 'Iced favorites', note: 'For warm Davao afternoons', icon: 'ph:snowflake', className: 'bg-cafe-iced text-cafe-icedText' },
+    { kicker: 'RICH & COZY', name: 'Hot classics', note: 'Comfort in every cup', icon: 'ph:coffee', className: 'bg-cafe-hot text-white' },
+    { kicker: 'MAKE IT YOURS', name: 'Cafe add-ons', note: 'A little extra goes a long way', icon: 'ph:plus-circle', className: 'bg-cafe-addOn text-cafe-addOnText' },
+]
 
-const rules = computed(() => ({
-    formLogin: {
-        email: {
-            required: helpers.withMessage(
-                () => 'This field is required.',
-                required
-            ),
-        },
-        password: {
-            required: helpers.withMessage(
-                () => 'This field is required.',
-                required
-            ),
-        },
-    },
-}))
+const visitDetails = [
+    { label: 'ADDRESS', value: 'Iñigo St., Bo. Obrero,\nDavao City', note: 'Near USEP Obrero main gate', icon: 'ph:map-pin' },
+    { label: 'BUSINESS HOURS', value: 'Every day\n11 AM — 12 Midnight', note: "Yes, we're open late.", icon: 'ph:clock' },
+]
 
-const v$ = useVuelidate(rules, state)
-
-async function login() {
-    state.error = {}
-    await v$.value.$validate()
-
-    if (v$.value.$error) {
-        return
-    }
-
-    state.isPageLoading = true
-
-    try {
-        const params = {
-            email: state.formLogin.email,
-            password: state.formLogin.password,
-        }
-
-        const response = await authService.login(params)
-
-        if (response.data) {
-            localStorage.setItem("_token", response.data?.token)
-            userStore.setUser(response?.data?.user)
-            await navigateTo('/overview')
-        }
-    } catch (error: any) {
-        state.error = error
-    } finally {
-        state.isPageLoading = false
-    }
-}
+const socials = [
+    { label: 'Instagram', href: 'https://www.instagram.com/brthrs_cafe', icon: 'ph:instagram-logo' },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@brthrscafe', icon: 'ph:tiktok-logo' },
+]
 </script>
-
-<style>
-* {
-    box-sizing: border-box;
-}
-
-html,
-body,
-#__nuxt {
-    min-height: 100%;
-}
-
-body {
-    margin: 0;
-}
-
-button,
-input {
-    font: inherit;
-}
-
-/* ==========================================================
-   PAGE
-   ========================================================== */
-
-.login-page {
-    --brand: #42aed9;
-    --brand-dark: #1b7395;
-    --navy: #102c46;
-    --navy-deep: #091e31;
-    --text: #16283a;
-    --muted: #708090;
-    --border: #dbe5ec;
-    --surface: #ffffff;
-    --background: #f4f8fb;
-
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns:
-        minmax(400px, 0.9fr) minmax(520px, 1.25fr);
-
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        sans-serif;
-
-    background: var(--background);
-    color: var(--text);
-}
-
-/* ==========================================================
-   LEFT PANEL
-   ========================================================== */
-
-.brand-panel {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-
-    min-height: 100vh;
-    padding: 42px 48px 38px;
-
-    display: flex;
-    flex-direction: column;
-
-    color: #fff;
-
-    background:
-        linear-gradient(145deg,
-            #0b253c 0%,
-            #123b5c 48%,
-            #092239 100%);
-}
-
-.brand-panel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.025) 1px,
-            transparent 1px),
-        linear-gradient(90deg,
-            rgba(255, 255, 255, 0.025) 1px,
-            transparent 1px);
-
-    background-size: 42px 42px;
-
-    mask-image:
-        linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.75),
-            transparent 80%);
-}
-
-.brand-glow {
-    position: absolute;
-    z-index: -1;
-    border-radius: 50%;
-    filter: blur(4px);
-    pointer-events: none;
-}
-
-.brand-glow--top {
-    width: 440px;
-    height: 440px;
-    top: -220px;
-    right: -180px;
-
-    background:
-        radial-gradient(circle,
-            rgba(66, 174, 217, 0.25),
-            transparent 68%);
-}
-
-.brand-glow--bottom {
-    width: 420px;
-    height: 420px;
-    left: -220px;
-    bottom: -180px;
-
-    background:
-        radial-gradient(circle,
-            rgba(58, 195, 184, 0.12),
-            transparent 70%);
-}
-
-.brand-header {
-    position: relative;
-    z-index: 1;
-}
-
-.brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.brand-mark {
-    width: 46px;
-    height: 46px;
-
-    display: grid;
-    place-items: center;
-
-    filter:
-        drop-shadow(0 8px 18px rgba(0, 0, 0, 0.14));
-}
-
-.brand-name {
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.25px;
-}
-
-.brand-label {
-    margin-top: 3px;
-
-    color: rgba(255, 255, 255, 0.42);
-
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-}
-
-.brand-content {
-    position: relative;
-    z-index: 1;
-
-    margin: auto 0;
-    max-width: 470px;
-    padding: 80px 0;
-}
-
-.eyebrow,
-.form-eyebrow {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-}
-
-.eyebrow {
-    margin-bottom: 20px;
-    color: #67c8eb;
-}
-
-.brand-content h1 {
-    margin: 0;
-
-    max-width: 440px;
-
-    color: #ffffff;
-    font-size: clamp(38px, 4vw, 45px);
-    font-weight: 700;
-    line-height: 1.08;
-    letter-spacing: -2px;
-}
-
-.brand-content h1 span {
-    display: block;
-    color: #76cbed;
-    font-size: clamp(38px, 4vw, 45px);
-}
-
-.brand-content>p {
-    margin: 22px 0 0;
-
-    max-width: 400px;
-
-    color: rgba(255, 255, 255, 0.58);
-    font-size: 14px;
-    line-height: 1.8;
-}
-
-.feature-list {
-    margin-top: 38px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.feature-item {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-}
-
-.feature-icon {
-    flex: 0 0 auto;
-
-    width: 34px;
-    height: 34px;
-
-    display: grid;
-    place-items: center;
-
-    border: 1px solid rgba(93, 193, 232, 0.24);
-    border-radius: 9px;
-
-    color: #6ec8ea;
-    background: rgba(66, 174, 217, 0.08);
-}
-
-.feature-item>div:last-child {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.feature-item strong {
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.feature-item span {
-    color: rgba(255, 255, 255, 0.42);
-    font-size: 11px;
-    line-height: 1.45;
-}
-
-.brand-footer {
-    position: relative;
-    z-index: 1;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 10px;
-}
-
-.status {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-}
-
-.status-dot {
-    width: 6px;
-    height: 6px;
-
-    border-radius: 50%;
-
-    background: #57d19b;
-    box-shadow:
-        0 0 0 4px rgba(87, 209, 155, 0.08);
-}
-
-/* ==========================================================
-   RIGHT PANEL
-   ========================================================== */
-
-.login-panel {
-    position: relative;
-
-    min-width: 0;
-    min-height: 100vh;
-    padding: 48px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(circle at 85% 10%,
-            rgba(66, 174, 217, 0.09),
-            transparent 26%),
-        radial-gradient(circle at 10% 90%,
-            rgba(43, 179, 171, 0.06),
-            transparent 28%),
-        #f4f8fb;
-}
-
-.mobile-brand {
-    display: none;
-}
-
-.login-card {
-    width: 100%;
-    max-width: 430px;
-
-    padding: 38px;
-
-    border: 1px solid rgba(21, 63, 91, 0.09);
-    border-radius: 18px;
-
-    background:
-        rgba(255, 255, 255, 0.96);
-
-    box-shadow:
-        0 22px 55px rgba(15, 43, 70, 0.08),
-        0 3px 10px rgba(15, 43, 70, 0.025);
-}
-
-.form-header {
-    margin-bottom: 28px;
-}
-
-.form-eyebrow {
-    margin-bottom: 10px;
-    color: var(--brand-dark);
-}
-
-.form-header h2 {
-    margin: 0;
-
-    color: var(--navy);
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.9px;
-}
-
-.form-header p {
-    margin: 8px 0 0;
-
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-.alert {
-    margin-bottom: 22px;
-}
-
-/* ==========================================================
-   FORM
-   ========================================================== */
-
-.field {
-    margin-bottom: 19px;
-}
-
-.field label {
-    display: block;
-
-    margin-bottom: 7px;
-
-    color: #28465d;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.label-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.input-wrap {
-    position: relative;
-}
-
-.input-icon {
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    left: 14px;
-
-    display: flex;
-
-    color: #8ca0af;
-
-    transform: translateY(-50%);
-
-    pointer-events: none;
-}
-
-.input-wrap input {
-    width: 100%;
-    height: 48px;
-
-    padding: 0 45px 0 43px;
-
-    border: 1px solid var(--border);
-    border-radius: 9px;
-
-    outline: none;
-
-    color: #173047;
-    background: #fbfcfd;
-
-    font-size: 13px;
-
-    transition:
-        border-color 160ms ease,
-        box-shadow 160ms ease,
-        background 160ms ease;
-}
-
-.input-wrap input::placeholder {
-    color: #a8b6c1;
-}
-
-.input-wrap input:hover:not(:disabled) {
-    border-color: #c3d2dc;
-}
-
-.input-wrap input:focus {
-    border-color: var(--brand);
-    background: #ffffff;
-
-    box-shadow:
-        0 0 0 3px rgba(66, 174, 217, 0.12);
-}
-
-.input-wrap input:disabled {
-    cursor: not-allowed;
-    opacity: 0.65;
-}
-
-.input-wrap:focus-within .input-icon {
-    color: var(--brand-dark);
-}
-
-.password-toggle {
-    position: absolute;
-    top: 50%;
-    right: 11px;
-
-    width: 32px;
-    height: 32px;
-
-    display: grid;
-    place-items: center;
-
-    padding: 0;
-    border: 0;
-    border-radius: 7px;
-
-    color: #788d9d;
-    background: transparent;
-
-    cursor: pointer;
-
-    transform: translateY(-50%);
-
-    transition:
-        color 150ms ease,
-        background 150ms ease;
-}
-
-.password-toggle:hover {
-    color: var(--brand-dark);
-    background: #edf7fb;
-}
-
-.password-toggle:focus-visible {
-    outline: 2px solid var(--brand);
-    outline-offset: 1px;
-}
-
-/* ==========================================================
-   SUBMIT
-   ========================================================== */
-
-.submit-button {
-    width: 100%;
-    height: 48px;
-
-    margin-top: 5px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    border: 0;
-    border-radius: 9px;
-
-    color: #fff;
-
-    background:
-        linear-gradient(135deg,
-            #42aed9 0%,
-            #268eb8 100%);
-
-    box-shadow:
-        0 8px 18px rgba(42, 153, 196, 0.18);
-
-    font-size: 13px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        transform 150ms ease,
-        box-shadow 150ms ease,
-        filter 150ms ease;
-}
-
-.submit-button:hover:not(:disabled) {
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 11px 24px rgba(42, 153, 196, 0.22);
-
-    filter: brightness(0.98);
-}
-
-.submit-button:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-.submit-button:focus-visible {
-    outline: 3px solid rgba(66, 174, 217, 0.25);
-    outline-offset: 3px;
-}
-
-.submit-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-    box-shadow: none;
-}
-
-.spinner {
-    width: 15px;
-    height: 15px;
-
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: #fff;
-    border-radius: 50%;
-
-    animation: spinner 700ms linear infinite;
-}
-
-@keyframes spinner {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.security-note {
-    margin-top: 18px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-
-    color: #91a1ad;
-    font-size: 10px;
-}
-
-/* ==========================================================
-   RESPONSIVE
-   ========================================================== */
-
-@media (max-width: 1000px) {
-    .login-page {
-        grid-template-columns:
-            minmax(330px, 0.8fr) minmax(480px, 1.2fr);
-    }
-
-    .brand-panel {
-        padding:
-            36px 34px 32px;
-    }
-
-    .brand-content h1 {
-        font-size: 40px;
-    }
-}
-
-@media (max-width: 820px) {
-    .login-page {
-        display: block;
-        min-height: 100svh;
-    }
-
-    .brand-panel {
-        display: none;
-    }
-
-    .login-panel {
-        min-height: 100svh;
-
-        padding:
-            28px 20px 36px;
-
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .mobile-brand {
-        width: 100%;
-        max-width: 430px;
-
-        margin-bottom: 24px;
-
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        color: var(--navy);
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    .brand-mark--small {
-        width: 36px;
-        height: 36px;
-    }
-
-    .login-card {
-        padding: 32px 28px;
-    }
-}
-
-@media (max-width: 480px) {
-    .login-panel {
-        padding:
-            24px 16px 32px;
-
-        justify-content: flex-start;
-    }
-
-    .mobile-brand {
-        margin-top: 12px;
-        margin-bottom: 30px;
-    }
-
-    .login-card {
-        padding: 0;
-
-        border: 0;
-        border-radius: 0;
-
-        background: transparent;
-
-        box-shadow: none;
-    }
-
-    .form-header {
-        margin-bottom: 26px;
-    }
-
-    .form-header h2 {
-        font-size: 27px;
-    }
-
-    .input-wrap input {
-        height: 50px;
-    }
-
-    .submit-button {
-        height: 50px;
-    }
-}
-
-/* ==========================================================
-   ACCESSIBILITY
-   ========================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-</style>
