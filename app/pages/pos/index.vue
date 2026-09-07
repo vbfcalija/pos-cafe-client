@@ -166,7 +166,7 @@
                     </section>
 
                     <aside
-                        class="overflow-hidden rounded-xl bg-white shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col lg:self-start">
+                        class="overflow-hidden rounded-xl bg-white shadow-sm lg:sticky lg:top-20 lg:flex lg:h-[calc(100dvh-9rem)] lg:flex-col lg:self-start">
                         <div class="min-h-0 flex-1 overflow-y-auto p-5 lg:p-4 xl:p-5">
                         <div class="mb-4 flex items-center justify-between">
                             <div class="flex items-center gap-3">
