@@ -60,7 +60,7 @@
                                             's' }}
                                     </span>
                                 </div>
-                                <div class="grid gap-4 sm:grid-cols-2">
+                                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                                     <article v-for="product in category.products" :key="product.uuid"
                                         class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
                                         <div class="h-1.5" :style="{ backgroundColor: product.color || '#dbeafe' }" />
@@ -166,7 +166,7 @@
                     </section>
 
                     <aside
-                        class="rounded-xl bg-white p-5 shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:overflow-y-auto lg:self-start">
+                        class="rounded-xl bg-white p-5 shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col lg:overflow-y-auto lg:p-4 lg:self-start xl:p-5">
                         <div class="mb-3 flex items-center justify-between lg:shrink-0">
                             <div>
                                 <h2 class="text-lg font-semibold text-gray-900">
@@ -183,7 +183,7 @@
                         </div>
 
                         <div
-                            class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 lg:max-h-none lg:min-h-[110px] lg:flex-1">
+                            class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 lg:max-h-none lg:min-h-[80px] lg:flex-1 xl:min-h-[110px]">
                             <div v-for="line in state.cart" :key="line.product_variant_uuid"
                                 class="rounded-lg border border-gray-200 p-3">
                                 <div class="flex items-start justify-between gap-3">
@@ -290,7 +290,8 @@
                             </template>
                         </div>
 
-                        <FormButton buttonStyle="primary" class="mt-3 w-full shrink-0"
+                        <FormButton buttonStyle="primary"
+                            class="mt-3 w-full shrink-0 lg:sticky lg:bottom-0 lg:z-10 lg:shadow-[0_-8px_16px_rgba(255,255,255,0.95)]"
                             :disabled="!canCheckout || state.isSubmitting" @click="checkout">
                             <Icon name="ph:check-circle" class="size-5" />
                             {{ state.isSubmitting ? 'Processing…' : `Charge ${money(grandTotal)}` }}
