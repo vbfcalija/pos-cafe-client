@@ -206,7 +206,8 @@ const selectedReportLabel = computed(() => reportOptions.find(report => report.v
 const filteredOrders = computed(() => state.orders.filter(order => {
     const orderDate = String(order.date || '').slice(0, 10)
     const [start, end] = state.dateRange
-    return (!start || orderDate >= start)
+    return !order.refunded_at
+        && (!start || orderDate >= start)
         && (!end || orderDate <= end)
         && (state.branch === 'all' || order.shift?.branch?.uuid === state.branch)
 }))

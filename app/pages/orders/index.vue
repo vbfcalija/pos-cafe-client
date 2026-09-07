@@ -55,7 +55,16 @@
                                         </p>
                                     </td>
                                     <td>
-                                        <p class="font-semibold">
+                                        <span :class="order.refunded_at
+                                            ? 'bg-red-50 text-red-700 ring-red-600/20'
+                                            : 'bg-green-50 text-green-700 ring-green-600/20'"
+                                            class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset">
+                                            {{ order.refunded_at ? 'Refunded' : 'Completed' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <p class="font-semibold"
+                                            :class="order.refunded_at && 'text-gray-400 line-through'">
                                             {{ money(orderTotal(order)) }}
                                         </p>
                                     </td>
@@ -72,6 +81,13 @@
                                                     :disabled="state.printingUuid === order.uuid"
                                                     @click="printOrder(order)">
                                                     <Icon name="ph:printer" class="size-4" />
+                                                </FormButton>
+                                            </Tooltip>
+                                            <Tooltip v-if="!order.refunded_at" text="Refund order">
+                                                <FormButton buttonStyle="danger" buttonSize="xs"
+                                                    :disabled="state.refundingUuid === order.uuid"
+                                                    @click="openRefundConfirmation(order)">
+                                                    <Icon name="ph:arrow-u-up-left" class="size-4" />
                                                 </FormButton>
                                             </Tooltip>
                                         </div>
@@ -112,6 +128,19 @@
                                     <p class="text-xs text-gray-500">Cashier</p>
                                     <p class="font-medium">
                                         {{ fullName(state.selectedOrder.user) }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div v-if="state.selectedOrder.refunded_at"
+                                class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+                                <Icon name="ph:arrow-u-up-left" class="mt-0.5 size-5 shrink-0" />
+                                <div>
+                                    <p class="font-semibold">This order was refunded</p>
+                                    <p class="mt-0.5 text-sm">
+                                        {{ formatDateToReadable(state.selectedOrder.refunded_at) }}
+                                        <span v-if="state.selectedOrder.refunded_by">
+                                            by {{ fullName(state.selectedOrder.refunded_by) }}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
@@ -185,6 +214,10 @@
                     </LoadingSpinner>
                 </template>
             </Modal>
+
+            <DialogConfirmation :isModalOpen="state.isRefundConfirmationOpen" title="Refund order"
+                :message="`Refund order #${state.refundOrder?.order_no || ''} for ${money(orderTotal(state.refundOrder))}? This action cannot be undone.`"
+                @close="closeRefundConfirmation" @confirm="refundOrder" />
         </NuxtLayout>
     </div>
 </template>
@@ -209,6 +242,7 @@ const state = reactive({
         { name: 'Customer' },
         { name: 'Cashier' },
         { name: 'Payment' },
+        { name: 'Status' },
         { name: 'Total' },
         { name: '' },
     ],
@@ -219,6 +253,9 @@ const state = reactive({
     isTableLoading: false,
     isOrderLoading: false,
     isOrderModalOpen: false,
+    isRefundConfirmationOpen: false,
+    refundOrder: null as any,
+    refundingUuid: '' as string,
     printingUuid: '' as string,
 })
 
@@ -249,6 +286,38 @@ async function printOrder(order: any) {
         errorAlert('Could not print', error?.message || 'Printer not detected. Make sure a Bluetooth thermal printer is paired and try again.')
     } finally {
         state.printingUuid = ''
+    }
+}
+
+function openRefundConfirmation(order: any) {
+    state.refundOrder = order
+    state.isRefundConfirmationOpen = true
+}
+
+function closeRefundConfirmation() {
+    state.isRefundConfirmationOpen = false
+    if (!state.refundingUuid) {
+        state.refundOrder = null
+    }
+}
+
+async function refundOrder() {
+    const order = state.refundOrder
+    if (!order || state.refundingUuid) return
+
+    state.refundingUuid = order.uuid
+    try {
+        await orderService.refundOrder(order.uuid)
+        successAlert('Order refunded', `Order #${order.order_no} was refunded successfully.`)
+        await fetchOrders()
+        if (state.selectedOrder?.uuid === order.uuid) {
+            await viewOrder(order)
+        }
+    } catch (error: any) {
+        errorAlert('Could not refund order', error?.message || 'Please try again.')
+    } finally {
+        state.refundingUuid = ''
+        state.refundOrder = null
     }
 }
 
@@ -340,7 +409,7 @@ function orderTax(order: any) {
 }
 
 function orderTotal(order: any) {
-    return order.details?.reduce((sum: number, line: any) => sum + lineTotal(line), 0) || 0
+    return order?.details?.reduce((sum: number, line: any) => sum + lineTotal(line), 0) || 0
 }
 
 function money(value: number | string) {

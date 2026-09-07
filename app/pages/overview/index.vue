@@ -455,7 +455,8 @@ const branchOptions = computed(() => {
 })
 const filteredOrders = computed(() => state.orders.filter((order: any) => {
     const businessDate = String(order.date || '').slice(0, 10)
-    return businessDate === state.selectedDate
+    return !order.refunded_at
+        && businessDate === state.selectedDate
         && (state.branchUuid === 'all' || order.shift?.branch?.uuid === state.branchUuid)
 }))
 
