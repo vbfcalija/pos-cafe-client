@@ -166,24 +166,29 @@
                     </section>
 
                     <aside
-                        class="rounded-xl bg-white p-5 shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col lg:overflow-y-auto lg:p-4 lg:self-start xl:p-5">
-                        <div class="mb-3 flex items-center justify-between lg:shrink-0">
-                            <div>
-                                <h2 class="text-lg font-semibold text-gray-900">
-                                    Current order
-                                </h2>
-                                <p class="text-sm text-gray-500">
-                                    {{ cartQuantity }} item{{ cartQuantity === 1 ? '' : 's' }}
-                                </p>
+                        class="overflow-hidden rounded-xl bg-white shadow-sm lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col lg:self-start">
+                        <div class="min-h-0 flex-1 overflow-y-auto p-5 lg:p-4 xl:p-5">
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="flex size-10 items-center justify-center rounded-xl bg-primary-50 text-primary">
+                                    <Icon name="ph:shopping-cart-simple" class="size-5" />
+                                </span>
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900">
+                                        Current order
+                                    </h2>
+                                    <p class="text-xs text-gray-500">
+                                        {{ cartQuantity }} item{{ cartQuantity === 1 ? '' : 's' }} selected
+                                    </p>
+                                </div>
                             </div>
                             <button v-if="state.cart.length" type="button"
-                                class="text-xs font-medium text-red-600 hover:text-red-700" @click="clearCart">
+                                class="min-h-9 rounded-lg px-3 text-xs font-semibold text-red-600 transition hover:bg-red-50 hover:text-red-700" @click="clearCart">
                                 Clear
                             </button>
                         </div>
 
-                        <div
-                            class="max-h-[42vh] space-y-3 overflow-y-auto pr-1 lg:max-h-none lg:min-h-[80px] lg:flex-1 xl:min-h-[110px]">
+                        <div class="space-y-3">
                             <div v-for="line in state.cart" :key="line.product_variant_uuid"
                                 class="rounded-lg border border-gray-200 p-3">
                                 <div class="flex items-start justify-between gap-3">
@@ -224,13 +229,15 @@
                                 </div>
                             </div>
                             <div v-if="!state.cart.length"
-                                class="rounded-xl border border-dashed border-gray-300 py-3 text-center lg:py-2">
-                                <Icon name="ph:shopping-cart-simple" class="mx-auto size-6 text-gray-300 lg:hidden" />
-                                <p class="mt-1 text-sm text-gray-500 lg:mt-0">Your cart is empty.</p>
+                                class="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-center">
+                                <Icon name="ph:shopping-cart-simple" class="mx-auto size-7 text-gray-300" />
+                                <p class="mt-2 text-sm font-medium text-gray-600">Your cart is empty</p>
+                                <p class="mt-1 text-xs text-gray-400">Select a product variant to get started.</p>
                             </div>
                         </div>
 
-                        <div class="mt-3 shrink-0 space-y-2 border-t border-gray-200 pt-3">
+                        <div class="mt-4 space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Order details</p>
                             <div class="space-y-1">
                                 <p class="text-sm text-gray-600">
                                     Customer (optional)
@@ -261,7 +268,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-3 shrink-0 space-y-1.5 border-t border-gray-200 pt-3 text-sm">
+                        <div class="mt-4 space-y-2 rounded-xl border border-gray-200 p-3 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-gray-500">Subtotal</span>
                                 <span>{{ money(subtotal) }}</span>
@@ -289,13 +296,15 @@
                                 </div>
                             </template>
                         </div>
+                        </div>
 
-                        <FormButton buttonStyle="primary"
-                            class="mt-3 w-full shrink-0 lg:sticky lg:bottom-0 lg:z-10 lg:shadow-[0_-8px_16px_rgba(255,255,255,0.95)]"
-                            :disabled="!canCheckout || state.isSubmitting" @click="checkout">
-                            <Icon name="ph:check-circle" class="size-5" />
-                            {{ state.isSubmitting ? 'Processing…' : `Charge ${money(grandTotal)}` }}
-                        </FormButton>
+                        <div class="shrink-0 border-t border-gray-100 bg-white p-4 lg:p-3 xl:p-4">
+                            <FormButton buttonStyle="primary" class="min-h-11 w-full"
+                                :disabled="!canCheckout || state.isSubmitting" @click="checkout">
+                                <Icon name="ph:check-circle" class="size-5" />
+                                {{ state.isSubmitting ? 'Processing…' : `Charge ${money(grandTotal)}` }}
+                            </FormButton>
+                        </div>
                     </aside>
                 </div>
             </LoadingSpinner>
