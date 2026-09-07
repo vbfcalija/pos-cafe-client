@@ -168,134 +168,136 @@
                     <aside
                         class="overflow-hidden rounded-xl bg-white shadow-sm lg:sticky lg:top-20 lg:flex lg:h-[calc(100dvh-9rem)] lg:flex-col lg:self-start">
                         <div class="min-h-0 flex-1 overflow-y-auto p-5 lg:p-4 xl:p-5">
-                        <div class="mb-4 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="flex size-10 items-center justify-center rounded-xl bg-primary-50 text-primary">
-                                    <Icon name="ph:shopping-cart-simple" class="size-5" />
-                                </span>
-                                <div>
-                                    <h2 class="text-lg font-semibold text-gray-900">
-                                        Current order
-                                    </h2>
-                                    <p class="text-xs text-gray-500">
-                                        {{ cartQuantity }} item{{ cartQuantity === 1 ? '' : 's' }} selected
+                            <div class="mb-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span
+                                        class="flex size-10 items-center justify-center rounded-xl bg-primary-50 text-primary">
+                                        <Icon name="ph:shopping-cart-simple" class="size-5" />
+                                    </span>
+                                    <div>
+                                        <h2 class="text-lg font-semibold text-gray-900">
+                                            Current order
+                                        </h2>
+                                        <p class="text-xs text-gray-500">
+                                            {{ cartQuantity }} item{{ cartQuantity === 1 ? '' : 's' }} selected
+                                        </p>
+                                    </div>
+                                </div>
+                                <button v-if="posStore.cart.length" type="button"
+                                    class="min-h-9 rounded-lg px-3 text-xs font-semibold text-red-600 transition hover:bg-red-50 hover:text-red-700"
+                                    @click="clearCart">
+                                    Clear
+                                </button>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div v-for="line in posStore.cart" :key="line.product_variant_uuid"
+                                    class="rounded-lg border border-gray-200 p-3">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <p class="truncate text-sm font-semibold text-gray-900">
+                                                {{ line.product_name }}
+                                            </p>
+                                            <p class="truncate text-xs text-gray-500">
+                                                {{ line.variant_name }} · {{ money(line.price) }}
+                                            </p>
+                                        </div>
+                                        <button type="button" class="text-gray-400 hover:text-red-600"
+                                            @click="removeLine(line.product_variant_uuid)">
+                                            <Icon name="ph:trash" class="size-4" />
+                                        </button>
+                                    </div>
+                                    <div class="mt-3 flex items-center justify-between gap-3">
+                                        <div class="inline-flex items-center rounded-lg border border-gray-200">
+                                            <button type="button" class="px-2 py-1.5 text-gray-600"
+                                                @click="decreaseQuantity(line)">
+                                                −
+                                            </button>
+                                            <span class="min-w-8 text-center text-sm font-medium">
+                                                {{ line.quantity }}
+                                            </span>
+                                            <button type="button" class="px-2 py-1.5 text-gray-600"
+                                                @click="line.quantity++">
+                                                +
+                                            </button>
+                                        </div>
+                                        <span class="text-sm font-semibold">
+                                            {{ money(lineTotal(line)) }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <FormSelect :options="discountOptions" :searchable="false" :canClear="false"
+                                            :appendToBody="true" :closeOnScroll="true" v-model="line.discount_uuid" />
+                                    </div>
+                                </div>
+                                <div v-if="!posStore.cart.length"
+                                    class="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-center">
+                                    <Icon name="ph:shopping-cart-simple" class="mx-auto size-7 text-gray-300" />
+                                    <p class="mt-2 text-sm font-medium text-gray-600">Your cart is empty</p>
+                                    <p class="mt-1 text-xs text-gray-400">Select a product variant to get started.</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Order details</p>
+                                <div class="space-y-1">
+                                    <p class="text-sm text-gray-600">
+                                        Customer (optional)
+                                    </p>
+                                    <FormSelect :options="customerOptions" v-model="state.customer_uuid" />
+                                </div>
+                                <div class="grid gap-2"
+                                    :class="state.payment_method === 'cash' ? 'grid-cols-1' : 'grid-cols-2'">
+                                    <div class="space-y-1">
+                                        <p class="text-sm text-gray-600">Payment</p>
+                                        <FormSelect :options="paymentMethodOptions" :searchable="false"
+                                            :canClear="false" v-model="state.payment_method" />
+                                    </div>
+                                    <div v-if="state.payment_method !== 'cash'" class="space-y-1">
+                                        <FormLabel for="reference" label="Reference" />
+                                        <input id="reference" v-model="state.reference" type="text"
+                                            placeholder="Optional" class="pos-select px-3" />
+                                    </div>
+                                </div>
+                                <div v-if="state.payment_method === 'cash'" class="space-y-1">
+                                    <FormLabel for="cash_tender" label="Cash tender" />
+                                    <FormNumberField id="cash_tender" name="cash_tender"
+                                        placeholder="Enter amount received" :min="0" v-model="state.cash_tender" />
+                                    <p v-if="cashShortfall > 0 && Number(state.cash_tender) > 0"
+                                        class="text-xs text-red-600">
+                                        Additional {{ money(cashShortfall) }} is required.
                                     </p>
                                 </div>
                             </div>
-                            <button v-if="state.cart.length" type="button"
-                                class="min-h-9 rounded-lg px-3 text-xs font-semibold text-red-600 transition hover:bg-red-50 hover:text-red-700" @click="clearCart">
-                                Clear
-                            </button>
-                        </div>
 
-                        <div class="space-y-3">
-                            <div v-for="line in state.cart" :key="line.product_variant_uuid"
-                                class="rounded-lg border border-gray-200 p-3">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0">
-                                        <p class="truncate text-sm font-semibold text-gray-900">
-                                            {{ line.product_name }}
-                                        </p>
-                                        <p class="truncate text-xs text-gray-500">
-                                            {{ line.variant_name }} · {{ money(line.price) }}
-                                        </p>
+                            <div class="mt-4 space-y-2 rounded-xl border border-gray-200 p-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Subtotal</span>
+                                    <span>{{ money(subtotal) }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Discount</span>
+                                    <span class="text-red-600">− {{ money(discountTotal) }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Tax</span>
+                                    <span>{{ money(taxTotal) }}</span>
+                                </div>
+                                <div class="flex justify-between border-t border-gray-200 pt-2 text-lg font-bold">
+                                    <span>Total</span>
+                                    <span>{{ money(grandTotal) }}</span>
+                                </div>
+                                <template v-if="state.payment_method === 'cash'">
+                                    <div class="flex justify-between pt-1">
+                                        <span class="text-gray-500">Cash tender</span>
+                                        <span>{{ money(state.cash_tender) }}</span>
                                     </div>
-                                    <button type="button" class="text-gray-400 hover:text-red-600"
-                                        @click="removeLine(line.product_variant_uuid)">
-                                        <Icon name="ph:trash" class="size-4" />
-                                    </button>
-                                </div>
-                                <div class="mt-3 flex items-center justify-between gap-3">
-                                    <div class="inline-flex items-center rounded-lg border border-gray-200">
-                                        <button type="button" class="px-2 py-1.5 text-gray-600"
-                                            @click="decreaseQuantity(line)">
-                                            −
-                                        </button>
-                                        <span class="min-w-8 text-center text-sm font-medium">
-                                            {{ line.quantity }}
-                                        </span>
-                                        <button type="button" class="px-2 py-1.5 text-gray-600"
-                                            @click="line.quantity++">
-                                            +
-                                        </button>
+                                    <div class="flex justify-between text-base font-bold text-green-700">
+                                        <span>Change</span>
+                                        <span>{{ money(cashChange) }}</span>
                                     </div>
-                                    <span class="text-sm font-semibold">
-                                        {{ money(lineTotal(line)) }}
-                                    </span>
-                                </div>
-                                <div class="mt-3">
-                                    <FormSelect :options="discountOptions" :searchable="false" :canClear="false"
-                                        :appendToBody="true" :closeOnScroll="true" v-model="line.discount_uuid" />
-                                </div>
+                                </template>
                             </div>
-                            <div v-if="!state.cart.length"
-                                class="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-center">
-                                <Icon name="ph:shopping-cart-simple" class="mx-auto size-7 text-gray-300" />
-                                <p class="mt-2 text-sm font-medium text-gray-600">Your cart is empty</p>
-                                <p class="mt-1 text-xs text-gray-400">Select a product variant to get started.</p>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Order details</p>
-                            <div class="space-y-1">
-                                <p class="text-sm text-gray-600">
-                                    Customer (optional)
-                                </p>
-                                <FormSelect :options="customerOptions" v-model="state.customer_uuid" />
-                            </div>
-                            <div class="grid gap-2"
-                                :class="state.payment_method === 'cash' ? 'grid-cols-1' : 'grid-cols-2'">
-                                <div class="space-y-1">
-                                    <p class="text-sm text-gray-600">Payment</p>
-                                    <FormSelect :options="paymentMethodOptions" :searchable="false" :canClear="false"
-                                        v-model="state.payment_method" />
-                                </div>
-                                <div v-if="state.payment_method !== 'cash'" class="space-y-1">
-                                    <FormLabel for="reference" label="Reference" />
-                                    <input id="reference" v-model="state.reference" type="text" placeholder="Optional"
-                                        class="pos-select px-3" />
-                                </div>
-                            </div>
-                            <div v-if="state.payment_method === 'cash'" class="space-y-1">
-                                <FormLabel for="cash_tender" label="Cash tender" />
-                                <FormNumberField id="cash_tender" name="cash_tender" placeholder="Enter amount received"
-                                    :min="0" v-model="state.cash_tender" />
-                                <p v-if="cashShortfall > 0 && Number(state.cash_tender) > 0"
-                                    class="text-xs text-red-600">
-                                    Additional {{ money(cashShortfall) }} is required.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 space-y-2 rounded-xl border border-gray-200 p-3 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Subtotal</span>
-                                <span>{{ money(subtotal) }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Discount</span>
-                                <span class="text-red-600">− {{ money(discountTotal) }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Tax</span>
-                                <span>{{ money(taxTotal) }}</span>
-                            </div>
-                            <div class="flex justify-between border-t border-gray-200 pt-2 text-lg font-bold">
-                                <span>Total</span>
-                                <span>{{ money(grandTotal) }}</span>
-                            </div>
-                            <template v-if="state.payment_method === 'cash'">
-                                <div class="flex justify-between pt-1">
-                                    <span class="text-gray-500">Cash tender</span>
-                                    <span>{{ money(state.cash_tender) }}</span>
-                                </div>
-                                <div class="flex justify-between text-base font-bold text-green-700">
-                                    <span>Change</span>
-                                    <span>{{ money(cashChange) }}</span>
-                                </div>
-                            </template>
-                        </div>
                         </div>
 
                         <div class="shrink-0 border-t border-gray-100 bg-white p-4 lg:p-3 xl:p-4">
@@ -334,8 +336,9 @@
                             <Icon name="ph:printer" class="size-5" />
                             {{ state.isPrinting ? 'Printing…' : 'Print receipt' }}
                         </FormButton>
-                        <FormButton buttonStyle="primary" class="mt-3 w-full" @click="state.isSuccessOpen = false">New
-                            order</FormButton>
+                        <FormButton buttonStyle="primary" class="mt-3 w-full" @click="state.isSuccessOpen = false">
+                            New order
+                        </FormButton>
                     </div>
                 </template>
             </Modal>
@@ -350,14 +353,18 @@ import { orderService } from '@/components/api/user/OrderService'
 import { productService } from '@/components/api/user/ProductService'
 import { productVariantService } from '@/components/api/user/ProductVariantService'
 import { shiftService } from '@/components/api/user/ShiftService'
+import { useAlert } from '@/composables/alert'
+import { usePosStore } from '@/store/pos'
 import { useUserStore } from '@/store/user'
 import type { CartLine, Error } from '@/types'
 
 const noDiscountValue = '__none__'
 
 const runtimeConfig = useRuntimeConfig()
+const posStore = usePosStore() as any
 const userStore = useUserStore() as any
 const { formatDateToReadable } = useDatetimeFormatter()
+const { successAlert } = useAlert()
 
 const state = reactive({
     shifts: [] as any[],
@@ -366,7 +373,6 @@ const state = reactive({
     products: [] as any[],
     productVariants: [] as any[],
     selectedVariantByProduct: {} as Record<string, string>,
-    cart: [] as CartLine[],
     computer_id: '',
     shift_uuid: '',
     customer_uuid: '',
@@ -456,14 +462,14 @@ const groupedProducts = computed(() => {
         .map(category => ({ ...category, products: category.products.sort((a, b) => a.name.localeCompare(b.name)) }))
         .sort((a, b) => a.name.localeCompare(b.name))
 })
-const cartQuantity = computed(() => state.cart.reduce((total, line) => total + line.quantity, 0))
+const cartQuantity = computed(() => posStore.cart.reduce((total, line) => total + line.quantity, 0))
 // Prices are tax-inclusive: the listed price is what the customer pays, so
 // tax is backed out of it rather than added on top. grandTotal is simply the
 // sum of each line's post-discount (already tax-inclusive) amount; subtotal
 // and taxTotal are just that amount split into its net/tax parts for display.
-const discountTotal = computed(() => state.cart.reduce((total, line) => total + lineDiscount(line), 0))
-const grandTotal = computed(() => state.cart.reduce((total, line) => total + lineTotal(line), 0))
-const taxTotal = computed(() => state.cart.reduce((total, line) => {
+const discountTotal = computed(() => posStore.cart.reduce((total, line) => total + lineDiscount(line), 0))
+const grandTotal = computed(() => posStore.cart.reduce((total, line) => total + lineTotal(line), 0))
+const taxTotal = computed(() => posStore.cart.reduce((total, line) => {
     const afterDiscount = lineTotal(line)
     const rate = line.tax_percentage / 100
     return total + afterDiscount * rate / (1 + rate)
@@ -473,7 +479,7 @@ const cashChange = computed(() => Math.max(0, Number(state.cash_tender || 0) - g
 const cashShortfall = computed(() => Math.max(0, grandTotal.value - Number(state.cash_tender || 0)))
 const hasSufficientPayment = computed(() => state.payment_method !== 'cash' || Number(state.cash_tender || 0) >= grandTotal.value)
 const canCheckout = computed(() => Boolean(
-    hasOpenShift.value && state.cart.length && hasSufficientPayment.value
+    hasOpenShift.value && posStore.cart.length && hasSufficientPayment.value
 ))
 
 async function fetchPosData() {
@@ -493,6 +499,7 @@ async function fetchPosData() {
         state.discounts = discounts?.data ?? []
         state.products = products?.data ?? []
         state.productVariants = productVariants?.data ?? []
+        syncCartWithLatestVariants()
         initializeProductVariants()
         selectLatestOpenShift()
         state.isShiftModalOpen = !hasOpenShift.value
@@ -534,7 +541,7 @@ async function closeShift() {
         await shiftService.updateShift(currentShift.value.uuid, { is_open: false })
         currentShift.value.is_open = false
         state.shift_uuid = ''
-        state.cart = []
+        posStore.clearCart()
         state.isShiftModalOpen = true
     } catch (error: any) {
         state.error = error
@@ -544,13 +551,31 @@ async function closeShift() {
 }
 
 function addToCart(variant: any) {
-    const existing = state.cart.find(line => line.product_variant_uuid === variant.uuid)
+    const existing = posStore.cart.find(line => line.product_variant_uuid === variant.uuid)
     if (existing) { existing.quantity++; return }
-    state.cart.push({
+    posStore.cart.push({
         product_variant_uuid: variant.uuid,
         product_name: variant.product?.name ?? 'Product', variant_name: variant.name,
         price: Number(variant.price), tax_percentage: Number(variant.product?.tax_rate?.percentage ?? 0),
         quantity: 1, discount_uuid: noDiscountValue,
+    })
+}
+
+function syncCartWithLatestVariants() {
+    posStore.cart = posStore.cart.flatMap((line: CartLine) => {
+        const variant = state.productVariants.find((item: any) => item.uuid === line.product_variant_uuid)
+
+        if (!variant?.is_active) {
+            return []
+        }
+
+        return [{
+            ...line,
+            product_name: variant.product?.name ?? line.product_name,
+            variant_name: variant.name,
+            price: Number(variant.price),
+            tax_percentage: Number(variant.product?.tax_rate?.percentage ?? 0),
+        }]
     })
 }
 
@@ -607,11 +632,11 @@ function decreaseQuantity(line: CartLine) {
 }
 
 function removeLine(uuid: string) {
-    state.cart = state.cart.filter(line => line.product_variant_uuid !== uuid)
+    posStore.cart = posStore.cart.filter(line => line.product_variant_uuid !== uuid)
 }
 
 function clearCart() {
-    state.cart = []
+    posStore.clearCart()
 }
 
 function selectedDiscount(line: CartLine) {
@@ -643,6 +668,7 @@ async function printReceipt() {
     state.printError = ''
     try {
         await orderService.printReceipt(state.completedOrder.uuid)
+        successAlert('Success', 'Receipt sent to printer.')
     } catch (error: any) {
         state.printError = error?.message || 'Printer not detected. Make sure a Bluetooth thermal printer is paired and try again.'
     } finally {
@@ -658,7 +684,7 @@ async function checkout() {
         const params = {
             shift_uuid: state.shift_uuid,
             customer_uuid: state.customer_uuid || null,
-            lines: state.cart.map(line => ({
+            lines: posStore.cart.map(line => ({
                 product_variant_uuid: line.product_variant_uuid, quantity: line.quantity,
                 discount_uuid: line.discount_uuid === noDiscountValue ? null : line.discount_uuid,
             })),
@@ -670,7 +696,7 @@ async function checkout() {
             state.completedPaymentMethod = state.payment_method
             state.completedChange = state.payment_method === 'cash' ? cashChange.value : 0
             state.printError = ''
-            state.cart = []
+            posStore.clearCart()
             state.customer_uuid = ''
             state.reference = ''
             state.cash_tender = ''
