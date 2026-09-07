@@ -7,9 +7,6 @@
             <Meta name="description"
                 content="Brthrs Cafe in Bo. Obrero, Davao City. Open every day from 11 AM to midnight." />
 
-            <!-- Brthrs Cafe logo as favicon -->
-            <Link rel="icon" type="image/jpeg" href="/images/brthrs-cafe-logo.jpeg" />
-
             <Link rel="preconnect" href="https://fonts.googleapis.com" />
 
             <Link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
