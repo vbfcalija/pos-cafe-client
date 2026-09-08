@@ -263,6 +263,20 @@
                                     <FormLabel for="cash_tender" label="Cash tender" />
                                     <FormNumberField id="cash_tender" name="cash_tender"
                                         placeholder="Enter amount received" :min="0" v-model="state.cash_tender" />
+                                    <div v-if="cashTenderSuggestions.length" class="pt-2">
+                                        <p class="mb-2 text-xs font-medium text-gray-500">Quick cash</p>
+                                        <div class="grid grid-cols-4 gap-2">
+                                            <button v-for="amount in cashTenderSuggestions" :key="amount" type="button"
+                                                class="min-h-10 rounded-lg border px-2 text-xs font-semibold transition active:scale-[0.97]"
+                                                :class="Number(state.cash_tender) === amount
+                                                    ? 'border-primary bg-primary text-white shadow-sm'
+                                                    : 'border-gray-200 bg-white text-gray-700 hover:border-primary hover:bg-primary-50 hover:text-primary-700'"
+                                                :aria-pressed="Number(state.cash_tender) === amount"
+                                                @click="selectCashTender(amount)">
+                                                {{ money(amount) }}
+                                            </button>
+                                        </div>
+                                    </div>
                                     <p v-if="cashShortfall > 0 && Number(state.cash_tender) > 0"
                                         class="text-xs text-red-600">
                                         Additional {{ money(cashShortfall) }} is required.
@@ -475,6 +489,18 @@ const taxTotal = computed(() => posStore.cart.reduce((total, line) => {
     return total + afterDiscount * rate / (1 + rate)
 }, 0))
 const subtotal = computed(() => grandTotal.value - taxTotal.value)
+const cashTenderSuggestions = computed(() => {
+    const total = Math.ceil(grandTotal.value * 100) / 100
+    if (total <= 0) return []
+
+    return [...new Set([
+        total,
+        Math.ceil(total / 50) * 50,
+        Math.ceil(total / 100) * 100,
+        Math.ceil(total / 500) * 500,
+        Math.ceil(total / 1000) * 1000,
+    ])].filter(amount => amount >= total).slice(0, 4)
+})
 const cashChange = computed(() => Math.max(0, Number(state.cash_tender || 0) - grandTotal.value))
 const cashShortfall = computed(() => Math.max(0, grandTotal.value - Number(state.cash_tender || 0)))
 const hasSufficientPayment = computed(() => state.payment_method !== 'cash' || Number(state.cash_tender || 0) >= grandTotal.value)
@@ -660,6 +686,10 @@ function discountLabel(discount: any) {
 
 function money(value: number | string) {
     return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(value || 0))
+}
+
+function selectCashTender(amount: number) {
+    state.cash_tender = amount.toFixed(2)
 }
 
 async function printReceipt() {
