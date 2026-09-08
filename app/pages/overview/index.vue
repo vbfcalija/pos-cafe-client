@@ -290,9 +290,10 @@
                             </div>
                         </div>
                         <div v-if="categorySummaries.length" class="divide-y divide-gray-200 border-t border-gray-100">
-                            <div v-for="category in categorySummaries" :key="category.uuid">
-                                <div
-                                    class="flex flex-col gap-2 bg-gray-50/70 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+                            <Disclosure v-for="category in categorySummaries" :key="category.uuid" v-slot="{ open }"
+                                as="div">
+                                <DisclosureButton
+                                    class="flex w-full flex-col gap-2 bg-gray-50/70 px-5 py-3 text-left transition hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary sm:flex-row sm:items-center sm:justify-between">
                                     <div class="flex items-center gap-2">
                                         <span class="size-2.5 rounded-full border border-gray-200"
                                             :style="{ backgroundColor: category.color }" />
@@ -304,7 +305,7 @@
                                             {{ category.variants.length === 1 ? 'variant' : 'variants' }}
                                         </span>
                                     </div>
-                                    <div class="flex gap-5 text-sm">
+                                    <div class="flex items-center gap-5 text-sm">
                                         <span class="text-gray-600">
                                             <strong class="text-gray-900">
                                                 {{ category.quantity }}
@@ -314,9 +315,11 @@
                                         <strong class="text-gray-900">
                                             {{ money(category.sales) }}
                                         </strong>
+                                        <Icon name="ph:caret-down" class="size-4 text-gray-500 transition-transform"
+                                            :class="open && 'rotate-180'" />
                                     </div>
-                                </div>
-                                <div class="overflow-x-auto">
+                                </DisclosureButton>
+                                <DisclosurePanel class="overflow-x-auto">
                                     <table class="w-full text-left text-sm">
                                         <thead
                                             class="border-y border-gray-100 text-xs uppercase tracking-wide text-gray-500">
@@ -353,8 +356,8 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
+                                </DisclosurePanel>
+                            </Disclosure>
                         </div>
                         <div v-else class="py-10 text-center">
                             <Icon name="ph:squares-four" class="mx-auto size-8 text-gray-300" />
@@ -428,6 +431,7 @@
 </template>
 
 <script setup lang="ts">
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
 import { orderService } from '@/components/api/user/OrderService'
 import { shiftService } from '@/components/api/user/ShiftService'
 import { branchService } from '@/components/api/user/BranchService'
