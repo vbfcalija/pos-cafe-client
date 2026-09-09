@@ -245,6 +245,9 @@
                                         <span class="min-w-0 flex-1 truncate capitalize text-gray-600">
                                             {{ method.name }}
                                         </span>
+                                        <span class="font-semibold text-gray-900">
+                                            {{ money(method.amount) }}
+                                        </span>
                                         <span class="font-medium text-gray-900">
                                             {{ method.percentage.toFixed(0) }}%
                                         </span>

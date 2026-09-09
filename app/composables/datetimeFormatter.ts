@@ -2,8 +2,12 @@ import moment from 'moment'
 
 export function useDatetimeFormatter() {
     function formatDateToReadable(time: string) {
-        return moment(time).format('MMMM DD, Y');
+        return moment(time).format('MMMM DD, Y')
     }
 
-    return { formatDateToReadable }
+    function formatDatetimeToReadable(time: string) {
+        return moment(time).format('MMMM DD, Y h:mm A')
+    }
+
+    return { formatDateToReadable, formatDatetimeToReadable }
 }

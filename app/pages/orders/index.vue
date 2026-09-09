@@ -18,7 +18,14 @@
                     </select>
                 </div>
                 <div class="space-y-5">
-                    <TableSearch @search="handleSearch" />
+                    <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
+                        <TableSearch @search="handleSearch" />
+                        <div class="grid gap-1">
+                            <FormLabel for="order-period" label="Transaction date" />
+                            <FormDateRangeField id="order-period" name="order_period"
+                                placeholder="Select date range" v-model="state.dateRange" />
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <Table :columnHeaders="state.columnHeaders" :data="state.orders"
                             :isLoading="state.isTableLoading" :sortData="orderStore.getSortData" @sort="sort">
@@ -31,7 +38,7 @@
                                     </td>
                                     <td>
                                         <p>
-                                            {{ formatDateToReadable(order.date) }}
+                                            {{ formatDatetimeToReadable(order.created_at) }}
                                         </p>
                                     </td>
                                     <td>
@@ -109,7 +116,7 @@
                                 <div>
                                     <p class="text-xs text-gray-500">Date</p>
                                     <p class="font-medium">
-                                        {{ formatDateToReadable(state.selectedOrder.date) }}
+                                        {{ formatDatetimeToReadable(state.selectedOrder.created_at) }}
                                     </p>
                                 </div>
                                 <div>
@@ -230,14 +237,19 @@ import type { Error } from '@/types'
 
 const runtimeConfig = useRuntimeConfig()
 const orderStore = useOrderStore() as any
-const { formatDateToReadable } = useDatetimeFormatter()
+const { formatDateToReadable, formatDatetimeToReadable } = useDatetimeFormatter()
 const { successAlert, errorAlert } = useAlert()
 const pageLengths = [10, 20, 30, 40, 50, 100, 500]
+
+if (orderStore.getSortData.sortField === 'date') {
+    orderStore.setSortData('created_at', orderStore.getSortData.sortOrder)
+}
+
 const state = reactive({
     orders: {} as any, selectedOrder: null as any,
     columnHeaders: [
         { name: 'Order no.', sorter: true, key: 'id' },
-        { name: 'Date', sorter: true, key: 'date' },
+        { name: 'Date & time', sorter: true, key: 'created_at' },
         { name: 'Branch' },
         { name: 'Customer' },
         { name: 'Cashier' },
@@ -249,6 +261,7 @@ const state = reactive({
     dataFilter: {
         search: [] as string[]
     },
+    dateRange: [] as string[],
     error: {} as Error,
     isTableLoading: false,
     isOrderLoading: false,
@@ -269,6 +282,8 @@ async function fetchOrders() {
             page_length: orderStore.getCurrentPageLength,
             sortField: orderStore.getSortData.sortField,
             sortOrder: orderStore.getSortData.sortOrder,
+            date_from: state.dateRange[0] || undefined,
+            date_to: state.dateRange[1] || undefined,
             ...state.dataFilter
         })
     } catch (error: any) {
@@ -357,6 +372,13 @@ function handleSearch(value: any) {
     state.dataFilter.search = value?.[0] == '' ? [] : value
     fetchOrders()
 }
+
+watch(() => state.dateRange, (value) => {
+    if (value.length === 0 || value.length === 2) {
+        orderStore.setCurrentPageNumber(1)
+        fetchOrders()
+    }
+}, { deep: true })
 
 function changePageLength(event: any) {
     orderStore.setCurrentPageNumber(1)

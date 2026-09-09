@@ -6,7 +6,7 @@ export const useOrderStore = defineStore('orderStore', {
         currentPageLength: 10,
         currentPageNumber: 1,
         sortData: {
-            sortField: 'date',
+            sortField: 'created_at',
             sortOrder: 'descend'
         }
     }),

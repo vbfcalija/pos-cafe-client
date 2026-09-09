@@ -728,6 +728,7 @@ async function checkout() {
             state.printError = ''
             posStore.clearCart()
             state.customer_uuid = ''
+            state.payment_method = 'cash'
             state.reference = ''
             state.cash_tender = ''
             state.isSuccessOpen = true
