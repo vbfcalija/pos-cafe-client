@@ -236,7 +236,7 @@ const pageLengths = [10, 20, 30, 40, 50, 100, 500]
 const state = reactive({
     orders: {} as any, selectedOrder: null as any,
     columnHeaders: [
-        { name: 'Order no.', sorter: true, key: 'order_no' },
+        { name: 'Order no.', sorter: true, key: 'id' },
         { name: 'Date', sorter: true, key: 'date' },
         { name: 'Branch' },
         { name: 'Customer' },
