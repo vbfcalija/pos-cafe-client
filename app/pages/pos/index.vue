@@ -49,6 +49,30 @@
                             </div>
                         </div>
 
+                        <div v-if="categoryFilters.length" class="mb-5 overflow-x-auto pb-1">
+                            <div class="flex min-w-max items-center gap-2" role="group"
+                                aria-label="Filter products by category">
+                                <button v-for="category in categoryFilters" :key="category.uuid" type="button"
+                                    class="inline-flex min-h-10 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition"
+                                    :class="state.selectedCategory === category.uuid
+                                        ? 'border-primary bg-primary text-white shadow-sm'
+                                        : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:bg-blue-50 hover:text-primary'"
+                                    :aria-pressed="state.selectedCategory === category.uuid"
+                                    @click="state.selectedCategory = category.uuid">
+                                    <span v-if="category.uuid !== 'all'"
+                                        class="size-2.5 rounded-full border border-current/20"
+                                        :style="{ backgroundColor: category.color }" />
+                                    {{ category.name }}
+                                    <span class="rounded-full px-2 py-0.5 text-xs"
+                                        :class="state.selectedCategory === category.uuid
+                                            ? 'bg-white/20 text-white'
+                                            : 'bg-gray-100 text-gray-500'">
+                                        {{ category.count }}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+
                         <div v-if="groupedProducts.length" class="space-y-8">
                             <section v-for="category in groupedProducts" :key="category.uuid">
                                 <div class="mb-3 flex items-center gap-2">
@@ -394,6 +418,7 @@ const state = reactive({
     reference: '',
     cash_tender: '',
     productSearch: '',
+    selectedCategory: 'all',
     error: {} as Error,
     isPageLoading: false,
     isSubmitting: false,
@@ -443,12 +468,36 @@ const hasOpenShift = computed(() => Boolean(state.shift_uuid && openShifts.value
     (shift: any) => shift.uuid === state.shift_uuid
 )))
 
+const categoryFilters = computed(() => {
+    const categories = new Map<string, { uuid: string, name: string, color: string, count: number }>()
+
+    state.products.forEach((product: any) => {
+        const category = product.category
+        const uuid = category?.uuid ?? 'uncategorized'
+        const current = categories.get(uuid) ?? {
+            uuid,
+            name: category?.name ?? 'Uncategorized',
+            color: category?.color || '#e5e7eb',
+            count: 0,
+        }
+        current.count++
+        categories.set(uuid, current)
+    })
+
+    return [
+        { uuid: 'all', name: 'All products', color: '', count: state.products.length },
+        ...Array.from(categories.values()).sort((a, b) => a.name.localeCompare(b.name)),
+    ]
+})
+
 const filteredProducts = computed(() => {
     const search = state.productSearch.trim().toLowerCase()
     return state.products.map((product: any) => ({
         ...product,
         variants: state.productVariants.filter((variant: any) => variant.is_active && variant.product?.uuid === product.uuid),
     })).filter((product: any) => {
+        const categoryUuid = product.category?.uuid ?? 'uncategorized'
+        if (state.selectedCategory !== 'all' && categoryUuid !== state.selectedCategory) return false
         if (!search) return true
         const variants = product.variants.map((variant: any) => variant.name).join(' ')
         return `${product.name} ${product.sku} ${product.barcode} ${variants}`.toLowerCase().includes(search)
