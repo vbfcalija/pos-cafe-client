@@ -20,6 +20,10 @@ class OrderService extends BaseAPIService {
     async refundOrder(orderUuid: string): Promise<any> {
         return await this.request(`/user/orders/${orderUuid}/refund`, 'POST')
     }
+
+    async updatePayment(orderUuid: string, paymentUuid: string, params: object): Promise<any> {
+        return await this.request(`/user/orders/${orderUuid}/payments/${paymentUuid}`, 'PATCH', params)
+    }
 }
 
 export const orderService = new OrderService()

@@ -22,8 +22,8 @@
                         <TableSearch @search="handleSearch" />
                         <div class="grid gap-1">
                             <FormLabel for="order-period" label="Transaction date" />
-                            <FormDateRangeField id="order-period" name="order_period"
-                                placeholder="Select date range" v-model="state.dateRange" />
+                            <FormDateRangeField id="order-period" name="order_period" placeholder="Select date range"
+                                v-model="state.dateRange" />
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -210,11 +210,60 @@
                                 </div>
                             </div>
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h3 class="mb-3 font-semibold">Payments</h3>
+                                <div class="mb-3 flex items-center justify-between gap-3">
+                                    <h3 class="font-semibold">Payments</h3>
+                                    <span class="text-xs text-gray-500">
+                                        {{ state.selectedOrder.payments?.length || 0 }} payment{{
+                                            state.selectedOrder.payments?.length === 1 ? '' : 's' }}
+                                    </span>
+                                </div>
                                 <div v-for="payment in state.selectedOrder.payments" :key="payment.uuid"
-                                    class="flex justify-between gap-3 text-sm">
-                                    <span class="capitalize">{{ payment.payment_method }}</span>
-                                    <span class="text-gray-500">{{ payment.reference || 'No reference' }}</span>
+                                    class="border-t border-gray-100 py-3 first:border-t-0 first:pt-0 last:pb-0">
+                                    <div v-if="state.editingPaymentUuid !== payment.uuid"
+                                        class="flex items-center justify-between gap-3 text-sm">
+                                        <div class="min-w-0">
+                                            <p class="font-medium capitalize text-gray-900">
+                                                {{ paymentMethodLabel(payment.payment_method) }}
+                                            </p>
+                                            <p class="truncate text-xs text-gray-500">
+                                                {{ payment.reference || 'No reference' }}
+                                            </p>
+                                        </div>
+                                        <FormButton v-if="!state.selectedOrder.refunded_at" buttonStyle="action"
+                                            buttonSize="xs" @click="editPayment(payment)">
+                                            <Icon name="ph:pencil-simple" class="size-4" /> Edit
+                                        </FormButton>
+                                    </div>
+                                    <div v-else class="space-y-3 rounded-lg bg-gray-50 p-3">
+                                        <div class="grid gap-3 sm:grid-cols-2" id="form-payment-method">
+                                            <div class="grid gap-1">
+                                                <FormLabel :for="`payment-method-${payment.uuid}`"
+                                                    label="Payment method" />
+                                                <FormSelect :id="`payment-method-${payment.uuid}`"
+                                                    :options="paymentMethodOptions" :searchable="false"
+                                                    :canClear="false" v-model="state.paymentForm.payment_method" />
+                                            </div>
+                                            <div class="grid gap-1">
+                                                <FormLabel :for="`payment-reference-${payment.uuid}`"
+                                                    label="Reference" />
+                                                <input :id="`payment-reference-${payment.uuid}`"
+                                                    v-model="state.paymentForm.reference" type="text"
+                                                    placeholder="Optional reference"
+                                                    class="h-[42px] rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end gap-2">
+                                            <FormButton buttonStyle="secondary" buttonSize="xs"
+                                                :disabled="state.isUpdatingPayment" @click="cancelEditPayment">
+                                                Cancel
+                                            </FormButton>
+                                            <FormButton buttonStyle="primary" buttonSize="xs"
+                                                :disabled="state.isUpdatingPayment" @click="updatePayment(payment)">
+                                                <Icon name="ph:check" class="size-4" />
+                                                {{ state.isUpdatingPayment ? 'Saving…' : 'Save payment' }}
+                                            </FormButton>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -240,6 +289,12 @@ const orderStore = useOrderStore() as any
 const { formatDateToReadable, formatDatetimeToReadable } = useDatetimeFormatter()
 const { successAlert, errorAlert } = useAlert()
 const pageLengths = [10, 20, 30, 40, 50, 100, 500]
+const paymentMethodOptions = [
+    { label: 'Cash', value: 'cash' },
+    { label: 'Card', value: 'card' },
+    { label: 'GCash', value: 'gcash' },
+    { label: 'GoTyme', value: 'gotyme' },
+]
 
 if (orderStore.getSortData.sortField === 'date') {
     orderStore.setSortData('created_at', orderStore.getSortData.sortOrder)
@@ -270,6 +325,12 @@ const state = reactive({
     refundOrder: null as any,
     refundingUuid: '' as string,
     printingUuid: '' as string,
+    editingPaymentUuid: '' as string,
+    isUpdatingPayment: false,
+    paymentForm: {
+        payment_method: 'cash',
+        reference: '',
+    },
 })
 
 onMounted(fetchOrders)
@@ -337,6 +398,7 @@ async function refundOrder() {
 }
 
 async function viewOrder(order: any) {
+    cancelEditPayment()
     state.selectedOrder = order
     state.isOrderModalOpen = true
     state.isOrderLoading = true
@@ -350,6 +412,40 @@ async function viewOrder(order: any) {
         state.error = error
     }
     state.isOrderLoading = false
+}
+
+function editPayment(payment: any) {
+    state.editingPaymentUuid = payment.uuid
+    state.paymentForm.payment_method = payment.payment_method?.value || payment.payment_method || 'cash'
+    state.paymentForm.reference = payment.reference || ''
+}
+
+function cancelEditPayment() {
+    state.editingPaymentUuid = ''
+    state.paymentForm.payment_method = 'cash'
+    state.paymentForm.reference = ''
+}
+
+async function updatePayment(payment: any) {
+    if (!state.selectedOrder || state.isUpdatingPayment) return
+
+    state.isUpdatingPayment = true
+    try {
+        const response = await orderService.updatePayment(state.selectedOrder.uuid, payment.uuid, {
+            payment_method: state.paymentForm.payment_method,
+            reference: state.paymentForm.reference || null,
+        })
+        if (response?.data) {
+            state.selectedOrder = response.data
+        }
+        cancelEditPayment()
+        await fetchOrders()
+        successAlert('Payment updated', 'The payment method was updated successfully.')
+    } catch (error: any) {
+        errorAlert('Could not update payment', error?.message || 'Please try again.')
+    } finally {
+        state.isUpdatingPayment = false
+    }
 }
 function previous() {
     orderStore.setCurrentPageNumber(orderStore.getCurrentPageNumber - 1)
@@ -391,7 +487,12 @@ function fullName(user: any) {
 }
 
 function paymentMethods(order: any) {
-    return order.payments?.map((payment: any) => payment.payment_method).join(', ') || '-'
+    return order.payments?.map((payment: any) => paymentMethodLabel(payment.payment_method)).join(', ') || '-'
+}
+
+function paymentMethodLabel(method: any) {
+    const value = method?.value || method
+    return paymentMethodOptions.find(option => option.value === value)?.label || value || '-'
 }
 
 function gross(line: any) {
@@ -438,3 +539,9 @@ function money(value: number | string) {
     return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(value || 0))
 }
 </script>
+
+<style>
+#form-payment-method .multiselect-dropdown {
+    max-height: 5rem !important;
+}
+</style>
