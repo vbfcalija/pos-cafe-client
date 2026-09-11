@@ -13,24 +13,67 @@
                 <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
                     <section class="min-w-0 rounded-xl bg-white p-5 shadow-sm">
                         <div v-if="hasOpenShift"
-                            class="mb-5 flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
-                            <div>
-                                <p class="font-semibold text-green-900">
-                                    {{ currentShift?.name }}
-                                </p>
-                                <p class="text-sm text-green-700">
-                                    Shift opened {{ formatDateToReadable(currentShift?.date) }}
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                                    Open shift
-                                </span>
-                                <FormButton buttonStyle="danger" buttonSize="xs" :disabled="state.isClosingShift"
-                                    @click="state.isCloseShiftConfirmationOpen = true">
-                                    <Icon name="ph:stop-circle" class="size-4" />
-                                    {{ state.isClosingShift ? 'Closing…' : 'Close shift' }}
-                                </FormButton>
+                            class="mb-5 overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm sm:p-5">
+                            <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,34rem)] lg:items-center">
+                                <div class="flex min-w-0 items-start gap-4">
+                                    <span
+                                        class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
+                                        <Icon name="ph:clock-countdown" class="size-6" />
+                                    </span>
+                                    <div class="min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+                                                Active shift
+                                            </p>
+                                            <span
+                                                class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
+                                                <span class="size-1.5 rounded-full bg-emerald-500" />
+                                                Open
+                                            </span>
+                                        </div>
+                                        <h2 class="mt-1 truncate text-xl font-bold text-gray-900">
+                                            {{ currentShift?.name }}
+                                        </h2>
+                                        <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-gray-600">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <Icon name="ph:storefront" class="size-4 text-emerald-600" />
+                                                {{ currentShift?.branch?.name || 'No branch' }}
+                                            </span>
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <Icon name="ph:calendar-blank" class="size-4 text-emerald-600" />
+                                                {{ formatDateToReadable(currentShift?.date) }}
+                                            </span>
+                                            <span v-if="currentShift?.user" class="inline-flex items-center gap-1.5">
+                                                <Icon name="ph:user-circle" class="size-4 text-emerald-600" />
+                                                {{ fullName(currentShift.user) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="rounded-xl border border-emerald-100 bg-white p-3 shadow-sm">
+                                    <div class="mb-2 flex items-center justify-between gap-3">
+                                        <FormLabel for="active-shift" label="Transact on shift" />
+                                        <span class="text-[11px] font-medium text-gray-500">
+                                            {{ openShiftOptions.length }} open
+                                        </span>
+                                    </div>
+                                    <FormSelect id="active-shift" :options="openShiftOptions" :searchable="false"
+                                        :canClear="false" v-model="state.shift_uuid" />
+                                    <div class="mt-3 flex flex-wrap items-center justify-end gap-2">
+                                        <FormButton buttonStyle="action" buttonSize="xs"
+                                            @click="state.isShiftModalOpen = true">
+                                            <Icon name="ph:plus" class="size-4" />
+                                            New shift
+                                        </FormButton>
+                                        <FormButton v-if="canManageCurrentShift" buttonStyle="danger" buttonSize="xs"
+                                            :disabled="state.isClosingShift"
+                                            @click="state.isCloseShiftConfirmationOpen = true">
+                                            <Icon name="ph:stop-circle" class="size-4" />
+                                            {{ state.isClosingShift ? 'Closing…' : 'Close shift' }}
+                                        </FormButton>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -63,10 +106,9 @@
                                         class="size-2.5 rounded-full border border-current/20"
                                         :style="{ backgroundColor: category.color }" />
                                     {{ category.name }}
-                                    <span class="rounded-full px-2 py-0.5 text-xs"
-                                        :class="state.selectedCategory === category.uuid
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-gray-100 text-gray-500'">
+                                    <span class="rounded-full px-2 py-0.5 text-xs" :class="state.selectedCategory === category.uuid
+                                        ? 'bg-white/20 text-white'
+                                        : 'bg-gray-100 text-gray-500'">
                                         {{ category.count }}
                                     </span>
                                 </button>
@@ -350,7 +392,7 @@
             </LoadingSpinner>
 
             <ModulesShiftStartModal :show="state.isShiftModalOpen" :computerId="state.computer_id"
-                @created="handleShiftCreated" />
+                :canClose="hasOpenShift" @close="state.isShiftModalOpen = false" @created="handleShiftCreated" />
 
             <DialogConfirmation :isModalOpen="state.isCloseShiftConfirmationOpen" title="Close shift"
                 message="Are you sure you want to close the current shift?"
@@ -391,6 +433,7 @@ import { orderService } from '@/components/api/user/OrderService'
 import { productService } from '@/components/api/user/ProductService'
 import { productVariantService } from '@/components/api/user/ProductVariantService'
 import { shiftService } from '@/components/api/user/ShiftService'
+import FormSelect from '@/components/form/Select.vue'
 import { useAlert } from '@/composables/alert'
 import { usePosStore } from '@/store/pos'
 import { useUserStore } from '@/store/user'
@@ -438,11 +481,13 @@ onMounted(() => {
     fetchPosData()
 })
 
-const openShifts = computed(() => state.shifts.filter((shift: any) => {
-    const belongsToUser = !userStore.getUser?.uuid || shift.user?.uuid === userStore.getUser.uuid
-    return shift.is_open && belongsToUser && shift.computer_id === state.computer_id
-}))
+const openShifts = computed(() => state.shifts.filter((shift: any) => shift.is_open))
 const currentShift = computed(() => openShifts.value.find((shift: any) => shift.uuid === state.shift_uuid))
+const canManageCurrentShift = computed(() => !userStore.getUser?.uuid || currentShift.value?.user?.uuid === userStore.getUser.uuid)
+const openShiftOptions = computed(() => openShifts.value.map((shift: any) => ({
+    value: shift.uuid,
+    label: `${shift.name} · ${shift.branch?.name || 'No branch'} · ${fullName(shift.user)}`,
+})))
 
 const customerOptions = computed(() => state.customers.map((customer: any) => ({
     label: customer.name,
@@ -585,7 +630,9 @@ async function fetchPosData() {
 }
 
 function selectLatestOpenShift() {
-    state.shift_uuid = openShifts.value[0]?.uuid ?? ''
+    if (!openShifts.value.some((shift: any) => shift.uuid === state.shift_uuid)) {
+        state.shift_uuid = openShifts.value[0]?.uuid ?? ''
+    }
 }
 
 function getComputerId() {
@@ -617,7 +664,8 @@ async function closeShift() {
         currentShift.value.is_open = false
         state.shift_uuid = ''
         posStore.clearCart()
-        state.isShiftModalOpen = true
+        selectLatestOpenShift()
+        state.isShiftModalOpen = !hasOpenShift.value
     } catch (error: any) {
         state.error = error
     } finally {
@@ -712,6 +760,10 @@ function removeLine(uuid: string) {
 
 function clearCart() {
     posStore.clearCart()
+}
+
+function fullName(user: any) {
+    return user ? `${user.firstname || ''} ${user.lastname || ''}`.trim() || 'Unknown user' : 'Unknown user'
 }
 
 function selectedDiscount(line: CartLine) {

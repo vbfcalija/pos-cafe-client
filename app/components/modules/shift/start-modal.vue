@@ -1,7 +1,13 @@
 <template>
-    <Modal size="sm" title="Start a new shift" :show="props.show" :canClose="false">
+    <Modal size="sm" title="Start a new shift" :show="props.show" :canClose="props.canClose" @close="$emit('close')">
         <template #modal-body>
-            <p class="text-sm text-gray-600">Create a shift before starting a POS transaction.</p>
+            <p class="text-sm text-gray-600">
+                {{
+                    props.canClose ?
+                        'Create another shift and switch to it.' :
+                        'Create a shift before starting a POS transaction.'
+                }}
+            </p>
             <ModulesShiftForm formType="create" :selectedShift="state.formShift" :error="state.error"
                 :showCancel="false" submitLabel="Start shift"
                 @isPageLoading="(value: boolean) => state.isPageLoading = value" @submitForm="saveShift" />
@@ -23,8 +29,12 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    canClose: {
+        type: Boolean,
+        default: false,
+    },
 })
-const emit = defineEmits(['created'])
+const emit = defineEmits(['created', 'close'])
 
 const branchStore = useBranchStore() as any
 
@@ -56,6 +66,13 @@ async function saveShift(shiftDetails: any) {
         if (response?.data) {
             branchStore.setSelectedBranch({ uuid: shiftDetails.branch_uuid })
             emit('created', response.data)
+            state.formShift = {
+                branch_uuid: shiftDetails.branch_uuid,
+                date: currentDate(),
+                name: '',
+                starting_cash: '',
+                is_open: true,
+            }
         }
     } catch (error: any) {
         state.error = error
