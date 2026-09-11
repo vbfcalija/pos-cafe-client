@@ -17,7 +17,9 @@
 
 <script setup lang="ts">
 import { shiftService } from '@/components/api/user/ShiftService'
+import { useDatetimeFormatter } from '@/composables/datetimeFormatter'
 import { useBranchStore } from '@/store/branch'
+import { useUserStore } from '@/store/user'
 import type { Error } from '@/types'
 
 const props = defineProps({
@@ -37,13 +39,15 @@ const props = defineProps({
 const emit = defineEmits(['created', 'close'])
 
 const branchStore = useBranchStore() as any
+const userStore = useUserStore() as any
+const { formatDateToReadable } = useDatetimeFormatter()
 
 const state = reactive({
     error: {} as Error,
     formShift: {
         branch_uuid: branchStore.getSelectedBranch?.uuid ?? '',
         date: currentDate(),
-        name: '',
+        name: defaultShiftName(),
         starting_cash: '',
         is_open: true,
     },
@@ -69,7 +73,7 @@ async function saveShift(shiftDetails: any) {
             state.formShift = {
                 branch_uuid: shiftDetails.branch_uuid,
                 date: currentDate(),
-                name: '',
+                name: defaultShiftName(),
                 starting_cash: '',
                 is_open: true,
             }
@@ -85,5 +89,12 @@ function currentDate() {
     const date = new Date()
     const offset = date.getTimezoneOffset()
     return new Date(date.getTime() - offset * 60 * 1000).toISOString().slice(0, 10)
+}
+
+function defaultShiftName() {
+    const user = userStore.getUser
+    const userName = `${user?.firstname || ''} ${user?.lastname || ''}`.trim() || 'User'
+
+    return `${userName} - ${formatDateToReadable(currentDate())} - Shift`
 }
 </script>
