@@ -82,13 +82,11 @@
                                         state.selectedCategory === category.uuid && category.uuid !== 'all'
                                             ? 'shadow-sm ring-2 ring-primary-200 ring-offset-1'
                                             : ''
-                                    ]"
-                                    :style="category.uuid === 'all' ? undefined : {
+                                    ]" :style="category.uuid === 'all' ? undefined : {
                                         backgroundColor: category.color,
                                         borderColor: category.color,
                                         color: categoryTextColor(category.color),
-                                    }"
-                                    :aria-pressed="state.selectedCategory === category.uuid"
+                                    }" :aria-pressed="state.selectedCategory === category.uuid"
                                     @click="state.selectedCategory = category.uuid">
                                     {{ category.name }}
                                     <span class="rounded-full px-1.5 py-0.5 text-[10px] sm:text-[11px]" :class="category.uuid !== 'all'
@@ -118,7 +116,7 @@
                                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                                     <article v-for="product in category.products" :key="product.uuid"
                                         class="overflow-hidden rounded-2xl border border-primary-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md">
-                                        <div class="h-1.5" :style="{ backgroundColor: product.color || '#c99d7e' }" />
+                                        <div class="h-1.5" :style="{ backgroundColor: category.color || '#c99d7e' }" />
                                         <div class="p-4">
                                             <div class="mb-4 flex items-start justify-between gap-3">
                                                 <div class="flex min-w-0 items-center gap-3">
@@ -162,14 +160,16 @@
                                                             <span
                                                                 class="flex size-9 shrink-0 items-center justify-center rounded-full"
                                                                 :class="variantIconClass(variant)">
-                                                                <Icon :name="variantIcon(variant)" class="size-[18px]" />
+                                                                <Icon :name="variantIcon(variant)"
+                                                                    class="size-[18px]" />
                                                             </span>
                                                             <span class="min-w-0 flex-1">
                                                                 <span
                                                                     class="block truncate text-sm font-semibold text-gray-900">
                                                                     {{ variantDisplayName(variant) }}
                                                                 </span>
-                                                                <span class="mt-0.5 block truncate text-[11px] font-medium text-gray-500">
+                                                                <span
+                                                                    class="mt-0.5 block truncate text-[11px] font-medium text-gray-500">
                                                                     {{ variantSize(variant) || 'Regular' }}
                                                                 </span>
                                                             </span>
@@ -179,8 +179,10 @@
                                                                 </span>
                                                                 <Icon
                                                                     v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
-                                                                    name="ph:check-circle-fill" class="size-4 text-primary" />
-                                                                <span v-else class="size-4 rounded-full border border-primary-200" />
+                                                                    name="ph:check-circle-fill"
+                                                                    class="size-4 text-primary" />
+                                                                <span v-else
+                                                                    class="size-4 rounded-full border border-primary-200" />
                                                             </span>
                                                         </button>
                                                     </div>
