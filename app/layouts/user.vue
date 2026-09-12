@@ -25,22 +25,10 @@
                                 </button>
                             </div>
 
-                            <div class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-[#0b2f49] px-6 pb-4"
-                                style="background-image: linear-gradient(rgba(66,174,217,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(66,174,217,.035) 1px, transparent 1px), radial-gradient(circle at 100% 0%, rgba(66,174,217,.16), transparent 38%); background-size: 80px 80px, 80px 80px, auto;">
-                                <div class="flex h-16 shrink-0 items-center gap-3">
-                                    <svg viewBox="0 0 40 40" class="size-9 shrink-0" role="img" aria-label="Cafe POS">
-                                        <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9"
-                                            stroke-width="1" />
-                                        <circle cx="20" cy="20" r="12" fill="#42AED9" stroke="#ffffff"
-                                            stroke-width="0.75" />
-                                        <circle cx="20" cy="20" r="4" fill="#ffffff" fill-opacity="0.9" />
-                                    </svg>
-                                    <div class="leading-tight">
-                                        <p class="font-bold text-white">
-                                            {{ runtimeConfig?.public?.appName || 'Cafe POS' }}
-                                        </p>
-                                        <p class="text-[10px] uppercase tracking-wider text-slate-400">Point of Sale</p>
-                                    </div>
+                            <div class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-primary-900 bg-[length:640px_640px] bg-top bg-blend-soft-light px-6 pb-4"
+                                style="background-image: url('/images/sidebar-grid.png');">
+                                <div class="flex h-20 shrink-0 items-center">
+                                    <BrandLogo />
                                 </div>
 
                                 <nav class="flex flex-1 flex-col">
@@ -51,8 +39,8 @@
                                                 <li v-for="item in navigation" :key="item.id">
                                                     <a :href="item.href" :class="[
                                                         isActive(item)
-                                                            ? 'bg-white/10 text-white'
-                                                            : 'text-slate-300 hover:bg-white/5 hover:text-white',
+                                                            ? 'bg-primary-700/80 text-white shadow-sm ring-1 ring-primary-600'
+                                                            : 'text-primary-100/80 hover:bg-primary-800 hover:text-white',
                                                         'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors',
                                                     ]" @click.prevent="
                                                         handleMobileNavigation(
@@ -61,8 +49,8 @@
                                                         ">
                                                         <Icon :name="item.icon" :class="[
                                                             isActive(item)
-                                                                ? 'text-[#69c9ed]'
-                                                                : 'text-slate-400 group-hover:text-[#69c9ed]',
+                                                                ? 'text-primary-100'
+                                                                : 'text-primary-300 group-hover:text-primary-100',
                                                             'size-6 shrink-0 transition-colors',
                                                         ]" />
 
@@ -77,7 +65,7 @@
                                         <!-- Settings -->
                                         <li>
                                             <div
-                                                class="text-xs/6 font-semibold uppercase tracking-wider text-slate-500">
+                                                class="text-xs/6 font-semibold uppercase tracking-wider text-primary-300/70">
                                                 Settings
                                             </div>
 
@@ -85,8 +73,8 @@
                                                 <li v-for="item in settings" :key="item.id">
                                                     <a :href="item.href" :class="[
                                                         isActive(item)
-                                                            ? 'bg-white/10 text-white'
-                                                            : 'text-slate-300 hover:bg-white/5 hover:text-white',
+                                                            ? 'bg-primary-700/80 text-white shadow-sm ring-1 ring-primary-600'
+                                                            : 'text-primary-100/80 hover:bg-primary-800 hover:text-white',
                                                         'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors',
                                                     ]" @click.prevent="
                                                         handleMobileNavigation(
@@ -95,8 +83,8 @@
                                                         ">
                                                         <Icon :name="item.icon" :class="[
                                                             isActive(item)
-                                                                ? 'text-[#69c9ed]'
-                                                                : 'text-slate-400 group-hover:text-[#69c9ed]',
+                                                                ? 'text-primary-100'
+                                                                : 'text-primary-300 group-hover:text-primary-100',
                                                             'size-6 shrink-0 transition-colors',
                                                         ]" />
 
@@ -110,14 +98,15 @@
 
                                         <li class="-mx-6 mt-auto">
                                             <a href="/profile"
-                                                class="flex items-center gap-x-4 border-t border-white/10 px-6 py-3 text-sm/6 font-semibold text-white transition-colors hover:bg-white/5"
+                                                class="flex items-center gap-x-4 border-t border-primary-700 px-6 py-3 text-sm/6 font-semibold text-white transition-colors hover:bg-primary-800"
                                                 @click.prevent="
                                                     handleMobileNavigation(
                                                         '/profile',
                                                     )
                                                     ">
+
                                                 <img class="size-8 rounded-full bg-gray-50 object-cover ring-1 ring-gray-200"
-                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                    :src="`https://ui-avatars.com/api/?background=6e4430&color=fff&name=${userStore.getUser.firstname + (userStore.getUser.lastname ?? '')}`"
                                                     alt="" />
 
                                                 <span aria-hidden="true">
@@ -139,26 +128,16 @@
             enter-to-class="translate-x-0" leave-active-class="transition-transform duration-300 ease-in"
             leave-from-class="translate-x-0" leave-to-class="-translate-x-full">
             <aside v-if="desktopSidebarOpen"
-                class="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-white/10 bg-[#0b2f49] lg:flex lg:flex-col"
-                style="background-image: linear-gradient(rgba(66,174,217,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(66,174,217,.035) 1px, transparent 1px), radial-gradient(circle at 100% 0%, rgba(66,174,217,.16), transparent 38%); background-size: 80px 80px, 80px 80px, auto;">
+                class="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-primary-800 bg-primary-900 bg-[length:640px_640px] bg-top bg-blend-soft-light lg:flex lg:flex-col"
+                style="background-image: url('/images/sidebar-grid.png');">
                 <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6">
                     <div class="flex h-16 shrink-0 items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <svg viewBox="0 0 40 40" class="size-9 shrink-0" role="img" aria-label="Cafe POS">
-                                <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9" stroke-width="1" />
-                                <circle cx="20" cy="20" r="12" fill="#42AED9" stroke="#ffffff" stroke-width="0.75" />
-                                <circle cx="20" cy="20" r="4" fill="#ffffff" fill-opacity="0.9" />
-                            </svg>
-                            <div class="leading-tight">
-                                <p class="font-bold text-white">
-                                    {{ runtimeConfig?.public?.appName || 'Cafe POS' }}
-                                </p>
-                                <p class="text-[10px] uppercase tracking-wider text-slate-400">Point of Sale</p>
-                            </div>
+                        <div class="min-w-0">
+                            <BrandLogo />
                         </div>
 
                         <button type="button"
-                            class="flex items-center rounded-md p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+                            class="flex items-center rounded-md p-2 text-primary-300 transition-colors hover:bg-primary-800 hover:text-white"
                             @click="desktopSidebarOpen = false">
                             <span class="sr-only">
                                 Hide sidebar
@@ -176,16 +155,16 @@
                                     <li v-for="item in navigation" :key="item.id">
                                         <a :href="item.href" :class="[
                                             isActive(item)
-                                                ? 'bg-white/10 text-white'
-                                                : 'text-slate-300 hover:bg-white/5 hover:text-white',
+                                                ? 'bg-primary-700/80 text-white shadow-sm ring-1 ring-primary-600'
+                                                : 'text-primary-100/80 hover:bg-primary-800 hover:text-white',
                                             'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors',
                                         ]" @click.prevent="
                                             navigateTo(item.href)
                                             ">
                                             <Icon :name="item.icon" :class="[
                                                 isActive(item)
-                                                    ? 'text-[#69c9ed]'
-                                                    : 'text-slate-400 group-hover:text-[#69c9ed]',
+                                                    ? 'text-primary-100'
+                                                    : 'text-primary-300 group-hover:text-primary-100',
                                                 'size-6 shrink-0 transition-colors',
                                             ]" />
 
@@ -199,7 +178,7 @@
 
                             <!-- Settings -->
                             <li>
-                                <div class="text-xs/6 font-semibold uppercase tracking-wider text-slate-500">
+                                <div class="text-xs/6 font-semibold uppercase tracking-wider text-primary-300/70">
                                     Settings
                                 </div>
 
@@ -207,16 +186,16 @@
                                     <li v-for="item in settings" :key="item.id">
                                         <a :href="item.href" :class="[
                                             isActive(item)
-                                                ? 'bg-white/10 text-white'
-                                                : 'text-slate-300 hover:bg-white/5 hover:text-white',
+                                                ? 'bg-primary-700/80 text-white shadow-sm ring-1 ring-primary-600'
+                                                : 'text-primary-100/80 hover:bg-primary-800 hover:text-white',
                                             'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors',
                                         ]" @click.prevent="
                                             navigateTo(item.href)
                                             ">
                                             <Icon :name="item.icon" :class="[
                                                 isActive(item)
-                                                    ? 'text-[#69c9ed]'
-                                                    : 'text-slate-400 group-hover:text-[#69c9ed]',
+                                                    ? 'text-primary-100'
+                                                    : 'text-primary-300 group-hover:text-primary-100',
                                                 'size-6 shrink-0 transition-colors',
                                             ]" />
 
@@ -229,7 +208,7 @@
                             </li>
 
                             <li class="-mx-6 mt-auto">
-                                <p class="py-3 text-center text-xs text-slate-500">
+                                <p class="py-3 text-center text-xs text-primary-300/70">
                                     {{ runtimeConfig?.public?.appName }}
                                     v{{ runtimeConfig?.public?.appVersion }}
                                 </p>
@@ -300,7 +279,7 @@
                             <MenuButton
                                 class="flex items-center gap-x-3 rounded-md p-1 transition-colors hover:bg-gray-50">
                                 <img class="size-8 rounded-full bg-gray-50 object-cover ring-1 ring-gray-200"
-                                    :src="`https://ui-avatars.com/api/?background=437dfb&color=fff&name=${userStore.getUser.firstname + (userStore.getUser.lastname ?? '')}`"
+                                    :src="`https://ui-avatars.com/api/?background=6e4430&color=fff&name=${userStore.getUser.firstname + (userStore.getUser.lastname ?? '')}`"
                                     alt="" />
 
                                 <span class="hidden lg:flex lg:items-center">

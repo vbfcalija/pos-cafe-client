@@ -3,8 +3,8 @@
         class="flex items-center justify-center gap-x-2 outline-none text-xs rounded-lg font-semibold whitespace-nowrap transition-all duration-150 ease-out active:scale-[0.97] disabled:active:scale-100"
         :class="[
             props.buttonStyle === 'primary' && 'bg-primary text-white border-1.5 border-primary shadow-sm hover:bg-primary-600 hover:border-primary-600',
-            props.buttonStyle === 'secondary' && 'outline-none bg-blue-50 text-blue-700 border-1.5 border-blue-200 shadow-none hover:border-blue-700 hover:bg-blue-50 hover:shadow-none hover:transform-none',
-            props.buttonStyle === 'action' && 'outline-none bg-blue-50 text-blue-700 border-1.5 border-blue-200 shadow-none hover:border-blue-700 hover:bg-blue-50 hover:shadow-none hover:transform-none',
+            props.buttonStyle === 'secondary' && 'outline-none bg-primary-50 text-primary-700 border-1.5 border-primary-200 shadow-none hover:border-primary-700 hover:bg-primary-50 hover:shadow-none hover:transform-none',
+            props.buttonStyle === 'action' && 'outline-none bg-primary-50 text-primary-700 border-1.5 border-primary-200 shadow-none hover:border-primary-700 hover:bg-primary-50 hover:shadow-none hover:transform-none',
             props.buttonStyle === 'success' && 'bg-green-800 text-white hover:bg-green-900',
             props.buttonStyle === 'warning' && 'bg-orange-400 text-white hover:bg-orange-500',
             props.buttonStyle === 'danger' && '!bg-red-50 !text-red-600 !border-1.5 !border-red-200 hover:!border-red-600',

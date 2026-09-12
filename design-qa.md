@@ -1,38 +1,38 @@
-# POS Active Shift Panel Design QA
+# Brthrs Café POS Redesign QA
 
-- Source visual truth: `/private/var/folders/9k/_1bktg5x651c_n27k_1q9vkh0000gn/T/codex-clipboard-1c040ce7-b2bd-424f-ae88-e7bb36204223.png`
-- Implementation route: `http://localhost:3001/pos`
-- Implementation evidence: authenticated in-app browser capture of the active-shift state (inline capture; the browser surface does not expose a filesystem path).
-- Source pixels: 2488 × 442.
-- Verified implementation viewport: 500 CSS pixels wide, device scale factor 1.
-- State: one active shift (`Test 2`), one available open shift, empty cart.
+- Source visual truth: pre-change in-app browser capture of `http://localhost:3001/pos` at the same authenticated state.
+- Implementation route: `http://localhost:3001/pos`.
+- Implementation screenshot: post-change in-app browser capture (inline browser artifact; no filesystem path exposed).
+- Source and implementation pixels: 811 × 998 at device scale factor 1.
+- CSS viewport: 811 × 998; no density normalization required.
+- State: authenticated, one open shift selected, populated product catalog, empty cart.
 
 ## Full-view comparison evidence
 
-The source panel used a tall, mostly empty green surface with weak separation between shift identity, shift selection, and actions. The revised implementation compacts those elements into a responsive two-part card: the active shift and its metadata form the primary status area, while selection and management actions live in a distinct white control surface. Products now begin immediately below the panel.
+The revised view preserves the tablet single-column flow while establishing a coherent espresso-and-cream workspace. The shift card, product toolbar, category filters, category section, cards, variants, and actions now share the same primary token family and stronger hierarchy.
 
 ## Focused region comparison evidence
 
-The authenticated browser capture confirms the active status, shift name, branch, date, owner, shift selector, open-shift count, new-shift action, and close-shift action remain visible without crowding. At the narrow verified viewport, the two regions stack cleanly and preserve useful touch targets.
+The active-shift block and first product row were legible in the full capture and checked at rendered size. Touch targets are at least 40–44px, selected variants remain obvious, product prices do not collide with buttons, and horizontal category scrolling is preserved. A separate crop was not needed.
 
 ## Findings
 
-- No P0, P1, or P2 visual or interaction defects found in the revised active-shift panel.
-- The new-shift modal opens and closes correctly from the redesigned action row.
-- The existing `FormSelect` remains the shift selector, preserving established form behavior.
+- No actionable P0, P1, or P2 issues remain in the verified tablet state.
+- The cart retains its existing responsive stacking and sticky checkout behavior.
+- All transaction, filtering, shift, variant, cart, payment, and checkout bindings are unchanged.
 
 ## Required fidelity surfaces
 
-- Typography: existing application font and scale retained; stronger weight and an uppercase eyebrow establish hierarchy.
-- Spacing: reduced vertical whitespace, consistent 12–20px internal rhythm, and responsive stacking.
-- Color: existing emerald open-shift semantics retained with neutral white controls and existing action colors.
-- Icons: existing Phosphor icon system used for shift, branch, date, user, and actions.
-- Content: current shift data and all existing functionality preserved.
+- Typography: clearer Menu eyebrow, stronger product title, and consistent weight hierarchy without changing the app font.
+- Spacing and layout: warm workspace frame, 16–20px card padding, touch-friendly filters, responsive add-action wrapping, and preserved tablet stacking.
+- Colors and tokens: primary-25 through primary-900 now drive surfaces, borders, selected states, icons, and checkout emphasis; green remains semantic for open/success states.
+- Image quality and asset fidelity: the existing project-local grid texture is reused at low contrast; standard Nuxt icons remain crisp.
+- Copy and content: all POS labels and transaction copy are preserved.
 
 ## Comparison history
 
-- Initial: oversized green panel, large unused center area, weak hierarchy, and competing controls.
-- Revision: compact responsive card, scannable metadata, dedicated selector surface, and grouped actions.
-- Verification: authenticated render checked, modal interaction checked, `git diff --check` clean, and Nuxt production build passed.
+- Initial: mixed emerald, gray, and blue-accented surfaces diluted the new brand and left weak separation between catalog and checkout regions.
+- Fix: introduced branded workspace texture, espresso shift treatment, cream catalog sections, stronger product cards, warm selected variants, and an emphasized cart/checkout shell.
+- Post-fix evidence: same-size authenticated capture shows improved hierarchy, consistent color use, no clipping, and intact horizontal filter scrolling.
 
 final result: passed

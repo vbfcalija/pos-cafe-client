@@ -57,7 +57,7 @@
                                     class="grid grid-cols-2 gap-x-4 gap-y-5 border-t border-gray-100 pt-4 lg:grid-cols-4">
                                     <div v-for="datum in shiftData" :key="datum.label" class="flex gap-3">
                                         <span
-                                            class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-primary">
+                                            class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary">
                                             <Icon :name="datum.icon" class="size-4" />
                                         </span>
                                         <div class="min-w-0">
@@ -112,7 +112,7 @@
                                 <div v-for="metric in metrics" :key="metric.label"
                                     class="px-3 text-center first:pl-0 last:pr-0">
                                     <span
-                                        class="mx-auto flex size-11 items-center justify-center rounded-full bg-blue-50 text-primary">
+                                        class="mx-auto flex size-11 items-center justify-center rounded-full bg-primary-50 text-primary">
                                         <Icon :name="metric.icon" class="size-5" />
                                     </span>
                                     <p class="mt-3 text-xs text-gray-500">
@@ -140,7 +140,7 @@
                                         Revenue by hour
                                     </p>
                                 </div>
-                                <span class="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-primary">
+                                <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary">
                                     By hour
                                 </span>
                             </div>
@@ -181,7 +181,7 @@
                                 <div v-for="(variant, index) in topVariants" :key="variant.uuid"
                                     class="flex items-center gap-3 py-3">
                                     <span
-                                        class="flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-primary">
+                                        class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-semibold text-primary">
                                         {{ index + 1 }}
                                     </span>
                                     <span
@@ -545,7 +545,7 @@ const categorySummaries = computed(() => {
 })
 const totalQuantitySold = computed(() => categorySummaries.value.reduce((total, category) => total + category.quantity, 0))
 const paymentMix = computed(() => {
-    const colors = ['#437dfb', '#60a5fa', '#22c55e', '#8b5cf6', '#94a3b8']; const methods = new Map<string, number>()
+    const colors = ['#6e4430', '#60a5fa', '#22c55e', '#8b5cf6', '#94a3b8']; const methods = new Map<string, number>()
     filteredOrders.value.forEach((order: any) => { const method = paymentMethod(order); methods.set(method, (methods.get(method) || 0) + orderTotal(order)) })
     return Array.from(methods, ([name, amount], index) => ({ name, amount, color: colors[index % colors.length], percentage: netSales.value ? amount / netSales.value * 100 : 0 }))
 })
@@ -685,7 +685,7 @@ function drawSalesChart() {
     const points = hourlySales.value.map((value, hour) => ({
         x: padding.left + chartWidth * hour / 23, y: padding.top + chartHeight - value / max * chartHeight
     }))
-    context.strokeStyle = '#437dfb'
+    context.strokeStyle = '#6e4430'
     context.lineWidth = 2.5
     context.lineJoin = 'round'
     context.beginPath()

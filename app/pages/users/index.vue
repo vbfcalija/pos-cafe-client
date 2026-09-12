@@ -36,7 +36,7 @@
                                         <td width="30%">
                                             <div class="flex items-center gap-x-2">
                                                 <div class="relative">
-                                                    <img :src="`https://ui-avatars.com/api/?background=42AED9&color=fff&name=${user?.firstname + ' ' + (user?.lastname ?? '')}`"
+                                                    <img :src="`https://ui-avatars.com/api/?background=6e4430&color=fff&name=${user?.firstname + ' ' + (user?.lastname ?? '')}`"
                                                         class="h-11 w-11 rounded-full bg-gray-50 object-cover" />
                                                 </div>
                                                 <span>

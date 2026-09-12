@@ -60,7 +60,8 @@
                                     {{ metric.value }}
                                 </p>
                             </div>
-                            <span class="flex size-10 items-center justify-center rounded-lg bg-blue-50 text-primary">
+                            <span
+                                class="flex size-10 items-center justify-center rounded-lg bg-primary-50 text-primary">
                                 <Icon :name="metric.icon" class="size-5" />
                             </span>
                         </div>
@@ -81,7 +82,7 @@
                                     Daily net sales within the selected period
                                 </p>
                             </div>
-                            <span class="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-primary">
+                            <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary">
                                 {{ filteredOrders.length }} orders
                             </span>
                         </div>
@@ -147,11 +148,11 @@
                     </div>
                     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         <button v-for="report in reports" :key="report.value" type="button"
-                            class="group flex items-start gap-4 rounded-xl border bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
+                            class="group flex items-start gap-4 rounded-xl border bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md"
                             :class="state.report === report.value ? 'border-primary ring-1 ring-primary/20' : 'border-gray-200'"
                             @click="selectReport(report.value)">
                             <span
-                                class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-primary">
+                                class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary">
                                 <Icon :name="report.icon" class="size-5" />
                             </span>
                             <span class="min-w-0 flex-1">

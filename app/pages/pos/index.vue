@@ -10,76 +10,52 @@
             <Alert v-if="state.error?.message" type="danger" :text="state.error.message" class="mb-4" />
 
             <LoadingSpinner :isActive="state.isPageLoading">
-                <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
-                    <section class="min-w-0 rounded-xl bg-white p-5 shadow-sm">
+                <div
+                    class="pos-workspace grid gap-5 rounded-2xl bg-primary-25 p-3 sm:p-4 lg:grid-cols-[minmax(0,1fr)_420px]">
+                    <section class="min-w-0 rounded-2xl border border-primary-100 bg-white p-4 shadow-sm sm:p-5">
                         <div v-if="hasOpenShift"
-                            class="mb-5 overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm sm:p-5">
-                            <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,34rem)] lg:items-center">
-                                <div class="flex min-w-0 items-start gap-4">
-                                    <span
-                                        class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
-                                        <Icon name="ph:clock-countdown" class="size-6" />
+                            class="mb-6 rounded-xl border border-primary-100 bg-white p-3 shadow-sm sm:p-4">
+                            <div class="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="size-2 rounded-full bg-emerald-500 ring-4 ring-emerald-50" />
+                                    <p class="text-xs font-bold uppercase tracking-wider text-primary-700">Active shift
+                                    </p>
+                                    <span class="text-[11px] font-medium text-gray-400">
+                                        {{ openShiftOptions.length }}
+                                        open
                                     </span>
-                                    <div class="min-w-0">
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-700">
-                                                Active shift
-                                            </p>
-                                            <span
-                                                class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
-                                                <span class="size-1.5 rounded-full bg-emerald-500" />
-                                                Open
-                                            </span>
-                                        </div>
-                                        <h2 class="mt-1 truncate text-xl font-bold text-gray-900">
-                                            {{ currentShift?.name }}
-                                        </h2>
-                                        <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-gray-600">
-                                            <span class="inline-flex items-center gap-1.5">
-                                                <Icon name="ph:storefront" class="size-4 text-emerald-600" />
-                                                {{ currentShift?.branch?.name || 'No branch' }}
-                                            </span>
-                                            <span class="inline-flex items-center gap-1.5">
-                                                <Icon name="ph:calendar-blank" class="size-4 text-emerald-600" />
-                                                {{ formatDateToReadable(currentShift?.date) }}
-                                            </span>
-                                            <span v-if="currentShift?.user" class="inline-flex items-center gap-1.5">
-                                                <Icon name="ph:user-circle" class="size-4 text-emerald-600" />
-                                                {{ fullName(currentShift.user) }}
-                                            </span>
-                                        </div>
-                                    </div>
                                 </div>
-
-                                <div class="rounded-xl border border-emerald-100 bg-white p-3 shadow-sm">
-                                    <div class="mb-2 flex items-center justify-between gap-3">
-                                        <FormLabel for="active-shift" label="Transact on shift" />
-                                        <span class="text-[11px] font-medium text-gray-500">
-                                            {{ openShiftOptions.length }} open
-                                        </span>
-                                    </div>
+                                <p class="truncate text-xs text-gray-500">
+                                    <Icon name="ph:user-circle" class="mr-1 inline size-4 text-primary-400" />
+                                    {{ fullName(userStore.getUser) }}
+                                </p>
+                            </div>
+                            <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                                <div class="min-w-0">
+                                    <FormLabel for="active-shift" label="Transact on shift" class="sr-only" />
                                     <FormSelect id="active-shift" :options="openShiftOptions" :searchable="false"
                                         :canClear="false" v-model="state.shift_uuid" />
-                                    <div class="mt-3 flex flex-wrap items-center justify-end gap-2">
-                                        <FormButton buttonStyle="action" buttonSize="xs"
-                                            @click="state.isShiftModalOpen = true">
-                                            <Icon name="ph:plus" class="size-4" />
-                                            New shift
-                                        </FormButton>
-                                        <FormButton v-if="canManageCurrentShift" buttonStyle="danger" buttonSize="xs"
-                                            :disabled="state.isClosingShift"
-                                            @click="state.isCloseShiftConfirmationOpen = true">
-                                            <Icon name="ph:stop-circle" class="size-4" />
-                                            {{ state.isClosingShift ? 'Closing…' : 'Close shift' }}
-                                        </FormButton>
-                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <FormButton buttonStyle="action" buttonSize="xs" class="min-h-9"
+                                        @click="state.isShiftModalOpen = true">
+                                        <Icon name="ph:plus" class="size-4" />
+                                        New shift
+                                    </FormButton>
+                                    <FormButton v-if="canManageCurrentShift" buttonStyle="danger" buttonSize="xs"
+                                        class="min-h-9" :disabled="state.isClosingShift"
+                                        @click="state.isCloseShiftConfirmationOpen = true">
+                                        <Icon name="ph:stop-circle" class="size-4" />
+                                        {{ state.isClosingShift ? 'Closing…' : 'Close shift' }}
+                                    </FormButton>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                             <div>
-                                <h2 class="text-lg font-semibold text-gray-900">Products</h2>
+                                <p class="text-xs font-bold uppercase tracking-[0.16em] text-primary-600">Menu</p>
+                                <h2 class="mt-1 text-xl font-bold text-gray-900">Choose products</h2>
                                 <p class="text-sm text-gray-500">
                                     Choose a product, select its variant, then add it to the order.
                                 </p>
@@ -88,25 +64,25 @@
                                 <Icon name="ph:magnifying-glass" class="absolute left-3 top-3 size-5 text-gray-400" />
                                 <input v-model="state.productSearch" type="search"
                                     placeholder="Search product or variant"
-                                    class="h-11 w-full rounded-lg border border-gray-200 pl-10 pr-4 text-sm focus:border-primary focus:outline-none" />
+                                    class="h-11 w-full rounded-xl border border-primary-100 bg-primary-25 pl-10 pr-4 text-sm shadow-sm transition focus:border-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-100" />
                             </div>
                         </div>
 
-                        <div v-if="categoryFilters.length" class="mb-5 overflow-x-auto pb-1">
-                            <div class="flex min-w-max items-center gap-2" role="group"
+                        <div v-if="categoryFilters.length" class="mb-5 overflow-visible pb-1">
+                            <div class="flex min-w-0 flex-wrap items-center gap-1.5" role="group"
                                 aria-label="Filter products by category">
                                 <button v-for="category in categoryFilters" :key="category.uuid" type="button"
-                                    class="inline-flex min-h-10 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition"
+                                    class="inline-flex min-h-8 items-center gap-1 rounded-lg border px-2.5 text-[11px] font-semibold transition active:scale-[0.98] sm:min-h-9 sm:gap-1.5 sm:px-3 sm:text-xs"
                                     :class="state.selectedCategory === category.uuid
                                         ? 'border-primary bg-primary text-white shadow-sm'
-                                        : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:bg-blue-50 hover:text-primary'"
+                                        : 'border-primary-100 bg-primary-25 text-gray-600 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700'"
                                     :aria-pressed="state.selectedCategory === category.uuid"
                                     @click="state.selectedCategory = category.uuid">
                                     <span v-if="category.uuid !== 'all'"
-                                        class="size-2.5 rounded-full border border-current/20"
+                                        class="size-2 rounded-full border border-current/20"
                                         :style="{ backgroundColor: category.color }" />
                                     {{ category.name }}
-                                    <span class="rounded-full px-2 py-0.5 text-xs" :class="state.selectedCategory === category.uuid
+                                    <span class="rounded-full px-1.5 py-0.5 text-[10px] sm:text-[11px]" :class="state.selectedCategory === category.uuid
                                         ? 'bg-white/20 text-white'
                                         : 'bg-gray-100 text-gray-500'">
                                         {{ category.count }}
@@ -116,25 +92,27 @@
                         </div>
 
                         <div v-if="groupedProducts.length" class="space-y-8">
-                            <section v-for="category in groupedProducts" :key="category.uuid">
+                            <section v-for="category in groupedProducts" :key="category.uuid"
+                                class="rounded-2xl bg-primary-25/70 p-3 sm:p-4">
                                 <div class="mb-3 flex items-center gap-2">
                                     <span class="size-3 rounded-full border border-gray-200"
                                         :style="{ backgroundColor: category.color }" />
                                     <h3 class="font-semibold text-gray-900">{{ category.name }}</h3>
                                     <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                                        {{ category.products.length }} product{{ category.products.length === 1 ? '' :
-                                            's' }}
+                                        {{
+                                            category.products.length }} product
+                                        {{ category.products.length === 1 ? '' : 's' }}
                                     </span>
                                 </div>
                                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                                     <article v-for="product in category.products" :key="product.uuid"
-                                        class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
-                                        <div class="h-1.5" :style="{ backgroundColor: product.color || '#dbeafe' }" />
+                                        class="overflow-hidden rounded-2xl border border-primary-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md">
+                                        <div class="h-1.5" :style="{ backgroundColor: product.color || '#c99d7e' }" />
                                         <div class="p-4">
                                             <div class="mb-4 flex items-start justify-between gap-3">
                                                 <div class="flex min-w-0 items-center gap-3">
                                                     <div
-                                                        class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                                        class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
                                                         <Icon name="ph:package" class="size-6" />
                                                     </div>
                                                     <div class="min-w-0">
@@ -166,8 +144,8 @@
                                                             type="button"
                                                             class="group relative flex min-h-16 items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition"
                                                             :class="state.selectedVariantByProduct[product.uuid] === variant.uuid
-                                                                ? 'border-primary bg-blue-50 text-primary ring-1 ring-primary/20 shadow-sm'
-                                                                : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:bg-blue-50/40'"
+                                                                ? 'border-primary bg-primary-50 text-primary ring-1 ring-primary/20 shadow-sm'
+                                                                : 'border-primary-100 bg-primary-25/60 text-gray-600 hover:border-primary-300 hover:bg-primary-50'"
                                                             :aria-pressed="state.selectedVariantByProduct[product.uuid] === variant.uuid"
                                                             @click="state.selectedVariantByProduct[product.uuid] = variant.uuid">
                                                             <span
@@ -194,7 +172,7 @@
                                                     </div>
                                                 </div>
                                                 <div
-                                                    class="mt-4 grid grid-cols-[minmax(0,1fr)_auto_auto] items-end gap-4 border-t border-gray-100 pt-4">
+                                                    class="mt-4 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 border-t border-primary-100 pt-4 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
                                                     <div class="min-w-0">
                                                         <p class="text-[11px] text-gray-500">Selected variant</p>
                                                         <p class="truncate text-sm font-semibold text-gray-900">
@@ -204,11 +182,13 @@
                                                     <div>
                                                         <p class="text-[11px] text-gray-500">Price</p>
                                                         <p class="text-lg font-bold text-gray-900">
-                                                            {{ money(selectedVariant(product)?.price || product.price)
+                                                            {{
+                                                                money(selectedVariant(product)?.price || product.price)
                                                             }}
                                                         </p>
                                                     </div>
-                                                    <FormButton buttonStyle="primary" buttonSize="xs" class="shrink-0"
+                                                    <FormButton buttonStyle="primary" buttonSize="xs"
+                                                        class="col-span-2 min-h-10 shrink-0 sm:col-span-1"
                                                         :disabled="!hasOpenShift || !state.selectedVariantByProduct[product.uuid]"
                                                         @click="addSelectedProduct(product)">
                                                         <Icon name="ph:plus" class="size-4" /> Add
@@ -232,12 +212,12 @@
                     </section>
 
                     <aside
-                        class="overflow-hidden rounded-xl bg-white shadow-sm lg:sticky lg:top-20 lg:flex lg:h-[calc(100dvh-9rem)] lg:flex-col lg:self-start">
+                        class="overflow-hidden rounded-2xl border border-primary-200 bg-white shadow-lg shadow-primary-900/5 lg:sticky lg:top-20 lg:flex lg:h-[calc(100dvh-9rem)] lg:flex-col lg:self-start">
                         <div class="min-h-0 flex-1 overflow-y-auto p-5 lg:p-4 xl:p-5">
                             <div class="mb-4 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
                                     <span
-                                        class="flex size-10 items-center justify-center rounded-xl bg-primary-50 text-primary">
+                                        class="flex size-11 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
                                         <Icon name="ph:shopping-cart-simple" class="size-5" />
                                     </span>
                                     <div>
@@ -258,7 +238,7 @@
 
                             <div class="space-y-3">
                                 <div v-for="line in posStore.cart" :key="line.product_variant_uuid"
-                                    class="rounded-lg border border-gray-200 p-3">
+                                    class="rounded-xl border border-primary-100 bg-primary-25/60 p-3">
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="min-w-0">
                                             <p class="truncate text-sm font-semibold text-gray-900">
@@ -297,15 +277,19 @@
                                     </div>
                                 </div>
                                 <div v-if="!posStore.cart.length"
-                                    class="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-center">
-                                    <Icon name="ph:shopping-cart-simple" class="mx-auto size-7 text-gray-300" />
+                                    class="rounded-2xl border border-dashed border-primary-200 bg-primary-25 px-4 py-8 text-center">
+                                    <span
+                                        class="mx-auto flex size-12 items-center justify-center rounded-full bg-white text-primary-300 shadow-sm">
+                                        <Icon name="ph:shopping-cart-simple" class="size-6" />
+                                    </span>
                                     <p class="mt-2 text-sm font-medium text-gray-600">Your cart is empty</p>
                                     <p class="mt-1 text-xs text-gray-400">Select a product variant to get started.</p>
                                 </div>
                             </div>
 
-                            <div class="mt-4 space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
-                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Order details</p>
+                            <div class="mt-4 space-y-3 rounded-xl border border-primary-100 bg-primary-25 p-3">
+                                <p class="text-xs font-bold uppercase tracking-[0.14em] text-primary-600">Order details
+                                </p>
                                 <div class="space-y-1">
                                     <p class="text-sm text-gray-600">
                                         Customer (optional)
@@ -350,7 +334,8 @@
                                 </div>
                             </div>
 
-                            <div class="mt-4 space-y-2 rounded-xl border border-gray-200 p-3 text-sm">
+                            <div
+                                class="mt-4 space-y-2 rounded-xl border border-primary-200 bg-white p-4 text-sm shadow-sm">
                                 <div class="flex justify-between">
                                     <span class="text-gray-500">Subtotal</span>
                                     <span>{{ money(subtotal) }}</span>
@@ -363,7 +348,8 @@
                                     <span class="text-gray-500">Tax</span>
                                     <span>{{ money(taxTotal) }}</span>
                                 </div>
-                                <div class="flex justify-between border-t border-gray-200 pt-2 text-lg font-bold">
+                                <div
+                                    class="flex justify-between border-t border-primary-100 pt-3 text-xl font-bold text-primary-900">
                                     <span>Total</span>
                                     <span>{{ money(grandTotal) }}</span>
                                 </div>
@@ -380,8 +366,10 @@
                             </div>
                         </div>
 
-                        <div class="shrink-0 border-t border-gray-100 bg-white p-4 lg:p-3 xl:p-4">
-                            <FormButton buttonStyle="primary" class="min-h-11 w-full"
+                        <div
+                            class="sticky bottom-0 shrink-0 border-t border-primary-100 bg-white/95 p-4 shadow-[0_-8px_24px_rgba(53,39,31,0.06)] backdrop-blur lg:static lg:p-3 xl:p-4">
+                            <FormButton buttonStyle="primary"
+                                class="min-h-12 w-full text-sm shadow-md shadow-primary-900/15"
                                 :disabled="!canCheckout || state.isSubmitting" @click="checkout">
                                 <Icon name="ph:check-circle" class="size-5" />
                                 {{ state.isSubmitting ? 'Processing…' : `Charge ${money(grandTotal)}` }}
@@ -444,7 +432,6 @@ const noDiscountValue = '__none__'
 const runtimeConfig = useRuntimeConfig()
 const posStore = usePosStore() as any
 const userStore = useUserStore() as any
-const { formatDateToReadable } = useDatetimeFormatter()
 const { successAlert } = useAlert()
 
 const state = reactive({
@@ -842,6 +829,14 @@ async function checkout() {
 </script>
 
 <style scoped>
+.pos-workspace {
+    background-color: #fdfbf9;
+    background-image: url('/images/sidebar-grid.png');
+    background-position: top left;
+    background-size: 760px 760px;
+    background-blend-mode: soft-light;
+}
+
 .pos-select {
     height: 2.75rem;
     width: 100%;
@@ -855,6 +850,15 @@ async function checkout() {
 }
 
 .pos-select:focus {
-    border-color: var(--color-primary, #437dfb);
+    border-color: var(--color-primary, #6e4430);
+    box-shadow: 0 0 0 4px rgb(240 226 215 / 0.8);
+}
+
+@media (max-width: 639px) {
+    .pos-workspace {
+        margin-inline: -0.5rem;
+        padding: 0.5rem;
+        border-radius: 0;
+    }
 }
 </style>

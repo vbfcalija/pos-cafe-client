@@ -7,28 +7,8 @@
     <main class="login-page">
         <!-- Brand / Product panel -->
         <section class="brand-panel">
-            <div class="brand-glow brand-glow--top"></div>
-            <div class="brand-glow brand-glow--bottom"></div>
-
             <div class="brand-header">
-                <div class="brand">
-                    <div class="brand-mark">
-                        <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
-                            <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9" stroke-width="1" />
-                            <circle cx="20" cy="20" r="12" fill="#42AED9" stroke="#ffffff" stroke-width="0.75" />
-                            <circle cx="20" cy="20" r="4" fill="#ffffff" fill-opacity="0.9" />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <div class="brand-name">
-                            {{ runtimeConfig?.public?.appName || 'POS' }}
-                        </div>
-                        <div class="brand-label">
-                            Point of Sale
-                        </div>
-                    </div>
-                </div>
+                <BrandLogo />
             </div>
 
             <div class="brand-content">
@@ -49,10 +29,7 @@
                 <div class="feature-list">
                     <div class="feature-item">
                         <div class="feature-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 6 9 17l-5-5" />
-                            </svg>
+                            <Icon name="ph:check" aria-hidden="true" />
                         </div>
 
                         <div>
@@ -63,11 +40,7 @@
 
                     <div class="feature-item">
                         <div class="feature-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
+                            <Icon name="ph:lock-key" aria-hidden="true" />
                         </div>
 
                         <div>
@@ -94,12 +67,7 @@
         <!-- Login panel -->
         <section class="login-panel">
             <div class="mobile-brand">
-                <div class="brand-mark brand-mark--small">
-                    <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
-                        <circle cx="20" cy="20" r="19" fill="#173A59" stroke="#42AED9" stroke-width="1" />
-                        <circle cx="20" cy="20" r="12" fill="#42AED9" />
-                    </svg>
-                </div>
+                <img src="/images/brthrs-cafe-logo.jpeg" alt="Brthrs Café" />
 
                 <span>
                     {{ runtimeConfig?.public?.appName || 'POS' }}
@@ -133,11 +101,7 @@
 
                     <div class="input-wrap">
                         <div class="input-icon">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <rect width="20" height="16" x="2" y="4" rx="2" />
-                                <path d="m22 7-10 7L2 7" />
-                            </svg>
+                            <Icon name="ph:envelope-simple" aria-hidden="true" />
                         </div>
 
                         <input id="co-email" v-model="state.formLogin.email" type="email" placeholder="you@example.com"
@@ -161,11 +125,7 @@
 
                     <div class="input-wrap">
                         <div class="input-icon">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
+                            <Icon name="ph:lock-key" aria-hidden="true" />
                         </div>
 
                         <input id="co-pw" v-model="state.formLogin.password" :type="state.showPassword
@@ -181,22 +141,7 @@
                                 state.showPassword =
                                 !state.showPassword
                                 ">
-                            <!-- Eye off -->
-                            <svg v-if="state.showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                aria-hidden="true">
-                                <path d="m2 2 20 20" />
-                                <path d="M6.71 6.71C3.78 8.27 2 12 2 12s3.5 7 10 7c1.58 0 2.96-.41 4.15-1.02" />
-                                <path d="M10.73 5.08A9.4 9.4 0 0 1 12 5c6.5 0 10 7 10 7a17.7 17.7 0 0 1-2.1 3.19" />
-                            </svg>
-
-                            <!-- Eye -->
-                            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path
-                                    d="M2.06 12.35C3.5 8.17 7.39 5 12 5s8.5 3.17 9.94 7.35a1 1 0 0 1 0 .65C20.5 17.17 16.61 20 12 20S3.5 17.17 2.06 13a1 1 0 0 1 0-.65Z" />
-                                <circle cx="12" cy="12.5" r="3" />
-                            </svg>
+                            <Icon :name="state.showPassword ? 'ph:eye-slash' : 'ph:eye'" aria-hidden="true" />
                         </button>
                     </div>
 
@@ -220,20 +165,11 @@
                         }}
                     </span>
 
-                    <svg v-if="!state.isPageLoading" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        aria-hidden="true">
-                        <path d="M5 12h14" />
-                        <path d="m13 6 6 6-6 6" />
-                    </svg>
+                    <Icon v-if="!state.isPageLoading" name="ph:arrow-right" aria-hidden="true" />
                 </button>
 
                 <div class="security-note">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z" />
-                        <path d="m9 12 2 2 4-4" />
-                    </svg>
+                    <Icon name="ph:shield-check" aria-hidden="true" />
 
                     <span>
                         Secure encrypted connection
@@ -339,15 +275,15 @@ input {
    ========================================================== */
 
 .login-page {
-    --brand: #42aed9;
-    --brand-dark: #1b7395;
-    --navy: #102c46;
-    --navy-deep: #091e31;
-    --text: #16283a;
-    --muted: #708090;
-    --border: #dbe5ec;
+    --brand: #6e4430;
+    --brand-dark: #58362a;
+    --navy: #35271f;
+    --navy-deep: #21150f;
+    --text: #35271f;
+    --muted: #786a61;
+    --border: #e5d8ce;
     --surface: #ffffff;
-    --background: #f4f8fb;
+    --background: #f8f1eb;
 
     min-height: 100vh;
     display: grid;
@@ -382,11 +318,11 @@ input {
 
     color: #fff;
 
-    background:
-        linear-gradient(145deg,
-            #0b253c 0%,
-            #123b5c 48%,
-            #092239 100%);
+    background-color: #21150f;
+    background-image: url('/images/sidebar-grid.png');
+    background-size: 640px 640px;
+    background-position: top left;
+    background-blend-mode: soft-light;
 }
 
 .brand-panel::before {
@@ -395,91 +331,13 @@ input {
     inset: 0;
     z-index: -2;
 
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.025) 1px,
-            transparent 1px),
-        linear-gradient(90deg,
-            rgba(255, 255, 255, 0.025) 1px,
-            transparent 1px);
-
-    background-size: 42px 42px;
-
-    mask-image:
-        linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.75),
-            transparent 80%);
-}
-
-.brand-glow {
-    position: absolute;
-    z-index: -1;
-    border-radius: 50%;
-    filter: blur(4px);
+    background: rgba(53, 39, 31, 0.14);
     pointer-events: none;
-}
-
-.brand-glow--top {
-    width: 440px;
-    height: 440px;
-    top: -220px;
-    right: -180px;
-
-    background:
-        radial-gradient(circle,
-            rgba(66, 174, 217, 0.25),
-            transparent 68%);
-}
-
-.brand-glow--bottom {
-    width: 420px;
-    height: 420px;
-    left: -220px;
-    bottom: -180px;
-
-    background:
-        radial-gradient(circle,
-            rgba(58, 195, 184, 0.12),
-            transparent 70%);
 }
 
 .brand-header {
     position: relative;
     z-index: 1;
-}
-
-.brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.brand-mark {
-    width: 46px;
-    height: 46px;
-
-    display: grid;
-    place-items: center;
-
-    filter:
-        drop-shadow(0 8px 18px rgba(0, 0, 0, 0.14));
-}
-
-.brand-name {
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.25px;
-}
-
-.brand-label {
-    margin-top: 3px;
-
-    color: rgba(255, 255, 255, 0.42);
-
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
 }
 
 .brand-content {
@@ -501,7 +359,7 @@ input {
 
 .eyebrow {
     margin-bottom: 20px;
-    color: #67c8eb;
+    color: #dfc4b1;
 }
 
 .brand-content h1 {
@@ -518,7 +376,7 @@ input {
 
 .brand-content h1 span {
     display: block;
-    color: #76cbed;
+    color: #dfc4b1;
     font-size: clamp(38px, 4vw, 45px);
 }
 
@@ -527,7 +385,7 @@ input {
 
     max-width: 400px;
 
-    color: rgba(255, 255, 255, 0.58);
+    color: rgba(255, 255, 255, 0.66);
     font-size: 14px;
     line-height: 1.8;
 }
@@ -555,11 +413,11 @@ input {
     display: grid;
     place-items: center;
 
-    border: 1px solid rgba(93, 193, 232, 0.24);
+    border: 1px solid rgba(223, 196, 177, 0.28);
     border-radius: 9px;
 
-    color: #6ec8ea;
-    background: rgba(66, 174, 217, 0.08);
+    color: #f0e2d7;
+    background: rgba(223, 196, 177, 0.1);
 }
 
 .feature-item>div:last-child {
@@ -574,7 +432,7 @@ input {
 }
 
 .feature-item span {
-    color: rgba(255, 255, 255, 0.42);
+    color: rgba(255, 255, 255, 0.52);
     font-size: 11px;
     line-height: 1.45;
 }
@@ -624,18 +482,23 @@ input {
     align-items: center;
     justify-content: center;
 
-    background:
-        radial-gradient(circle at 85% 10%,
-            rgba(66, 174, 217, 0.09),
-            transparent 26%),
-        radial-gradient(circle at 10% 90%,
-            rgba(43, 179, 171, 0.06),
-            transparent 28%),
-        #f4f8fb;
+    background-color: #f8f1eb;
+    background-image: url('/images/sidebar-grid.png');
+    background-size: 760px 760px;
+    background-position: center;
+    background-blend-mode: soft-light;
 }
 
 .mobile-brand {
     display: none;
+}
+
+.mobile-brand img {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #dfc4b1;
+    border-radius: 12px;
+    object-fit: cover;
 }
 
 .login-card {
@@ -644,15 +507,15 @@ input {
 
     padding: 38px;
 
-    border: 1px solid rgba(21, 63, 91, 0.09);
+    border: 1px solid rgba(110, 68, 48, 0.14);
     border-radius: 18px;
 
     background:
         rgba(255, 255, 255, 0.96);
 
     box-shadow:
-        0 22px 55px rgba(15, 43, 70, 0.08),
-        0 3px 10px rgba(15, 43, 70, 0.025);
+        0 22px 55px rgba(53, 39, 31, 0.09),
+        0 3px 10px rgba(53, 39, 31, 0.04);
 }
 
 .form-header {
@@ -698,7 +561,7 @@ input {
 
     margin-bottom: 7px;
 
-    color: #28465d;
+    color: #58362a;
     font-size: 12px;
     font-weight: 600;
 }
@@ -721,7 +584,7 @@ input {
 
     display: flex;
 
-    color: #8ca0af;
+    color: #9a887b;
 
     transform: translateY(-50%);
 
@@ -739,8 +602,8 @@ input {
 
     outline: none;
 
-    color: #173047;
-    background: #fbfcfd;
+    color: #35271f;
+    background: #fdfbf9;
 
     font-size: 13px;
 
@@ -751,11 +614,11 @@ input {
 }
 
 .input-wrap input::placeholder {
-    color: #a8b6c1;
+    color: #ad9e93;
 }
 
 .input-wrap input:hover:not(:disabled) {
-    border-color: #c3d2dc;
+    border-color: #c99d7e;
 }
 
 .input-wrap input:focus {
@@ -763,7 +626,7 @@ input {
     background: #ffffff;
 
     box-shadow:
-        0 0 0 3px rgba(66, 174, 217, 0.12);
+        0 0 0 3px rgba(110, 68, 48, 0.12);
 }
 
 .input-wrap input:disabled {
@@ -790,7 +653,7 @@ input {
     border: 0;
     border-radius: 7px;
 
-    color: #788d9d;
+    color: #8f7e72;
     background: transparent;
 
     cursor: pointer;
@@ -804,7 +667,7 @@ input {
 
 .password-toggle:hover {
     color: var(--brand-dark);
-    background: #edf7fb;
+    background: #f0e2d7;
 }
 
 .password-toggle:focus-visible {
@@ -832,13 +695,10 @@ input {
 
     color: #fff;
 
-    background:
-        linear-gradient(135deg,
-            #42aed9 0%,
-            #268eb8 100%);
+    background: var(--brand);
 
     box-shadow:
-        0 8px 18px rgba(42, 153, 196, 0.18);
+        0 8px 18px rgba(110, 68, 48, 0.2);
 
     font-size: 13px;
     font-weight: 600;
@@ -855,7 +715,7 @@ input {
     transform: translateY(-1px);
 
     box-shadow:
-        0 11px 24px rgba(42, 153, 196, 0.22);
+        0 11px 24px rgba(110, 68, 48, 0.26);
 
     filter: brightness(0.98);
 }
@@ -865,7 +725,7 @@ input {
 }
 
 .submit-button:focus-visible {
-    outline: 3px solid rgba(66, 174, 217, 0.25);
+    outline: 3px solid rgba(110, 68, 48, 0.25);
     outline-offset: 3px;
 }
 
@@ -900,7 +760,7 @@ input {
     justify-content: center;
     gap: 6px;
 
-    color: #91a1ad;
+    color: #99887c;
     font-size: 10px;
 }
 
@@ -957,11 +817,6 @@ input {
         color: var(--navy);
         font-size: 16px;
         font-weight: 700;
-    }
-
-    .brand-mark--small {
-        width: 36px;
-        height: 36px;
     }
 
     .login-card {
