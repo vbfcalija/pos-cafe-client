@@ -147,20 +147,23 @@
                                                         class="text-xs font-semibold uppercase tracking-wide text-gray-500">
                                                         Choose a variant
                                                     </p>
-                                                    <div class="grid grid-cols-2 gap-2" role="group"
-                                                        :aria-label="`${product.name} variants`">
+                                                    <div class="grid gap-2"
+                                                        :class="product.variants.length === 1 ? 'grid-cols-1' : 'grid-cols-2'"
+                                                        role="group" :aria-label="`${product.name} variants`">
                                                         <button v-for="variant in product.variants" :key="variant.uuid"
                                                             type="button"
                                                             class="group flex min-h-14 items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition active:scale-[0.99]"
                                                             :class="state.selectedVariantByProduct[product.uuid] === variant.uuid
-                                                                ? 'border-primary-400 bg-primary-50 text-primary-800 shadow-sm ring-1 ring-primary-200'
-                                                                : 'border-primary-100 bg-white text-gray-600 hover:border-primary-300 hover:bg-primary-25'"
+                                                                ? 'shadow-sm ring-1'
+                                                                : 'bg-white text-gray-600 hover:opacity-90'"
+                                                            :style="variantCategoryStyle(category.color,
+                                                                state.selectedVariantByProduct[product.uuid] === variant.uuid)"
                                                             :aria-pressed="state.selectedVariantByProduct[product.uuid] === variant.uuid"
                                                             @click="state.selectedVariantByProduct[product.uuid] = variant.uuid">
                                                             <span
                                                                 class="flex size-9 shrink-0 items-center justify-center rounded-full"
-                                                                :class="variantIconClass(variant)">
-                                                                <Icon :name="variantIcon(variant)"
+                                                                :style="variantCategoryIconStyle(category.color)">
+                                                                <Icon :name="variantIcon(category)"
                                                                     class="size-[18px]" />
                                                             </span>
                                                             <span class="min-w-0 flex-1">
@@ -179,10 +182,10 @@
                                                                 </span>
                                                                 <Icon
                                                                     v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
-                                                                    name="ph:check-circle-fill"
-                                                                    class="size-4 text-primary" />
-                                                                <span v-else
-                                                                    class="size-4 rounded-full border border-primary-200" />
+                                                                    name="ph:check-circle-fill" class="size-4"
+                                                                    :style="{ color: category.color || '#6e4430' }" />
+                                                                <span v-else class="size-4 rounded-full border"
+                                                                    :style="{ borderColor: categoryColorRgba(category.color, 0.45) }" />
                                                             </span>
                                                         </button>
                                                     </div>
@@ -716,24 +719,11 @@ function selectedVariant(product: any) {
     return product.variants.find((variant: any) => variant.uuid === state.selectedVariantByProduct[product.uuid])
 }
 
-function isColdVariant(variant: any) {
-    return /iced|cold|frozen|chilled/i.test(variant.name)
-}
-
-function isHotVariant(variant: any) {
-    return /hot|warm|heated/i.test(variant.name)
-}
-
-function variantIcon(variant: any) {
-    if (isColdVariant(variant)) return 'ph:snowflake'
-    if (isHotVariant(variant)) return 'ph:coffee'
+function variantIcon(category: any) {
+    const categoryName = category?.name || ''
+    if (/hot/i.test(categoryName)) return 'ph:coffee'
+    if (/iced/i.test(categoryName)) return 'ph:snowflake'
     return 'ph:plus-circle'
-}
-
-function variantIconClass(variant: any) {
-    if (isColdVariant(variant)) return 'bg-sky-100 text-sky-600'
-    if (isHotVariant(variant)) return 'bg-orange-100 text-orange-600'
-    return 'bg-primary-100 text-primary-600'
 }
 
 function categoryTextColor(color: string) {
@@ -741,6 +731,30 @@ function categoryTextColor(color: string) {
     if (!hex || !/^[0-9a-f]{6}$/i.test(hex)) return '#35271f'
     const [red, green, blue] = [0, 2, 4].map(index => parseInt(hex.slice(index, index + 2), 16))
     return (red * 299 + green * 587 + blue * 114) / 1000 > 150 ? '#35271f' : '#ffffff'
+}
+
+function categoryColorRgba(color: string, opacity: number) {
+    const hex = color?.replace('#', '')
+    if (!hex || !/^[0-9a-f]{6}$/i.test(hex)) return `rgba(110, 68, 48, ${opacity})`
+    const red = parseInt(hex.slice(0, 2), 16)
+    const green = parseInt(hex.slice(2, 4), 16)
+    const blue = parseInt(hex.slice(4, 6), 16)
+    return `rgba(${red}, ${green}, ${blue}, ${opacity})`
+}
+
+function variantCategoryStyle(color: string, selected: boolean) {
+    return {
+        backgroundColor: selected ? categoryColorRgba(color, 0.09) : '#ffffff',
+        borderColor: categoryColorRgba(color, selected ? 0.75 : 0.25),
+        '--tw-ring-color': categoryColorRgba(color, 0.28),
+    }
+}
+
+function variantCategoryIconStyle(color: string) {
+    return {
+        backgroundColor: categoryColorRgba(color, 0.14),
+        color: color || '#6e4430',
+    }
 }
 
 function variantSize(variant: any) {
