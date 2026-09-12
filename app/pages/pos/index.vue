@@ -142,32 +142,35 @@
                                                         :aria-label="`${product.name} variants`">
                                                         <button v-for="variant in product.variants" :key="variant.uuid"
                                                             type="button"
-                                                            class="group relative flex min-h-16 items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition"
+                                                            class="group flex min-h-14 items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition active:scale-[0.99]"
                                                             :class="state.selectedVariantByProduct[product.uuid] === variant.uuid
-                                                                ? 'border-primary bg-primary-50 text-primary ring-1 ring-primary/20 shadow-sm'
-                                                                : 'border-primary-100 bg-primary-25/60 text-gray-600 hover:border-primary-300 hover:bg-primary-50'"
+                                                                ? 'border-primary-400 bg-primary-50 text-primary-800 shadow-sm ring-1 ring-primary-200'
+                                                                : 'border-primary-100 bg-white text-gray-600 hover:border-primary-300 hover:bg-primary-25'"
                                                             :aria-pressed="state.selectedVariantByProduct[product.uuid] === variant.uuid"
                                                             @click="state.selectedVariantByProduct[product.uuid] = variant.uuid">
                                                             <span
-                                                                class="flex size-8 shrink-0 items-center justify-center rounded-lg"
+                                                                class="flex size-9 shrink-0 items-center justify-center rounded-full"
                                                                 :class="variantIconClass(variant)">
-                                                                <Icon :name="variantIcon(variant)" class="size-4" />
+                                                                <Icon :name="variantIcon(variant)" class="size-[18px]" />
                                                             </span>
                                                             <span class="min-w-0 flex-1">
                                                                 <span
-                                                                    class="block truncate text-xs font-semibold text-gray-900">
+                                                                    class="block truncate text-sm font-semibold text-gray-900">
                                                                     {{ variantDisplayName(variant) }}
                                                                 </span>
-                                                                <span
-                                                                    class="mt-0.5 flex items-center justify-between gap-2 text-[11px] font-medium text-gray-500">
-                                                                    <span>{{ variantSize(variant) || 'Regular' }}</span>
-                                                                    <span>{{ money(variant.price) }}</span>
+                                                                <span class="mt-0.5 block truncate text-[11px] font-medium text-gray-500">
+                                                                    {{ variantSize(variant) || 'Regular' }}
                                                                 </span>
                                                             </span>
-                                                            <Icon
-                                                                v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
-                                                                name="ph:check-circle-fill"
-                                                                class="absolute right-2 top-2 size-4 text-primary" />
+                                                            <span class="flex shrink-0 flex-col items-end gap-1">
+                                                                <span class="text-sm font-bold text-primary-800">
+                                                                    {{ money(variant.price) }}
+                                                                </span>
+                                                                <Icon
+                                                                    v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
+                                                                    name="ph:check-circle-fill" class="size-4 text-primary" />
+                                                                <span v-else class="size-4 rounded-full border border-primary-200" />
+                                                            </span>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -717,7 +720,7 @@ function variantIcon(variant: any) {
 function variantIconClass(variant: any) {
     if (isColdVariant(variant)) return 'bg-sky-100 text-sky-600'
     if (isHotVariant(variant)) return 'bg-orange-100 text-orange-600'
-    return 'bg-emerald-100 text-emerald-600'
+    return 'bg-primary-100 text-primary-600'
 }
 
 function variantSize(variant: any) {
