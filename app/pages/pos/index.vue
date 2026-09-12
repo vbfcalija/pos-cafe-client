@@ -73,18 +73,29 @@
                                 aria-label="Filter products by category">
                                 <button v-for="category in categoryFilters" :key="category.uuid" type="button"
                                     class="inline-flex min-h-8 items-center gap-1 rounded-lg border px-2.5 text-[11px] font-semibold transition active:scale-[0.98] sm:min-h-9 sm:gap-1.5 sm:px-3 sm:text-xs"
-                                    :class="state.selectedCategory === category.uuid
-                                        ? 'border-primary bg-primary text-white shadow-sm'
-                                        : 'border-primary-100 bg-primary-25 text-gray-600 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700'"
+                                    :class="[
+                                        category.uuid === 'all'
+                                            ? (state.selectedCategory === category.uuid
+                                                ? 'border-primary bg-primary text-white shadow-sm'
+                                                : 'border-primary-100 bg-primary-25 text-gray-600 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700')
+                                            : 'border-transparent hover:opacity-90',
+                                        state.selectedCategory === category.uuid && category.uuid !== 'all'
+                                            ? 'shadow-sm ring-2 ring-primary-200 ring-offset-1'
+                                            : ''
+                                    ]"
+                                    :style="category.uuid === 'all' ? undefined : {
+                                        backgroundColor: category.color,
+                                        borderColor: category.color,
+                                        color: categoryTextColor(category.color),
+                                    }"
                                     :aria-pressed="state.selectedCategory === category.uuid"
                                     @click="state.selectedCategory = category.uuid">
-                                    <span v-if="category.uuid !== 'all'"
-                                        class="size-2 rounded-full border border-current/20"
-                                        :style="{ backgroundColor: category.color }" />
                                     {{ category.name }}
-                                    <span class="rounded-full px-1.5 py-0.5 text-[10px] sm:text-[11px]" :class="state.selectedCategory === category.uuid
-                                        ? 'bg-white/20 text-white'
-                                        : 'bg-gray-100 text-gray-500'">
+                                    <span class="rounded-full px-1.5 py-0.5 text-[10px] sm:text-[11px]" :class="category.uuid !== 'all'
+                                        ? 'bg-white/70 text-gray-700'
+                                        : (state.selectedCategory === category.uuid
+                                            ? 'bg-white/20 text-white'
+                                            : 'bg-gray-100 text-gray-500')">
                                         {{ category.count }}
                                     </span>
                                 </button>
@@ -721,6 +732,13 @@ function variantIconClass(variant: any) {
     if (isColdVariant(variant)) return 'bg-sky-100 text-sky-600'
     if (isHotVariant(variant)) return 'bg-orange-100 text-orange-600'
     return 'bg-primary-100 text-primary-600'
+}
+
+function categoryTextColor(color: string) {
+    const hex = color?.replace('#', '')
+    if (!hex || !/^[0-9a-f]{6}$/i.test(hex)) return '#35271f'
+    const [red, green, blue] = [0, 2, 4].map(index => parseInt(hex.slice(index, index + 2), 16))
+    return (red * 299 + green * 587 + blue * 114) / 1000 > 150 ? '#35271f' : '#ffffff'
 }
 
 function variantSize(variant: any) {
