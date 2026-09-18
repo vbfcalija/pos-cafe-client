@@ -190,7 +190,11 @@ function printReceipt() {
         return
     }
     state.error = ''
-    const intentUrl = `intent:${state.escposData}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`
+    // The literal "base64," prefix is required — without it RawBT can't
+    // tell the payload apart from plain text and just prints the base64
+    // string itself verbatim instead of decoding it into ESC/POS bytes
+    // first. Matches escpos-php's own RawbtPrintConnector exactly.
+    const intentUrl = `intent:base64,${state.escposData}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`
     window.location.href = intentUrl
     successAlert('Sent to RawBT', 'Check RawBT to confirm the receipt printed.')
 }
