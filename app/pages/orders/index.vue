@@ -85,8 +85,7 @@
                                             </Tooltip>
                                             <Tooltip text="Print receipt">
                                                 <FormButton buttonStyle="action" buttonSize="xs"
-                                                    :disabled="state.printingUuid === order.uuid"
-                                                    @click="printOrder(order)">
+                                                    @click="openPrintPreview(order)">
                                                     <Icon name="ph:printer" class="size-4" />
                                                 </FormButton>
                                             </Tooltip>
@@ -274,6 +273,9 @@
             <DialogConfirmation :isModalOpen="state.isRefundConfirmationOpen" title="Refund order"
                 :message="`Refund order #${state.refundOrder?.order_no || ''} for ${money(orderTotal(state.refundOrder))}? This action cannot be undone.`"
                 @close="closeRefundConfirmation" @confirm="refundOrder" />
+
+            <ModulesOrderReceiptPreviewModal :show="state.isPrintPreviewOpen" :order="state.printPreviewOrder"
+                @close="state.isPrintPreviewOpen = false" />
         </NuxtLayout>
     </div>
 </template>
@@ -324,7 +326,8 @@ const state = reactive({
     isRefundConfirmationOpen: false,
     refundOrder: null as any,
     refundingUuid: '' as string,
-    printingUuid: '' as string,
+    isPrintPreviewOpen: false,
+    printPreviewOrder: null as any,
     editingPaymentUuid: '' as string,
     isUpdatingPayment: false,
     paymentForm: {
@@ -352,17 +355,9 @@ async function fetchOrders() {
     }
     state.isTableLoading = false
 }
-async function printOrder(order: any) {
-    if (state.printingUuid) return
-    state.printingUuid = order.uuid
-    try {
-        await orderService.printReceipt(order.uuid)
-        successAlert('Success', 'Receipt sent to printer.')
-    } catch (error: any) {
-        errorAlert('Could not print', error?.message || 'Printer not detected. Make sure a Bluetooth thermal printer is paired and try again.')
-    } finally {
-        state.printingUuid = ''
-    }
+function openPrintPreview(order: any) {
+    state.printPreviewOrder = order
+    state.isPrintPreviewOpen = true
 }
 
 function openRefundConfirmation(order: any) {

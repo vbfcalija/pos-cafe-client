@@ -416,12 +416,9 @@
                             <p class="text-xs font-medium uppercase tracking-wide">Change to customer</p>
                             <p class="mt-1 text-2xl font-bold">{{ money(state.completedChange) }}</p>
                         </div>
-                        <Alert type="danger" :text="state.printError" class="mt-4 text-left"
-                            v-if="state.printError && state.printError.length > 0" />
-                        <FormButton buttonStyle="action" class="mt-5 w-full" :disabled="state.isPrinting"
-                            @click="printReceipt">
+                        <FormButton buttonStyle="action" class="mt-5 w-full" @click="state.isPrintPreviewOpen = true">
                             <Icon name="ph:printer" class="size-5" />
-                            {{ state.isPrinting ? 'Printing…' : 'Print receipt' }}
+                            Print receipt
                         </FormButton>
                         <FormButton buttonStyle="primary" class="mt-3 w-full" @click="state.isSuccessOpen = false">
                             New order
@@ -429,6 +426,9 @@
                     </div>
                 </template>
             </Modal>
+
+            <ModulesOrderReceiptPreviewModal :show="state.isPrintPreviewOpen" :order="state.completedOrder"
+                @close="state.isPrintPreviewOpen = false" />
         </NuxtLayout>
     </div>
 </template>
@@ -441,7 +441,6 @@ import { productService } from '@/components/api/user/ProductService'
 import { productVariantService } from '@/components/api/user/ProductVariantService'
 import { shiftService } from '@/components/api/user/ShiftService'
 import FormSelect from '@/components/form/Select.vue'
-import { useAlert } from '@/composables/alert'
 import { usePosStore } from '@/store/pos'
 import { useUserStore } from '@/store/user'
 import type { CartLine, Error } from '@/types'
@@ -451,7 +450,6 @@ const noDiscountValue = '__none__'
 const runtimeConfig = useRuntimeConfig()
 const posStore = usePosStore() as any
 const userStore = useUserStore() as any
-const { successAlert } = useAlert()
 
 const state = reactive({
     shifts: [] as any[],
@@ -475,8 +473,7 @@ const state = reactive({
     completedOrder: null as any,
     completedChange: 0,
     completedPaymentMethod: '',
-    isPrinting: false,
-    printError: '',
+    isPrintPreviewOpen: false,
     isShiftModalOpen: false,
     isCloseShiftConfirmationOpen: false,
     isClosingShift: false,
@@ -817,20 +814,6 @@ function selectCashTender(amount: number) {
     state.cash_tender = amount.toFixed(2)
 }
 
-async function printReceipt() {
-    if (state.isPrinting || !state.completedOrder?.uuid) return
-    state.isPrinting = true
-    state.printError = ''
-    try {
-        await orderService.printReceipt(state.completedOrder.uuid)
-        successAlert('Success', 'Receipt sent to printer.')
-    } catch (error: any) {
-        state.printError = error?.message || 'Printer not detected. Make sure a Bluetooth thermal printer is paired and try again.'
-    } finally {
-        state.isPrinting = false
-    }
-}
-
 async function checkout() {
     if (!canCheckout.value || state.isSubmitting) return
     state.error = {}
@@ -850,7 +833,6 @@ async function checkout() {
             state.completedOrder = response.data
             state.completedPaymentMethod = state.payment_method
             state.completedChange = state.payment_method === 'cash' ? cashChange.value : 0
-            state.printError = ''
             posStore.clearCart()
             state.customer_uuid = ''
             state.payment_method = 'cash'
