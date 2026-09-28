@@ -8,6 +8,11 @@
                         'Create a shift before starting a POS transaction.'
                 }}
             </p>
+            <button type="button"
+                class="mt-1 text-sm font-medium text-primary hover:text-primary-700 hover:underline"
+                @click="navigateTo('/overview')">
+                Go to Overview instead
+            </button>
             <ModulesShiftForm formType="create" :selectedShift="state.formShift" :error="state.error"
                 :showCancel="false" submitLabel="Start shift"
                 @isPageLoading="(value: boolean) => state.isPageLoading = value" @submitForm="saveShift" />
