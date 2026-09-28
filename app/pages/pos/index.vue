@@ -440,6 +440,7 @@ import { orderService } from '@/components/api/user/OrderService'
 import { productService } from '@/components/api/user/ProductService'
 import { productVariantService } from '@/components/api/user/ProductVariantService'
 import { shiftService } from '@/components/api/user/ShiftService'
+import { useReceiptPrinter } from '@/composables/receiptPrinter'
 import FormSelect from '@/components/form/Select.vue'
 import { usePosStore } from '@/store/pos'
 import { useUserStore } from '@/store/user'
@@ -450,6 +451,7 @@ const noDiscountValue = '__none__'
 const runtimeConfig = useRuntimeConfig()
 const posStore = usePosStore() as any
 const userStore = useUserStore() as any
+const { printOrderReceipt } = useReceiptPrinter()
 
 const state = reactive({
     shifts: [] as any[],
@@ -839,6 +841,11 @@ async function checkout() {
             state.reference = ''
             state.cash_tender = ''
             state.isSuccessOpen = true
+            // Auto-print on sale completion without showing the receipt
+            // preview modal — only the "Order completed" modal is shown.
+            // "Print receipt" still opens the preview modal manually if this
+            // silent attempt gets dropped (see composables/receiptPrinter.ts).
+            printOrderReceipt(response.data.uuid).catch(() => { })
         }
     } catch (error: any) {
         state.error = error

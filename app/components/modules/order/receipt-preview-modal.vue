@@ -63,6 +63,7 @@
 <script setup lang="ts">
 import { orderService } from '@/components/api/user/OrderService'
 import { useAlert } from '@/composables/alert'
+import { useReceiptPrinter } from '@/composables/receiptPrinter'
 import moment from 'moment'
 
 const props = defineProps({
@@ -79,8 +80,8 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const runtimeConfig = useRuntimeConfig()
-const route = useRoute()
 const { successAlert } = useAlert()
+const { sendToRawBt } = useReceiptPrinter()
 
 const state = reactive({
     isGeneratingPdf: false,
@@ -100,15 +101,6 @@ watch(() => props.show, async (show) => {
     try {
         const response = await orderService.getReceiptEscPos(props.order.uuid)
         state.escposData = response.data
-        // On the POS screen the modal appears right after a sale is completed,
-        // so skip the extra tap and fire the RawBT handoff immediately. Note
-        // this runs after an awaited fetch rather than inside a click, so it
-        // isn't a "genuine user gesture" the way the button's own click is —
-        // see the note on printReceipt() below. The Print button stays
-        // visible as a manual fallback if the automatic handoff gets dropped.
-        if (route.path === '/pos') {
-            printReceipt()
-        }
     } catch {
         // Print button will just show its own error if clicked with nothing loaded.
     }
@@ -176,38 +168,21 @@ function money(value: number | string) {
     return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(value || 0))
 }
 
-// The app is a plain website now, not a packaged native app, so there's no
-// bridge for a browser to talk Bluetooth to a classic-SPP thermal printer
-// (Web Bluetooth only supports BLE). RawBT bridges that gap: handing it
-// ESC/POS bytes via Chrome's "intent:" URL syntax hands the print job to
-// that app, which does the real Bluetooth printing — this is RawBT's own
-// documented integration (rawbt.ru/intents.html), not a plain `rawbt:` href,
-// which Chrome doesn't reliably resolve into an app handoff on its own.
-//
-// Critically, this must run synchronously inside the click itself — no
-// `await` before it. Android/Chrome only honors an app-intent handoff as
-// part of a real user gesture, and that gesture is considered "spent" the
-// moment an async microtask (like an awaited fetch) runs first, so the
-// intent silently gets dropped. That's why the ESC/POS bytes are fetched
-// ahead of time (see the `show` watcher above) instead of on click.
-//
-// There's also no way to get a genuine success/failure signal back from
-// this handoff, so this can only confirm the job was *sent to RawBT* —
-// never that it actually printed, unlike the (now unreachable) native
-// Bluetooth path this used to call.
+// See composables/receiptPrinter.ts for why this goes through RawBT's
+// "intent:" URL scheme. Critically, sendToRawBt() must run synchronously
+// inside the click itself — no `await` before it. Android/Chrome only
+// honors an app-intent handoff as part of a real user gesture, and that
+// gesture is considered "spent" the moment an async microtask (like an
+// awaited fetch) runs first, so the intent silently gets dropped. That's
+// why the ESC/POS bytes are fetched ahead of time (see the `show` watcher
+// above) instead of on click.
 function printReceipt() {
     if (!state.escposData) {
         state.error = 'Still preparing the receipt — wait a moment and try again.'
         return
     }
     state.error = ''
-    // The literal "base64," prefix is required — without it RawBT can't
-    // tell the payload apart from plain text and just prints the base64
-    // string itself verbatim instead of decoding it into ESC/POS bytes
-    // first. Matches escpos-php's own RawbtPrintConnector exactly.
-    const intentUrl = `intent:base64,${state.escposData}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`
-    window.location.href = intentUrl
-    successAlert('Sent to RawBT', 'Check RawBT to confirm the receipt printed.')
+    sendToRawBt(state.escposData)
 }
 
 async function downloadPdf() {
