@@ -98,8 +98,7 @@ class BaseAPIService {
 
     revokeAccess() {
         localStorage.removeItem("_token")
-        localStorage.removeItem("remember_me")
-        navigateTo('/')
+        navigateTo('/login')
     }
 }
 

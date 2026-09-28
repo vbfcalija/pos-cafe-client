@@ -2,7 +2,8 @@
     <Modal size="sm" title="Receipt preview" :show="props.show" @close="$emit('close')">
         <template #modal-body>
             <div class="flex justify-center">
-                <div class="w-[280px] rounded-md border border-dashed border-gray-300 bg-white p-4 font-mono text-[11px] leading-relaxed shadow-sm">
+                <div
+                    class="w-[280px] rounded-md border border-dashed border-gray-300 bg-white p-4 font-mono text-[11px] leading-relaxed shadow-sm">
                     <p class="text-center font-bold">{{ runtimeConfig?.public?.appName }}</p>
                     <p v-if="branchName" class="text-center">{{ branchName }}</p>
                     <hr class="my-2 border-t border-dashed border-gray-400">
@@ -78,6 +79,7 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const runtimeConfig = useRuntimeConfig()
+const route = useRoute()
 const { successAlert } = useAlert()
 
 const state = reactive({
@@ -98,13 +100,22 @@ watch(() => props.show, async (show) => {
     try {
         const response = await orderService.getReceiptEscPos(props.order.uuid)
         state.escposData = response.data
+        // On the POS screen the modal appears right after a sale is completed,
+        // so skip the extra tap and fire the RawBT handoff immediately. Note
+        // this runs after an awaited fetch rather than inside a click, so it
+        // isn't a "genuine user gesture" the way the button's own click is —
+        // see the note on printReceipt() below. The Print button stays
+        // visible as a manual fallback if the automatic handoff gets dropped.
+        if (route.path === '/pos') {
+            printReceipt()
+        }
     } catch {
         // Print button will just show its own error if clicked with nothing loaded.
     }
 }, { immediate: true })
 
 const branchName = computed(() => props.order?.shift?.branch?.name || '')
-const formattedDate = computed(() => props.order?.date ? moment(props.order.date).format('YYYY-MM-DD HH:mm') : '')
+const formattedDate = computed(() => props.order?.created_at ? moment(props.order.created_at).format('YYYY-MM-DD HH:mm') : '')
 
 const paymentMethods = computed(() => {
     return props.order?.payments?.map((payment: any) => paymentMethodLabel(payment.payment_method)).join(', ') || '-'
