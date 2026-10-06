@@ -35,17 +35,23 @@
                                 <template #body
                                     v-if="!(state.isTableLoading || (state.productVariants?.data?.length === 0))">
                                     <tr v-for="(productVariant, index) in state.productVariants?.data" :key="index">
-                                        <td width="20%">
+                                        <td width="18%">
                                             <p>{{ productVariant?.product?.name }}</p>
                                         </td>
-                                        <td width="20%">
+                                        <td width="18%">
                                             <p>{{ productVariant?.name }}</p>
                                         </td>
-                                        <td width="15%">
+                                        <td width="12%">
                                             <p>{{ money(productVariant?.price) }}</p>
                                         </td>
-                                        <td width="15%">
+                                        <td width="12%">
                                             <p>{{ money(productVariant?.cost) }}</p>
+                                        </td>
+                                        <td width="10%">
+                                            <p v-if="productVariant?.is_track_stock">
+                                                {{ productVariant?.current_stocks }}
+                                            </p>
+                                            <p v-else class="text-gray-400">-</p>
                                         </td>
                                         <td width="10%">
                                             <Badge class="w-fit"
@@ -113,6 +119,7 @@ const state = reactive({
         { name: 'Name', sorter: true, key: 'name' },
         { name: 'Price', sorter: true, key: 'price' },
         { name: 'Cost', sorter: true, key: 'cost' },
+        { name: 'Stocks', sorter: true, key: 'current_stocks' },
         { name: 'Status', sorter: true, key: 'is_active' },
         { name: '' },
     ],

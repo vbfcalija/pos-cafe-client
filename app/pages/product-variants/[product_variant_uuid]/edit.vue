@@ -46,7 +46,9 @@ const state = reactive({
         name: '',
         price: '',
         cost: '',
-        is_active: false
+        is_active: false,
+        is_track_stock: false,
+        current_stocks: '0',
     },
     isPageLoading: false,
 })
@@ -67,6 +69,8 @@ async function fetchProductVariant() {
                 price: response?.data?.price?.toString() ?? '',
                 cost: response?.data?.cost?.toString() ?? '',
                 is_active: response?.data?.is_active ? true : false,
+                is_track_stock: response?.data?.is_track_stock ? true : false,
+                current_stocks: response?.data?.current_stocks?.toString() ?? '0',
             }
         }
     } catch (error: any) {
@@ -85,6 +89,8 @@ async function updateProductVariant(productVariantDetails: any) {
             price: productVariantDetails.price,
             cost: productVariantDetails.cost,
             is_active: productVariantDetails.is_active,
+            is_track_stock: productVariantDetails.is_track_stock,
+            current_stocks: productVariantDetails.is_track_stock ? Number(productVariantDetails.current_stocks || 0) : undefined,
         }
         const response = await productVariantService.updateProductVariant(productVariantUuid, params)
         if (response.data) {

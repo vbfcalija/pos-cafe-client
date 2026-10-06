@@ -156,13 +156,13 @@
                                                             :class="state.selectedVariantByProduct[product.uuid] === variant.uuid
                                                                 ? 'shadow-sm ring-1'
                                                                 : 'bg-white text-gray-600 hover:opacity-90'"
-                                                            :style="variantCategoryStyle(category.color,
+                                                            :style="variantCategoryStyle(variantAccent(category.color),
                                                                 state.selectedVariantByProduct[product.uuid] === variant.uuid)"
                                                             :aria-pressed="state.selectedVariantByProduct[product.uuid] === variant.uuid"
                                                             @click="state.selectedVariantByProduct[product.uuid] = variant.uuid">
                                                             <span
                                                                 class="flex size-9 shrink-0 items-center justify-center rounded-full"
-                                                                :style="variantCategoryIconStyle(category.color)">
+                                                                :style="variantCategoryIconStyle(variantAccent(category.color))">
                                                                 <Icon :name="variantIcon(category)"
                                                                     class="size-[18px]" />
                                                             </span>
@@ -175,6 +175,15 @@
                                                                     class="mt-0.5 block truncate text-[11px] font-medium text-gray-500">
                                                                     {{ variantSize(variant) || 'Regular' }}
                                                                 </span>
+                                                                <span v-if="variant.is_track_stock"
+                                                                    class="mt-0.5 block truncate text-[11px] font-medium"
+                                                                    :class="variant.current_stocks > 0 ? 'text-gray-500' : 'text-red-600'">
+                                                                    {{
+                                                                        variant.current_stocks > 0 ?
+                                                                            `${variant.current_stocks} in stock` :
+                                                                            'Out of stock'
+                                                                    }}
+                                                                </span>
                                                             </span>
                                                             <span class="flex shrink-0 flex-col items-end gap-1">
                                                                 <span class="text-sm font-bold text-primary-800">
@@ -182,10 +191,10 @@
                                                                 </span>
                                                                 <Icon
                                                                     v-if="state.selectedVariantByProduct[product.uuid] === variant.uuid"
-                                                                    name="ph:check-circle-fill" class="size-4"
-                                                                    :style="{ color: category.color || '#6e4430' }" />
-                                                                <span v-else class="size-4 rounded-full border"
-                                                                    :style="{ borderColor: categoryColorRgba(category.color, 0.45) }" />
+                                                                    name="ph:check-circle-fill" class="size-5"
+                                                                    :style="{ color: variantAccent(category.color) }" />
+                                                                <span v-else class="size-5 rounded-full border"
+                                                                    :style="{ borderColor: categoryColorRgba(variantAccent(category.color), 0.45) }" />
                                                             </span>
                                                         </button>
                                                     </div>
@@ -196,6 +205,12 @@
                                                         <p class="text-[11px] text-gray-500">Selected variant</p>
                                                         <p class="truncate text-sm font-semibold text-gray-900">
                                                             {{ selectedVariant(product)?.name || 'Select a variant' }}
+                                                        </p>
+                                                        <p v-if="selectedVariant(product)?.is_track_stock"
+                                                            class="text-[11px] font-medium"
+                                                            :class="selectedVariant(product).current_stocks > 0 ? 'text-gray-500' : 'text-red-600'">
+                                                            Current stocks:
+                                                            {{ selectedVariant(product).current_stocks }}
                                                         </p>
                                                     </div>
                                                     <div>
@@ -739,6 +754,17 @@ function categoryColorRgba(color: string, opacity: number) {
     const green = parseInt(hex.slice(2, 4), 16)
     const blue = parseInt(hex.slice(4, 6), 16)
     return `rgba(${red}, ${green}, ${blue}, ${opacity})`
+}
+
+// Category colors that are missing or too light (near-white/gray) make the
+// selected check and borders disappear on the white card, so fall back to the
+// brand brown.
+function variantAccent(color: string) {
+    const hex = color?.replace('#', '')
+    if (!hex || !/^[0-9a-f]{6}$/i.test(hex)) return '#6e4430'
+    const [r, g, b] = [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16))
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    return luminance > 0.7 ? '#6e4430' : color
 }
 
 function variantCategoryStyle(color: string, selected: boolean) {

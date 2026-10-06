@@ -42,6 +42,18 @@
                         <FormCheckbox :value="state.formProductVariant.is_active" /> Active
                     </div>
                 </div>
+                <div class="space-y-1">
+                    <div class="w-fit flex items-center cursor-pointer" @click="changeIsTrackStock">
+                        <FormCheckbox :value="state.formProductVariant.is_track_stock" /> Track stock
+                    </div>
+                </div>
+                <div class="space-y-1" v-if="state.formProductVariant.is_track_stock">
+                    <FormLabel for="current_stocks" label="Current stocks" />
+                    <FormNumberField id="current_stocks" name="current_stocks" placeholder="Current stocks" :min="0"
+                        v-model="state.formProductVariant.current_stocks" />
+                    <FormError :error="v$?.formProductVariant?.current_stocks?.$errors[0]?.$message.toString()" />
+                    <FormError :error="props?.error?.errors?.current_stocks?.[0]" />
+                </div>
             </div>
             <div class="mt-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -95,7 +107,9 @@ const state = reactive({
         name: '',
         price: '',
         cost: '',
-        is_active: false
+        is_active: false,
+        is_track_stock: false,
+        current_stocks: '0',
     } as any,
     isPageLoading: false,
     productOptions: [] as any[],
@@ -114,6 +128,8 @@ watch(() => props.selectedProductVariant, (newValue: any) => {
             price: newValue.price,
             cost: newValue.cost,
             is_active: newValue.is_active,
+            is_track_stock: newValue.is_track_stock ?? false,
+            current_stocks: newValue.current_stocks ?? '0',
         }
     }
 })
@@ -125,6 +141,9 @@ const rules = computed(() => ({
         name: { required: requiredField },
         price: { required: requiredField, minValue: helpers.withMessage('Price must be at least 0.', minValue(0)) },
         cost: { required: requiredField, minValue: helpers.withMessage('Cost must be at least 0.', minValue(0)) },
+        current_stocks: {
+            minValue: helpers.withMessage('Current stocks must be at least 0.', minValue(0)),
+        },
     },
 }))
 const v$ = useVuelidate(rules, state)
@@ -149,6 +168,10 @@ function submitForm() {
 
 function changeIsActive() {
     state.formProductVariant.is_active = !state.formProductVariant.is_active
+}
+
+function changeIsTrackStock() {
+    state.formProductVariant.is_track_stock = !state.formProductVariant.is_track_stock
 }
 
 function handleProductCreated(product: any) {

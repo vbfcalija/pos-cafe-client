@@ -45,7 +45,9 @@ const state = reactive({
         name: '',
         price: '',
         cost: '',
-        is_active: false
+        is_active: false,
+        is_track_stock: false,
+        current_stocks: '0',
     },
     isPageLoading: false,
 })
@@ -60,6 +62,8 @@ async function saveProductVariant(productVariantDetails: any) {
             price: productVariantDetails.price,
             cost: productVariantDetails.cost,
             is_active: productVariantDetails.is_active,
+            is_track_stock: productVariantDetails.is_track_stock,
+            current_stocks: productVariantDetails.is_track_stock ? Number(productVariantDetails.current_stocks || 0) : 0,
         }
         const response = await productVariantService.saveProductVariant(params)
         if (response.data) {
