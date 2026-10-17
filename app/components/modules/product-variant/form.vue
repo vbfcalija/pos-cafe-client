@@ -24,6 +24,18 @@
                     <FormError :error="props?.error?.errors?.name?.[0]" />
                 </div>
                 <div class="space-y-1">
+                    <FormLabel for="sku" label="SKU" />
+                    <FormTextField id="sku" name="sku" placeholder="SKU" v-model="state.formProductVariant.sku" />
+                    <FormError :error="v$?.formProductVariant?.sku?.$errors[0]?.$message.toString()" />
+                    <FormError :error="props?.error?.errors?.sku?.[0]" />
+                </div>
+                <div class="space-y-1">
+                    <FormLabel for="barcode" label="Barcode" />
+                    <FormTextField id="barcode" name="barcode" placeholder="Barcode"
+                        v-model="state.formProductVariant.barcode" />
+                    <FormError :error="props?.error?.errors?.barcode?.[0]" />
+                </div>
+                <div class="space-y-1">
                     <FormLabel for="price" label="Price" />
                     <FormNumberField id="price" name="price" placeholder="Price" :min="0"
                         v-model="state.formProductVariant.price" />
@@ -105,6 +117,8 @@ const state = reactive({
     formProductVariant: {
         product_uuid: '',
         name: '',
+        sku: '',
+        barcode: '',
         price: '',
         cost: '',
         is_active: false,
@@ -125,6 +139,8 @@ watch(() => props.selectedProductVariant, (newValue: any) => {
         state.formProductVariant = {
             product_uuid: newValue.product_uuid,
             name: newValue.name,
+            sku: newValue.sku ?? '',
+            barcode: newValue.barcode ?? '',
             price: newValue.price,
             cost: newValue.cost,
             is_active: newValue.is_active,
@@ -139,6 +155,7 @@ const rules = computed(() => ({
     formProductVariant: {
         product_uuid: { required: requiredField },
         name: { required: requiredField },
+        sku: { required: requiredField },
         price: { required: requiredField, minValue: helpers.withMessage('Price must be at least 0.', minValue(0)) },
         cost: { required: requiredField, minValue: helpers.withMessage('Cost must be at least 0.', minValue(0)) },
         current_stocks: {

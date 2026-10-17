@@ -129,7 +129,7 @@
                                                             {{ product.name }}
                                                         </h4>
                                                         <p class="truncate text-xs text-gray-500">
-                                                            {{ product.sku || 'No SKU' }}
+                                                            {{ product.category?.name || 'Uncategorized' }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -205,6 +205,10 @@
                                                         <p class="text-[11px] text-gray-500">Selected variant</p>
                                                         <p class="truncate text-sm font-semibold text-gray-900">
                                                             {{ selectedVariant(product)?.name || 'Select a variant' }}
+                                                        </p>
+                                                        <p v-if="selectedVariant(product)?.sku"
+                                                            class="truncate text-[11px] text-gray-500">
+                                                            SKU: {{ selectedVariant(product).sku }}
                                                         </p>
                                                         <p v-if="selectedVariant(product)?.is_track_stock"
                                                             class="text-[11px] font-medium"
@@ -564,8 +568,10 @@ const filteredProducts = computed(() => {
         const categoryUuid = product.category?.uuid ?? 'uncategorized'
         if (state.selectedCategory !== 'all' && categoryUuid !== state.selectedCategory) return false
         if (!search) return true
-        const variants = product.variants.map((variant: any) => variant.name).join(' ')
-        return `${product.name} ${product.sku} ${product.barcode} ${variants}`.toLowerCase().includes(search)
+        const variants = product.variants
+            .map((variant: any) => [variant.name, variant.sku, variant.barcode].filter(Boolean).join(' '))
+            .join(' ')
+        return `${product.name} ${variants}`.toLowerCase().includes(search)
     })
 })
 

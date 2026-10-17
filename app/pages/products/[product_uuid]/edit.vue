@@ -36,7 +36,7 @@ const productUuid = router?.currentRoute?.value?.params?.product_uuid
 const breadcrumbLinks = [{ name: 'Products', href: '/products' }, { name: 'Edit product', href: `/products/${productUuid}/edit` }]
 const state = reactive({
     error: {} as Error,
-    formProduct: { sku: '', barcode: '', name: '', color: '#000000', category_uuid: '', tax_rate_uuid: '' },
+    formProduct: { name: '', color: '#000000', category_uuid: '', tax_rate_uuid: '' },
     isPageLoading: false,
 })
 onMounted(() => { fetchProduct() })
@@ -47,7 +47,7 @@ async function fetchProduct() {
         const response = await productService.getProduct(productUuid)
         if (response) {
             state.formProduct = {
-                sku: response?.data?.sku ?? '', barcode: response?.data?.barcode ?? '', name: response?.data?.name ?? '',
+                name: response?.data?.name ?? '',
                 color: response?.data?.color || '#000000', category_uuid: response?.data?.category?.uuid ?? '',
                 tax_rate_uuid: response?.data?.tax_rate?.uuid ?? '',
             }
@@ -60,8 +60,6 @@ async function updateProduct(productDetails: any) {
     state.isPageLoading = true
     try {
         const params = {
-            sku: productDetails.sku,
-            barcode: productDetails.barcode,
             name: productDetails.name,
             color: productDetails.color,
             category_uuid: productDetails.category_uuid,

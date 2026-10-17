@@ -5,18 +5,6 @@
                 v-if="props.error?.message && props.error.message.length > 0" />
             <div class="space-y-3">
                 <div class="space-y-1">
-                    <FormLabel for="sku" label="SKU" />
-                    <FormTextField id="sku" name="sku" placeholder="SKU" v-model="state.formProduct.sku" />
-                    <FormError :error="v$?.formProduct?.sku?.$errors[0]?.$message.toString()" />
-                    <FormError :error="props?.error?.errors?.sku?.[0]" />
-                </div>
-                <div class="space-y-1">
-                    <FormLabel for="barcode" label="Barcode" />
-                    <FormTextField id="barcode" name="barcode" placeholder="Barcode"
-                        v-model="state.formProduct.barcode" />
-                    <FormError :error="props?.error?.errors?.barcode?.[0]" />
-                </div>
-                <div class="space-y-1">
                     <FormLabel for="name" label="Name" />
                     <FormTextField id="name" name="name" placeholder="Name" v-model="state.formProduct.name" />
                     <FormError :error="v$?.formProduct?.name?.$errors[0]?.$message.toString()" />
@@ -105,8 +93,6 @@ const emit = defineEmits(['isPageLoading', 'submitForm'])
 const state = reactive({
     error: {} as Error,
     formProduct: {
-        sku: '',
-        barcode: '',
         name: '',
         color: '#000000',
         category_uuid: '',
@@ -125,8 +111,6 @@ onMounted(() => {
 watch(() => props.selectedProduct, (newValue: any) => {
     if (newValue != null) {
         state.formProduct = {
-            sku: newValue.sku,
-            barcode: newValue.barcode,
             name: newValue.name,
             color: newValue.color || '#000000',
             category_uuid: newValue.category_uuid,
@@ -138,7 +122,6 @@ watch(() => props.selectedProduct, (newValue: any) => {
 const requiredField = helpers.withMessage('This field is required.', required)
 const rules = computed(() => ({
     formProduct: {
-        sku: { required: requiredField },
         name: { required: requiredField },
         category_uuid: { required: requiredField },
         tax_rate_uuid: { required: requiredField },

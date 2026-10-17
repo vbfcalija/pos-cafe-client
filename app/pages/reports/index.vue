@@ -401,7 +401,7 @@ function exportRows(): any[][] {
         filteredOrders.value.forEach(order => order.details?.forEach((line: any) => {
             const variant = line.product_variant
             const key = variant?.uuid || `${variant?.product?.name}-${variant?.name}`
-            const item = variants.get(key) || { category: variant?.product?.category?.name || 'Uncategorized', product: variant?.product?.name || 'Product', sku: variant?.product?.sku || '', variant: variant?.name || 'Default', orders: new Set(), quantity: 0, gross: 0, discount: 0, tax: 0, net: 0, cost: 0 }
+            const item = variants.get(key) || { category: variant?.product?.category?.name || 'Uncategorized', product: variant?.product?.name || 'Product', sku: variant?.sku || '', variant: variant?.name || 'Default', orders: new Set(), quantity: 0, gross: 0, discount: 0, tax: 0, net: 0, cost: 0 }
             item.orders.add(order.uuid); item.quantity += Number(line.quantity); item.gross += lineGross(line); item.discount += lineDiscount(line); item.tax += lineTax(line); item.net += lineTotal(line); item.cost += lineCost(line); variants.set(key, item)
         }))
         Array.from(variants.values()).sort((a, b) => b.net - a.net).forEach(item => rows.push([item.category, item.product, item.sku, item.variant, item.orders.size, item.quantity, decimal(item.gross), decimal(item.discount), decimal(item.tax), decimal(item.net), decimal(item.cost), decimal(item.net - item.tax - item.cost)]))

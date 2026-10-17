@@ -43,6 +43,8 @@ const state = reactive({
     formProductVariant: {
         product_uuid: '',
         name: '',
+        sku: '',
+        barcode: '',
         price: '',
         cost: '',
         is_active: false,
@@ -59,6 +61,8 @@ async function saveProductVariant(productVariantDetails: any) {
         const params = {
             product_uuid: productVariantDetails.product_uuid,
             name: productVariantDetails.name,
+            sku: productVariantDetails.sku,
+            barcode: productVariantDetails.barcode,
             price: productVariantDetails.price,
             cost: productVariantDetails.cost,
             is_active: productVariantDetails.is_active,

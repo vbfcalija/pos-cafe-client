@@ -33,12 +33,6 @@
                                 <template #body v-if="!(state.isTableLoading || (state.products?.data?.length === 0))">
                                     <tr v-for="(product, index) in state.products?.data" :key="index">
                                         <td>
-                                            <p>{{ product?.sku }}</p>
-                                        </td>
-                                        <td>
-                                            <p>{{ product?.barcode || '-' }}</p>
-                                        </td>
-                                        <td>
                                             <p>{{ product?.name }}</p>
                                         </td>
                                         <td><span class="inline-block size-6 rounded border"
@@ -94,8 +88,6 @@ const { successAlert } = useAlert()
 const state = reactive({
     products: [] as any,
     columnHeaders: [
-        { name: 'SKU', sorter: true, key: 'sku' },
-        { name: 'Barcode', sorter: true, key: 'barcode' },
         { name: 'Name', sorter: true, key: 'name' },
         { name: 'Color', sorter: true, key: 'color' },
         { name: 'Category', sorter: true, key: 'category_id' },

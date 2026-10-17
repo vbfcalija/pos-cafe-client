@@ -46,8 +46,6 @@ const { successAlert } = useAlert()
 const state = reactive({
     error: {} as Error,
     formProduct: {
-        sku: '',
-        barcode: '',
         name: '',
         color: '#000000',
         category_uuid: '',
@@ -60,8 +58,6 @@ async function saveProduct(productDetails: any) {
     state.isPageLoading = true
     try {
         const params = {
-            sku: productDetails.sku,
-            barcode: productDetails.barcode,
             name: productDetails.name,
             color: productDetails.color,
             category_uuid: productDetails.category_uuid,

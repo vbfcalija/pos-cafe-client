@@ -35,16 +35,22 @@
                                 <template #body
                                     v-if="!(state.isTableLoading || (state.productVariants?.data?.length === 0))">
                                     <tr v-for="(productVariant, index) in state.productVariants?.data" :key="index">
-                                        <td width="18%">
+                                        <td width="14%">
                                             <p>{{ productVariant?.product?.name }}</p>
                                         </td>
-                                        <td width="18%">
+                                        <td width="14%">
                                             <p>{{ productVariant?.name }}</p>
                                         </td>
                                         <td width="12%">
-                                            <p>{{ money(productVariant?.price) }}</p>
+                                            <p>{{ productVariant?.sku || '-' }}</p>
                                         </td>
                                         <td width="12%">
+                                            <p>{{ productVariant?.barcode || '-' }}</p>
+                                        </td>
+                                        <td width="10%">
+                                            <p>{{ money(productVariant?.price) }}</p>
+                                        </td>
+                                        <td width="10%">
                                             <p>{{ money(productVariant?.cost) }}</p>
                                         </td>
                                         <td width="10%">
@@ -63,7 +69,7 @@
                                                 </p>
                                             </Badge>
                                         </td>
-                                        <td width="20%">
+                                        <td width="8%">
                                             <div class="flex items-end gap-2">
                                                 <Tooltip text="Edit">
                                                     <FormButton type="button" buttonStyle="action"
@@ -117,6 +123,8 @@ const state = reactive({
     columnHeaders: [
         { name: 'Product', sorter: true, key: 'product_id' },
         { name: 'Name', sorter: true, key: 'name' },
+        { name: 'SKU', sorter: true, key: 'sku' },
+        { name: 'Barcode', sorter: true, key: 'barcode' },
         { name: 'Price', sorter: true, key: 'price' },
         { name: 'Cost', sorter: true, key: 'cost' },
         { name: 'Stocks', sorter: true, key: 'current_stocks' },
