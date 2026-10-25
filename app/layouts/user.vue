@@ -405,6 +405,16 @@ const navigation: SidebarNavigationItem[] = [
         ],
     },
     {
+        id: 'checklists',
+        label: 'Daily checklist',
+        href: '/checklists',
+        icon: 'ph:clipboard-text',
+        routes: [
+            'checklists',
+            'checklists-checklist_uuid',
+        ],
+    },
+    {
         id: 'reports',
         label: 'Reports',
         href: '/reports',
@@ -426,6 +436,17 @@ const settings: SidebarNavigationItem[] = [
             'branches-create',
             'branches-id',
             'branches-id-edit',
+        ],
+    },
+    {
+        id: 'checklist-tasks',
+        label: 'Checklist tasks',
+        href: '/checklist-tasks',
+        icon: 'ph:list-checks',
+        routes: [
+            'checklist-tasks',
+            'checklist-tasks-new',
+            'checklist-tasks-task_uuid-edit',
         ],
     },
     {
