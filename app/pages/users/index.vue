@@ -54,6 +54,12 @@
                                         </td>
                                         <td width="20%">
                                             <div class="flex items-end gap-2">
+                                                <Tooltip text="Activity">
+                                                    <FormButton type="button" buttonStyle="action"
+                                                        @click="navigateTo(`/activity-logs?user=${user.uuid}`)">
+                                                        <Icon name="ph:clock-counter-clockwise" class="size-4" />
+                                                    </FormButton>
+                                                </Tooltip>
                                                 <Tooltip text="Edit">
                                                     <FormButton type="button" buttonStyle="action"
                                                         @click="navigateTo(`/users/${user.uuid}/edit`)">

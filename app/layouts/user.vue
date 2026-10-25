@@ -427,6 +427,15 @@ const navigation: SidebarNavigationItem[] = [
 
 const settings: SidebarNavigationItem[] = [
     {
+        id: 'activity-logs',
+        label: 'Activity log',
+        href: '/activity-logs',
+        icon: 'ph:clock-counter-clockwise',
+        routes: [
+            'activity-logs',
+        ],
+    },
+    {
         id: 'branches',
         label: 'Branches',
         href: '/branches',

@@ -1,4 +1,5 @@
 import APIError from '@/components/api/user/APIError'
+import { getDeviceId } from '@/composables/deviceInfo'
 
 class BaseAPIService {
     async request(url: string, method: string, params: object = []): Promise<any> {
@@ -28,6 +29,8 @@ class BaseAPIService {
             xhr.open(method, `${runtimeConfig.public.apiBaseURL}${url}${query}`)
             xhr.setRequestHeader('Authorization', headers.Authorization)
             xhr.setRequestHeader('Accept', headers.Accept)
+            // Lets the activity log tell which device each action came from.
+            xhr.setRequestHeader('X-Device-Id', getDeviceId())
             if (!isGet) {
                 xhr.setRequestHeader('Content-Type', 'application/json')
             }

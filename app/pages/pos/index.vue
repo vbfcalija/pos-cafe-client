@@ -453,6 +453,7 @@
 </template>
 
 <script setup lang="ts">
+import { getDeviceId } from '@/composables/deviceInfo'
 import { customerService } from '@/components/api/user/CustomerService'
 import { discountService } from '@/components/api/user/DiscountService'
 import { orderService } from '@/components/api/user/OrderService'
@@ -661,14 +662,9 @@ function selectLatestOpenShift() {
     }
 }
 
+// Same per-device ID the activity log uses (see composables/deviceInfo.ts).
 function getComputerId() {
-    const storageKey = 'cafe_pos_computer_id'
-    let computerId = localStorage.getItem(storageKey)
-    if (!computerId) {
-        computerId = crypto.randomUUID()
-        localStorage.setItem(storageKey, computerId)
-    }
-    return computerId
+    return getDeviceId()
 }
 
 function handleShiftCreated(shift: any) {

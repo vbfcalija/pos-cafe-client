@@ -185,6 +185,7 @@ import { authService } from '@/components/api/user/AuthService'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
 import { useUserStore } from '@/store/user'
+import { collectDeviceInfo } from '@/composables/deviceInfo'
 import type { Error } from '@/types'
 
 const runtimeConfig = useRuntimeConfig()
@@ -233,6 +234,8 @@ async function login() {
         const params = {
             email: state.formLogin.email,
             password: state.formLogin.password,
+            // Recorded with the sign-in in the activity log.
+            device: await collectDeviceInfo(),
         }
 
         const response = await authService.login(params)
