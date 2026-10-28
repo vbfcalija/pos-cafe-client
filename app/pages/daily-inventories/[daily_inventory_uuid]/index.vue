@@ -21,7 +21,7 @@
 
                     <template v-if="sheet">
                         <!-- Sheet header -->
-                        <section class="rounded-2xl border border-primary-100 bg-white p-5 shadow-sm">
+                        <section class="rounded-2xl border border-primary-100 bg-white p-4 shadow-sm md:p-5">
                             <div class="flex flex-wrap items-start justify-between gap-4">
                                 <div class="min-w-0">
                                     <p class="text-xs font-semibold uppercase tracking-wider text-primary-700">Daily
@@ -37,7 +37,7 @@
                                         <Icon name="ph:storefront" class="size-4" /> {{ sheet.branch?.name }}
                                     </p>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-2">
+                                <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
                                     <span :class="isVerified
                                         ? 'bg-green-50 text-green-800 ring-green-600/20'
                                         : 'bg-yellow-50 text-yellow-800 ring-yellow-600/20'"
@@ -46,11 +46,12 @@
                                             class="size-4" />
                                         {{ isVerified ? 'Verified' : 'Pending' }}
                                     </span>
-                                    <FormButton v-if="!isVerified" buttonStyle="success"
+                                    <FormButton v-if="!isVerified" buttonStyle="success" class="flex-1 sm:flex-none"
                                         @click="state.modal.isVerifyOpen = true">
                                         <Icon name="ph:seal-check" class="size-4" /> Verify inventory
                                     </FormButton>
-                                    <FormButton v-else buttonStyle="secondary" @click="state.modal.isReopenOpen = true">
+                                    <FormButton v-else buttonStyle="secondary" class="flex-1 sm:flex-none"
+                                        @click="state.modal.isReopenOpen = true">
                                         <Icon name="ph:lock-open" class="size-4" /> Reopen
                                     </FormButton>
                                 </div>
@@ -92,16 +93,16 @@
 
                         <!-- The sheet -->
                         <section class="overflow-hidden rounded-2xl border border-primary-100 bg-white shadow-sm">
-                            <div class="flex flex-wrap items-center gap-3 border-b border-gray-100 px-5 py-4">
+                            <div class="flex flex-wrap items-center gap-3 border-b border-gray-100 px-4 py-4 md:px-5">
                                 <div class="relative min-w-0 flex-1 basis-60">
                                     <Icon name="ph:magnifying-glass"
                                         class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
                                     <input id="item-search" v-model="state.search" type="search"
                                         placeholder="Find an item"
-                                        class="h-10 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-sm focus:border-primary-700 focus:outline-none focus:ring-primary-700" />
+                                        class="h-11 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-base focus:border-primary-700 focus:outline-none focus:ring-primary-700 sm:h-10 sm:text-sm" />
                                 </div>
                                 <button type="button"
-                                    class="inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-colors"
+                                    class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium transition-colors sm:h-10 sm:w-auto"
                                     :class="state.notCountedOnly
                                         ? 'border-primary-700 bg-primary-50 text-primary-800'
                                         : 'border-gray-200 text-gray-700 hover:border-primary-300'"
@@ -112,7 +113,151 @@
                                 </button>
                             </div>
 
-                            <div class="overflow-x-auto">
+                            <!-- Phones: one card per item -->
+                            <div class="md:hidden">
+                                <ul class="divide-y divide-gray-100">
+                                    <li v-for="(count, index) in visibleItemLines" :key="count.uuid"
+                                        class="relative px-4 py-3"
+                                        :class="count.ending !== null ? 'bg-green-50/50' : index % 2 === 1 ? 'bg-gray-50/60' : 'bg-white'">
+                                        <span class="absolute inset-y-0 left-0 w-1"
+                                            :class="count.ending !== null ? 'bg-green-600' : 'bg-transparent'" />
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="min-w-0">
+                                                <p class="font-medium text-gray-900">{{ count.item_name }}</p>
+                                                <p class="text-xs text-gray-500">{{ count.unit }}</p>
+                                            </div>
+                                            <SaveState :state="state.rowState[count.uuid]" class="mt-0.5 shrink-0" />
+                                        </div>
+                                        <div class="mt-2 grid grid-cols-2 gap-2">
+                                            <label class="block min-w-0">
+                                                <span
+                                                    class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Begin</span>
+                                                <input v-if="!isVerified" v-model="draft(count).begin" type="number"
+                                                    inputmode="decimal" min="0" step="any" :id="`m-begin-${count.uuid}`"
+                                                    class="sheet-input mt-1" @change="saveField(count, 'begin')" />
+                                                <span v-else class="mt-1 block tabular-nums">{{
+                                                    formatNumber(count.begin) }}</span>
+                                            </label>
+                                            <label class="block min-w-0">
+                                                <span
+                                                    class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Ending</span>
+                                                <input v-if="!isVerified" v-model="draft(count).ending" type="number"
+                                                    inputmode="decimal" min="0" step="any"
+                                                    :id="`m-ending-${count.uuid}`"
+                                                    class="sheet-input mt-1 font-semibold"
+                                                    @change="saveField(count, 'ending')" />
+                                                <span v-else class="mt-1 block font-semibold tabular-nums">{{
+                                                    formatNumber(count.ending) }}</span>
+                                            </label>
+                                        </div>
+                                        <input v-if="!isVerified" v-model="draft(count).remarks" type="text"
+                                            maxlength="1000" :id="`m-remarks-${count.uuid}`"
+                                            placeholder="Remarks (optional)"
+                                            :aria-label="`Remarks for ${count.item_name}`"
+                                            class="sheet-input mt-2 text-left" @change="saveField(count, 'remarks')" />
+                                        <p v-else-if="count.remarks" class="mt-2 text-sm text-gray-700">
+                                            {{ count.remarks }}
+                                        </p>
+                                    </li>
+                                    <li v-if="visibleItemLines.length === 0"
+                                        class="px-4 py-8 text-center text-gray-500">
+                                        {{
+                                            state.notCountedOnly ?
+                                                'Every item matching this search is counted.' :
+                                                'No item matches this search.'
+                                        }}
+                                    </li>
+                                </ul>
+
+                                <p
+                                    class="bg-primary-50/60 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-primary-800">
+                                    Other items
+                                </p>
+                                <ul class="divide-y divide-gray-100">
+                                    <li v-for="count in otherLines" :key="count.uuid" class="relative px-4 py-3"
+                                        :class="count.ending !== null ? 'bg-green-50/50' : 'bg-white'">
+                                        <span class="absolute inset-y-0 left-0 w-1"
+                                            :class="count.ending !== null ? 'bg-green-600' : 'bg-transparent'" />
+                                        <div v-if="!isVerified" class="flex items-start gap-2">
+                                            <div class="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_6rem] gap-2">
+                                                <input v-model="draft(count).item_name" type="text" maxlength="255"
+                                                    :id="`m-name-${count.uuid}`" aria-label="Item name"
+                                                    class="sheet-input text-left font-medium"
+                                                    @change="saveField(count, 'item_name')" />
+                                                <input v-model="draft(count).unit" type="text" maxlength="50"
+                                                    :id="`m-unit-${count.uuid}`" aria-label="Unit"
+                                                    class="sheet-input text-left" @change="saveField(count, 'unit')" />
+                                            </div>
+                                            <button type="button"
+                                                class="flex size-11 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
+                                                :aria-label="`Remove ${count.item_name}`" @click="askRemove(count)">
+                                                <Icon name="ph:trash" class="size-5" />
+                                            </button>
+                                        </div>
+                                        <div v-else>
+                                            <p class="font-medium text-gray-900">{{ count.item_name }}</p>
+                                            <p class="text-xs text-gray-500">{{ count.unit }}</p>
+                                        </div>
+                                        <div class="mt-2 grid grid-cols-2 gap-2">
+                                            <label class="block min-w-0">
+                                                <span
+                                                    class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Begin</span>
+                                                <input v-if="!isVerified" v-model="draft(count).begin" type="number"
+                                                    inputmode="decimal" min="0" step="any" :id="`m-begin-${count.uuid}`"
+                                                    class="sheet-input mt-1" @change="saveField(count, 'begin')" />
+                                                <span v-else class="mt-1 block tabular-nums">
+                                                    {{ formatNumber(count.begin) }}
+                                                </span>
+                                            </label>
+                                            <label class="block min-w-0">
+                                                <span
+                                                    class="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Ending</span>
+                                                <input v-if="!isVerified" v-model="draft(count).ending" type="number"
+                                                    inputmode="decimal" min="0" step="any"
+                                                    :id="`m-ending-${count.uuid}`"
+                                                    class="sheet-input mt-1 font-semibold"
+                                                    @change="saveField(count, 'ending')" />
+                                                <span v-else class="mt-1 block font-semibold tabular-nums">
+                                                    {{ formatNumber(count.ending) }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="mt-2 flex items-center gap-2">
+                                            <input v-if="!isVerified" v-model="draft(count).remarks" type="text"
+                                                maxlength="1000" :id="`m-remarks-${count.uuid}`"
+                                                placeholder="Remarks (optional)"
+                                                :aria-label="`Remarks for ${count.item_name}`"
+                                                class="sheet-input text-left" @change="saveField(count, 'remarks')" />
+                                            <p v-else-if="count.remarks" class="text-sm text-gray-700">
+                                                {{ count.remarks }}
+                                            </p>
+                                            <SaveState :state="state.rowState[count.uuid]" class="shrink-0" />
+                                        </div>
+                                    </li>
+                                    <li v-if="isVerified && otherLines.length === 0" class="px-4 py-3 text-gray-500">
+                                        None
+                                    </li>
+                                </ul>
+                                <div v-if="!isVerified" class="grid gap-2 border-t border-gray-100 px-4 py-4">
+                                    <div class="grid grid-cols-[minmax(0,1fr)_6rem] gap-2">
+                                        <input id="m-new-other-name" v-model="state.newOther.item_name" type="text"
+                                            maxlength="255" placeholder="Item not on the list"
+                                            aria-label="New item name" class="sheet-input text-left"
+                                            @keydown.enter.prevent="addOther" />
+                                        <input id="m-new-other-unit" v-model="state.newOther.unit" type="text"
+                                            maxlength="50" placeholder="Unit" aria-label="New item unit"
+                                            class="sheet-input text-left" @keydown.enter.prevent="addOther" />
+                                    </div>
+                                    <FormButton buttonStyle="action" class="h-11 w-full"
+                                        :disabled="!state.newOther.item_name.trim() || !state.newOther.unit.trim()"
+                                        @click="addOther">
+                                        <Icon name="ph:plus" class="size-4" /> Add other item
+                                    </FormButton>
+                                </div>
+                            </div>
+
+                            <!-- Tablets and desktops: the sheet as a table -->
+                            <div class="hidden overflow-x-auto md:block">
                                 <table class="w-full min-w-[46rem] text-sm">
                                     <thead
                                         class="bg-primary-900 text-left text-[11px] uppercase tracking-wider text-white">
@@ -140,7 +285,9 @@
                                                     inputmode="decimal" min="0" step="any" :id="`begin-${count.uuid}`"
                                                     :aria-label="`Begin for ${count.item_name}`" class="sheet-input"
                                                     @change="saveField(count, 'begin')" />
-                                                <span v-else class="tabular-nums">{{ formatNumber(count.begin) }}</span>
+                                                <span v-else class="tabular-nums">
+                                                    {{ formatNumber(count.begin) }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2">
                                                 <input v-if="!isVerified" v-model="draft(count).ending" type="number"
@@ -148,8 +295,9 @@
                                                     :aria-label="`Ending for ${count.item_name}`"
                                                     class="sheet-input font-semibold"
                                                     @change="saveField(count, 'ending')" />
-                                                <span v-else class="font-semibold tabular-nums">{{
-                                                    formatNumber(count.ending) }}</span>
+                                                <span v-else class="font-semibold tabular-nums">
+                                                    {{ formatNumber(count.ending) }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2">
                                                 <input v-if="!isVerified" v-model="draft(count).remarks" type="text"
@@ -157,7 +305,9 @@
                                                     :aria-label="`Remarks for ${count.item_name}`"
                                                     class="sheet-input w-full min-w-[10rem] text-left"
                                                     @change="saveField(count, 'remarks')" />
-                                                <span v-else class="text-gray-700">{{ count.remarks || '' }}</span>
+                                                <span v-else class="text-gray-700">
+                                                    {{ count.remarks || '' }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2 text-center">
                                                 <SaveState :state="state.rowState[count.uuid]" />
@@ -189,22 +339,27 @@
                                                     maxlength="255" :id="`name-${count.uuid}`" aria-label="Item name"
                                                     class="sheet-input w-full text-left font-medium"
                                                     @change="saveField(count, 'item_name')" />
-                                                <span v-else class="font-medium text-gray-900">{{ count.item_name
-                                                }}</span>
+                                                <span v-else class="font-medium text-gray-900">
+                                                    {{ count.item_name }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2">
                                                 <input v-if="!isVerified" v-model="draft(count).unit" type="text"
                                                     maxlength="50" :id="`unit-${count.uuid}`" aria-label="Unit"
                                                     class="sheet-input w-24 text-left"
                                                     @change="saveField(count, 'unit')" />
-                                                <span v-else class="text-gray-600">{{ count.unit }}</span>
+                                                <span v-else class="text-gray-600">
+                                                    {{ count.unit }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2">
                                                 <input v-if="!isVerified" v-model="draft(count).begin" type="number"
                                                     inputmode="decimal" min="0" step="any" :id="`begin-${count.uuid}`"
                                                     :aria-label="`Begin for ${count.item_name}`" class="sheet-input"
                                                     @change="saveField(count, 'begin')" />
-                                                <span v-else class="tabular-nums">{{ formatNumber(count.begin) }}</span>
+                                                <span v-else class="tabular-nums">
+                                                    {{ formatNumber(count.begin) }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2">
                                                 <input v-if="!isVerified" v-model="draft(count).ending" type="number"
@@ -222,7 +377,9 @@
                                                     :aria-label="`Remarks for ${count.item_name}`"
                                                     class="sheet-input w-full min-w-[10rem] text-left"
                                                     @change="saveField(count, 'remarks')" />
-                                                <span v-else class="text-gray-700">{{ count.remarks || '' }}</span>
+                                                <span v-else class="text-gray-700">
+                                                    {{ count.remarks || '' }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2 text-center">
                                                 <button v-if="!isVerified" type="button"
@@ -548,6 +705,13 @@ function formatLongDate(value: string) {
 
 .sheet-input::placeholder {
     color: rgb(156 163 175);
+}
+
+@media (max-width: 767px) {
+    .sheet-input {
+        height: 2.75rem;
+        font-size: 16px;
+    }
 }
 </style>
 
