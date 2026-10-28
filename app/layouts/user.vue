@@ -96,7 +96,7 @@
                                             </ul>
                                         </li>
 
-                                        <li class="-mx-6 mt-auto">
+                                        <!-- <li class="-mx-6 mt-auto">
                                             <a href="/profile"
                                                 class="flex items-center gap-x-4 border-t border-primary-700 px-6 py-3 text-sm/6 font-semibold text-white transition-colors hover:bg-primary-800"
                                                 @click.prevent="
@@ -113,7 +113,7 @@
                                                     {{ userStore.getUser.firstname }} {{ userStore.getUser.lastname }}
                                                 </span>
                                             </a>
-                                        </li>
+                                        </li> -->
                                     </ul>
                                 </nav>
                             </div>
