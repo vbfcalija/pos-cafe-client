@@ -415,6 +415,16 @@ const navigation: SidebarNavigationItem[] = [
         ],
     },
     {
+        id: 'daily-inventories',
+        label: 'Daily inventory',
+        href: '/daily-inventories',
+        icon: 'ph:package',
+        routes: [
+            'daily-inventories',
+            'daily-inventories-daily_inventory_uuid',
+        ],
+    },
+    {
         id: 'reports',
         label: 'Reports',
         href: '/reports',
@@ -480,6 +490,17 @@ const settings: SidebarNavigationItem[] = [
             'discounts-create',
             'discounts-id',
             'discounts-id-edit',
+        ],
+    },
+    {
+        id: 'inventory-items',
+        label: 'Inventory items',
+        href: '/inventory-items',
+        icon: 'ph:archive-box',
+        routes: [
+            'inventory-items',
+            'inventory-items-new',
+            'inventory-items-inventory_item_uuid-edit',
         ],
     },
     {
