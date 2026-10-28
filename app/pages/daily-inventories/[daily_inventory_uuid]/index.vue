@@ -123,8 +123,16 @@
                                             :class="count.ending !== null ? 'bg-green-600' : 'bg-transparent'" />
                                         <div class="flex items-start justify-between gap-3">
                                             <div class="min-w-0">
-                                                <p class="font-medium text-gray-900">{{ count.item_name }}</p>
-                                                <p class="text-xs text-gray-500">{{ count.unit }}</p>
+                                                <p class="font-medium text-gray-900">
+                                                    {{ count.item_name }}
+                                                    <StockFlag :count="count" class="ml-1 align-middle" />
+                                                </p>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ count.unit }}
+                                                    <template v-if="count.low_stock_threshold !== null">
+                                                        · low at {{ formatNumber(count.low_stock_threshold) }}
+                                                    </template>
+                                                </p>
                                             </div>
                                             <SaveState :state="state.rowState[count.uuid]" class="mt-0.5 shrink-0" />
                                         </div>
@@ -278,8 +286,17 @@
                                                 <span class="absolute inset-y-0 left-0 w-1"
                                                     :class="count.ending !== null ? 'bg-green-600' : 'bg-transparent'" />
                                                 {{ count.item_name }}
+                                                <StockFlag :count="count" class="ml-1 align-middle" />
                                             </td>
-                                            <td class="whitespace-nowrap px-3 py-2 text-gray-600">{{ count.unit }}</td>
+                                            <td class="whitespace-nowrap px-3 py-2 text-gray-600">
+                                                {{ count.unit }}
+                                                <span v-if="count.low_stock_threshold !== null"
+                                                    class="block text-[11px] text-gray-400">low at
+                                                    {{
+                                                        formatNumber(count.low_stock_threshold)
+                                                    }}
+                                                </span>
+                                            </td>
                                             <td class="px-3 py-2">
                                                 <input v-if="!isVerified" v-model="draft(count).begin" type="number"
                                                     inputmode="decimal" min="0" step="any" :id="`begin-${count.uuid}`"
@@ -449,6 +466,20 @@ const SaveState = defineComponent({
             if (props.state === 'saving') return h(resolveComponent('Icon'), { name: 'ph:circle-notch', class: 'size-4 animate-spin text-gray-400', 'aria-label': 'Saving' })
             if (props.state === 'saved') return h(resolveComponent('Icon'), { name: 'ph:check-circle', class: 'size-4 text-green-600', 'aria-label': 'Saved' })
             if (props.state === 'error') return h(resolveComponent('Icon'), { name: 'ph:warning-circle', class: 'size-4 text-red-600', 'aria-label': 'Not saved' })
+            return null
+        }
+    },
+})
+
+// "Out" / "Low" tag once an ending is entered, using the item's low stock level.
+const StockFlag = defineComponent({
+    props: { count: { type: Object, required: true } },
+    setup(props) {
+        return () => {
+            const { ending, low_stock_threshold: level } = props.count as any
+            if (ending === null || ending === undefined) return null
+            if (ending <= 0) return h('span', { class: 'inline-flex rounded-full bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-700 ring-1 ring-inset ring-red-600/20' }, 'Out')
+            if (level !== null && level !== undefined && ending <= level) return h('span', { class: 'inline-flex rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 ring-1 ring-inset ring-amber-600/20' }, 'Low')
             return null
         }
     },

@@ -39,11 +39,17 @@
                             :isLoading="state.isTableLoading" :sortData="itemStore.getSortData" @sort="sort">
                             <template #body v-if="!(state.isTableLoading || state.items?.data?.length === 0)">
                                 <tr v-for="item in state.items?.data" :key="item.uuid">
-                                    <td width="50%">
+                                    <td width="40%">
                                         <p class="font-medium text-gray-900">{{ item.name }}</p>
                                     </td>
-                                    <td width="20%">
+                                    <td width="15%">
                                         <p class="text-gray-600">{{ item.unit }}</p>
+                                    </td>
+                                    <td width="15%">
+                                        <p v-if="item.low_stock_threshold !== null" class="tabular-nums text-gray-900">
+                                            {{ formatNumber(item.low_stock_threshold) }}
+                                        </p>
+                                        <p v-else class="text-gray-400">Not set</p>
                                     </td>
                                     <td width="15%">
                                         <Badge class="w-fit" :type="item.is_active ? 'active' : 'inactive'">
@@ -102,6 +108,7 @@ const state = reactive({
     columnHeaders: [
         { name: 'Item', sorter: true, key: 'name' },
         { name: 'Unit', sorter: true, key: 'unit' },
+        { name: 'Low stock at', sorter: true, key: 'low_stock_threshold' },
         { name: 'Status', sorter: true, key: 'is_active' },
         { name: '' },
     ],
@@ -139,6 +146,10 @@ async function fetchItems() {
         state.error = error
     }
     state.isTableLoading = false
+}
+
+function formatNumber(value: number) {
+    return new Intl.NumberFormat('en-PH', { maximumFractionDigits: 2 }).format(value)
 }
 
 function previous() {

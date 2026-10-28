@@ -40,7 +40,7 @@ const breadcrumbLinks = [
 
 const state = reactive({
     error: {} as Error,
-    formItem: { name: '', unit: '', is_active: true },
+    formItem: { name: '', unit: '', low_stock_threshold: '' as any, is_active: true },
     isPageLoading: false,
 })
 
@@ -52,6 +52,7 @@ onMounted(async () => {
             state.formItem = {
                 name: response.data.name ?? '',
                 unit: response.data.unit ?? '',
+                low_stock_threshold: response.data.low_stock_threshold ?? '',
                 is_active: Boolean(response.data.is_active),
             }
         }
@@ -68,6 +69,9 @@ async function saveItem(itemDetails: any) {
         const response = await inventoryItemService.updateInventoryItem(itemUuid, {
             name: itemDetails.name,
             unit: itemDetails.unit,
+            low_stock_threshold: itemDetails.low_stock_threshold === '' || itemDetails.low_stock_threshold === null
+                ? null
+                : Number(itemDetails.low_stock_threshold),
             is_active: itemDetails.is_active,
         })
         if (response.data) {

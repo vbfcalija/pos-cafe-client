@@ -17,6 +17,21 @@
                 <FormError :error="props?.error?.errors?.unit?.[0]" />
             </div>
             <div class="space-y-1">
+                <FormLabel for="low_stock_threshold" label="Low stock level (optional)" />
+                <div class="flex items-center gap-2">
+                    <input id="low_stock_threshold" v-model="state.formItem.low_stock_threshold" type="number"
+                        inputmode="decimal" min="0" step="any" placeholder="e.g. 500"
+                        class="appearance-none block w-40 px-4 h-11 border border-gray-200 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-primary-700 focus:border-primary-700 sm:text-sm" />
+                    <span class="text-sm text-gray-500">{{ state.formItem.unit || 'unit' }}</span>
+                </div>
+                <p class="text-xs text-gray-500">
+                    The Overview lists this item as low stock when its latest ending count is at or below this. Leave
+                    blank if it doesn't need an alert. An ending of 0 always shows as out of stock.
+                </p>
+                <FormError :error="v$?.formItem?.low_stock_threshold?.$errors[0]?.$message.toString()" />
+                <FormError :error="props?.error?.errors?.low_stock_threshold?.[0]" />
+            </div>
+            <div class="space-y-1">
                 <div class="w-fit flex items-center cursor-pointer"
                     @click="state.formItem.is_active = !state.formItem.is_active">
                     <FormCheckbox :value="state.formItem.is_active" /> Count this item each day
@@ -61,6 +76,7 @@ const state = reactive({
     formItem: {
         name: '',
         unit: '',
+        low_stock_threshold: '',
         is_active: true,
     } as any,
 })
@@ -70,6 +86,7 @@ watch(() => props.selectedItem, (newValue: any) => {
         state.formItem = {
             name: newValue.name ?? '',
             unit: newValue.unit ?? '',
+            low_stock_threshold: newValue.low_stock_threshold ?? '',
             is_active: newValue.is_active ?? true,
         }
     }
@@ -80,6 +97,9 @@ const rules = computed(() => ({
     formItem: {
         name: { required: requiredField },
         unit: { required: requiredField },
+        low_stock_threshold: {
+            minValue: helpers.withMessage('Use 0 or more, or leave it blank.', (value: any) => value === '' || value === null || Number(value) >= 0),
+        },
     },
 }))
 const v$ = useVuelidate(rules, state)
