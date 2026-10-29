@@ -370,6 +370,192 @@
                         </div>
                     </section>
 
+                    <!-- Price vs cost by variant -->
+                    <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                        <div class="flex flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">
+                                    Price vs cost by variant
+                                </h3>
+                                <p class="text-xs text-gray-500">
+                                    Profit per variant sold on the selected date · uses the price and cost at the time
+                                    of each sale, after discounts, excluding tax
+                                </p>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-sm sm:flex sm:gap-5">
+                                <div>
+                                    <p class="text-xs text-gray-500">Sales</p>
+                                    <p class="font-semibold text-gray-900">{{ money(profitTotals.sales) }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Cost</p>
+                                    <p class="font-semibold text-gray-900">{{ money(profitTotals.cost) }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Profit</p>
+                                    <p class="font-semibold"
+                                        :class="profitTotals.profit < 0 ? 'text-red-600' : 'text-green-700'">
+                                        {{ money(profitTotals.profit) }}
+                                        <span class="text-xs font-medium text-gray-500">
+                                            {{ formatMargin(profitTotals.margin) }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="profitTotals.missingCost"
+                            class="flex items-start gap-2 border-t border-amber-100 bg-amber-50 px-5 py-2.5 text-xs text-amber-800">
+                            <Icon name="ph:warning" class="mt-0.5 size-4 shrink-0" />
+                            <span>
+                                {{ profitTotals.missingCost }}
+                                {{ profitTotals.missingCost === 1 ? 'variant was' : 'variants were' }} sold with no
+                                cost set, so the profit shown for them is overstated. Set the cost on the product
+                                variant for future sales.
+                            </span>
+                        </div>
+
+                        <div v-if="profitCategories.length" class="divide-y divide-gray-200 border-t border-gray-100">
+                            <Disclosure v-for="category in profitCategories" :key="category.uuid" v-slot="{ open }"
+                                as="div">
+                                <DisclosureButton
+                                    class="flex w-full flex-col gap-2 bg-gray-50/70 px-5 py-3 text-left transition hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary sm:flex-row sm:items-center sm:justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="size-2.5 rounded-full border border-gray-200"
+                                            :style="{ backgroundColor: category.color }" />
+                                        <span class="font-semibold text-gray-900">{{ category.name }}</span>
+                                        <span class="text-xs text-gray-500">
+                                            {{ category.quantity }} sold
+                                        </span>
+                                        <Icon v-if="category.missingCost" name="ph:warning"
+                                            class="size-4 text-amber-600" />
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                                        <span class="text-gray-500">
+                                            Sales <strong class="text-gray-900">{{ money(category.sales) }}</strong>
+                                        </span>
+                                        <span class="text-gray-500">
+                                            Cost <strong class="text-gray-900">{{ money(category.cost) }}</strong>
+                                        </span>
+                                        <span class="text-gray-500">
+                                            Profit
+                                            <strong :class="category.profit < 0 ? 'text-red-600' : 'text-green-700'">
+                                                {{ money(category.profit) }}
+                                            </strong>
+                                        </span>
+                                        <span class="rounded-full px-2 py-0.5 text-xs font-semibold"
+                                            :class="marginBadgeClass({ hasCost: true, margin: category.margin })">
+                                            {{ formatMargin(category.margin) }}
+                                        </span>
+                                        <Icon name="ph:caret-down" class="size-4 text-gray-500 transition-transform"
+                                            :class="open && 'rotate-180'" />
+                                    </div>
+                                </DisclosureButton>
+                                <DisclosurePanel>
+                                    <!-- Mobile: cards -->
+                                    <ul class="divide-y divide-gray-100 border-t border-gray-100 md:hidden">
+                                        <li v-for="variant in category.variants" :key="variant.uuid" class="px-5 py-3">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <p class="truncate font-medium text-gray-900">
+                                                        {{ variant.productName }}
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">
+                                                        {{ variant.variantName }} · {{ variant.quantity }} sold
+                                                    </p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="font-semibold"
+                                                        :class="variant.profit < 0 ? 'text-red-600' : 'text-gray-900'">
+                                                        {{ money(variant.profit) }}
+                                                    </p>
+                                                    <span class="text-xs font-medium" :class="marginClass(variant)">
+                                                        {{
+                                                            variant.hasCost ?
+                                                                formatMargin(variant.margin) :
+                                                                'No cost set'
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 grid grid-cols-2 gap-x-4 text-xs text-gray-500">
+                                                <span>
+                                                    Price {{ money(variant.unitPrice) }} ·
+                                                    Cost {{ money(variant.unitCost) }}
+                                                </span>
+                                                <span class="text-right">
+                                                    Sales {{ money(variant.sales) }} · Cost {{ money(variant.cost) }}
+                                                </span>
+                                            </div>
+                                        </li>
+                                    </ul>
+
+                                    <!-- Desktop: table -->
+                                    <div class="hidden overflow-x-auto md:block">
+                                        <table class="w-full text-left text-sm">
+                                            <thead
+                                                class="border-y border-gray-100 text-xs uppercase tracking-wide text-gray-500">
+                                                <tr>
+                                                    <th class="px-5 py-2.5 font-medium">Product</th>
+                                                    <th class="px-5 py-2.5 font-medium">Variant</th>
+                                                    <th class="px-5 py-2.5 text-right font-medium">Sold</th>
+                                                    <th class="px-5 py-2.5 text-right font-medium">Avg. price</th>
+                                                    <th class="px-5 py-2.5 text-right font-medium">Unit cost</th>
+                                                    <th class="px-5 py-2.5 text-right font-medium">Sales</th>
+                                                    <th class="px-5 py-2.5 text-right font-medium">Total cost</th>
+                                                    <th class="px-5 py-2.5 text-right font-medium">Profit</th>
+                                                    <th class="px-5 py-2.5 text-right font-medium">Margin</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100">
+                                                <tr v-for="variant in category.variants" :key="variant.uuid"
+                                                    class="hover:bg-gray-50">
+                                                    <td class="px-5 py-3 font-medium text-gray-900">
+                                                        {{ variant.productName }}
+                                                    </td>
+                                                    <td class="px-5 py-3 text-gray-600">
+                                                        {{ variant.variantName }}
+                                                    </td>
+                                                    <td class="px-5 py-3 text-right text-gray-600">
+                                                        {{ variant.quantity }}
+                                                    </td>
+                                                    <td class="px-5 py-3 text-right text-gray-600">
+                                                        {{ money(variant.unitPrice) }}
+                                                    </td>
+                                                    <td class="px-5 py-3 text-right text-gray-600">
+                                                        <span v-if="variant.hasCost">
+                                                            {{ money(variant.unitCost) }}
+                                                        </span>
+                                                        <span v-else class="text-amber-700">Not set</span>
+                                                    </td>
+                                                    <td class="px-5 py-3 text-right text-gray-900">
+                                                        {{ money(variant.sales) }}
+                                                    </td>
+                                                    <td class="px-5 py-3 text-right text-gray-600">
+                                                        {{ money(variant.cost) }}
+                                                    </td>
+                                                    <td class="px-5 py-3 text-right font-semibold"
+                                                        :class="variant.profit < 0 ? 'text-red-600' : 'text-gray-900'">
+                                                        {{ money(variant.profit) }}
+                                                    </td>
+                                                    <td class="px-5 py-3 text-right">
+                                                        <span class="rounded-full px-2 py-0.5 text-xs font-semibold"
+                                                            :class="marginBadgeClass(variant)">
+                                                            {{ variant.hasCost ? formatMargin(variant.margin) : '—' }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </DisclosurePanel>
+                            </Disclosure>
+                        </div>
+                        <div v-else class="border-t border-gray-100 py-10 text-center">
+                            <Icon name="ph:scales" class="mx-auto size-8 text-gray-300" />
+                            <p class="mt-2 text-sm text-gray-500">No sales for this date.</p>
+                        </div>
+                    </section>
+
                     <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                         <div class="flex items-center justify-between px-5 py-4">
                             <div>
@@ -702,6 +888,108 @@ const categorySummaries = computed(() => {
         }))
         .sort((a, b) => b.sales - a.sales)
 })
+// --- Price vs cost by variant
+// Sales are what the customer paid after discounts, with tax backed out
+// (prices are tax-inclusive, and tax isn't the café's money). Cost is the
+// variant cost copied onto each order line at the time of sale.
+const variantProfits = computed(() => {
+    const variants = new Map<string, any>()
+    filteredOrders.value.forEach((order: any) => order.details?.forEach((line: any) => {
+        const variant = line.product_variant
+        const product = variant?.product
+        const uuid = variant?.uuid || `${product?.uuid || 'product'}-${variant?.name || 'default'}`
+        const current = variants.get(uuid) || {
+            uuid,
+            category: product?.category || null,
+            productName: product?.name || 'Product',
+            variantName: variant?.name || 'Default',
+            quantity: 0,
+            gross: 0,
+            sales: 0,
+            cost: 0,
+            hasCost: true,
+        }
+        const quantity = Number(line.quantity)
+        const rate = Number(line.tax_percentage || 0) / 100
+        const total = lineTotal(line)
+        current.quantity += quantity
+        current.gross += Number(line.price) * quantity
+        current.sales += total / (1 + rate)
+        current.cost += Number(line.cost || 0) * quantity
+        if (!Number(line.cost)) current.hasCost = false
+        variants.set(uuid, current)
+    }))
+    return Array.from(variants.values())
+        .map((variant: any) => {
+            const profit = variant.sales - variant.cost
+            return {
+                ...variant,
+                unitPrice: variant.quantity ? variant.gross / variant.quantity : 0,
+                unitCost: variant.quantity ? variant.cost / variant.quantity : 0,
+                profit,
+                margin: variant.sales ? profit / variant.sales * 100 : null,
+            }
+        })
+        .sort((a, b) => b.profit - a.profit)
+})
+const profitCategories = computed(() => {
+    const categories = new Map<string, any>()
+    variantProfits.value.forEach((variant: any) => {
+        const uuid = variant.category?.uuid || 'uncategorized'
+        const current = categories.get(uuid) || {
+            uuid,
+            name: variant.category?.name || 'Uncategorized',
+            color: variant.category?.color || '#e5e7eb',
+            quantity: 0,
+            sales: 0,
+            cost: 0,
+            missingCost: 0,
+            variants: [] as any[],
+        }
+        current.quantity += variant.quantity
+        current.sales += variant.sales
+        current.cost += variant.cost
+        if (!variant.hasCost) current.missingCost++
+        current.variants.push(variant) // already sorted by profit
+        categories.set(uuid, current)
+    })
+    return Array.from(categories.values())
+        .map((category: any) => {
+            const profit = category.sales - category.cost
+            return { ...category, profit, margin: category.sales ? profit / category.sales * 100 : null }
+        })
+        .sort((a, b) => b.profit - a.profit)
+})
+const profitTotals = computed(() => {
+    const totals = variantProfits.value.reduce((sum: any, variant: any) => {
+        sum.quantity += variant.quantity
+        sum.sales += variant.sales
+        sum.cost += variant.cost
+        if (!variant.hasCost) sum.missingCost++
+        return sum
+    }, { quantity: 0, sales: 0, cost: 0, missingCost: 0 })
+    const profit = totals.sales - totals.cost
+    return { ...totals, profit, margin: totals.sales ? profit / totals.sales * 100 : null }
+})
+
+function formatMargin(margin: number | null) {
+    return margin === null ? '—' : `${margin.toFixed(1)}%`
+}
+
+function marginClass(variant: any) {
+    if (!variant.hasCost) return 'text-amber-700'
+    if (variant.margin < 0) return 'text-red-600'
+    if (variant.margin < 30) return 'text-amber-700'
+    return 'text-green-700'
+}
+
+function marginBadgeClass(variant: any) {
+    if (!variant.hasCost) return 'bg-gray-100 text-gray-500'
+    if (variant.margin < 0) return 'bg-red-50 text-red-700'
+    if (variant.margin < 30) return 'bg-amber-50 text-amber-800'
+    return 'bg-green-50 text-green-700'
+}
+
 const totalQuantitySold = computed(() => categorySummaries.value.reduce((total, category) => total + category.quantity, 0))
 const paymentMix = computed(() => {
     const colors = ['#6e4430', '#60a5fa', '#22c55e', '#8b5cf6', '#94a3b8']; const methods = new Map<string, number>()
