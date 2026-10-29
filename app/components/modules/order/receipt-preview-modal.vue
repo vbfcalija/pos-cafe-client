@@ -48,13 +48,30 @@
                     <Icon name="ph:file-pdf" class="size-4" />
                     {{ state.isGeneratingPdf ? 'Generating…' : 'Save as PDF' }}
                 </FormButton>
-                <FormButton buttonStyle="primary" :disabled="!state.escposData" @click="printReceipt">
+                <FormButton buttonStyle="primary" :disabled="!state.escposData || state.isPrinting"
+                    @click="printReceipt">
                     <Icon name="ph:printer" class="size-4" />
-                    {{ state.escposData ? 'Print via Bluetooth' : 'Preparing…' }}
+                    {{ printButtonLabel }}
                 </FormButton>
             </div>
-            <p class="mt-2 text-center text-xs text-gray-400">
+            <p v-if="printMethod === 'rawbt'" class="mt-2 text-center text-xs text-gray-400">
                 Printing requires the RawBT app installed on this device, paired to the printer.
+            </p>
+            <p v-else-if="printMethod === 'bluetooth'" class="mt-2 text-center text-xs text-gray-400">
+                <template v-if="connectedPrinterName">
+                    Printer: <span class="font-medium text-gray-600">{{ connectedPrinterName }}</span> ·
+                    <button type="button" class="text-primary-600 underline" @click="forgetPrinter">Change</button>
+                </template>
+                <template v-else>
+                    Turn on the printer — you'll pick it from the list the first time you print.
+                </template>
+            </p>
+            <p v-else class="mt-2 text-center text-xs text-gray-500">
+                To print on iPhone/iPad, open this site in the
+                <a href="https://apps.apple.com/app/bluefy-web-ble-browser/id1492822055" target="_blank" rel="noopener"
+                    class="text-primary-600 underline">
+                    Bluefy browser
+                </a>(free) — Safari can't reach Bluetooth printers.
             </p>
         </template>
     </Modal>
@@ -81,10 +98,11 @@ const emit = defineEmits(['close'])
 
 const runtimeConfig = useRuntimeConfig()
 const { successAlert } = useAlert()
-const { sendToRawBt } = useReceiptPrinter()
+const { printMethod, connectedPrinterName, sendToPrinter, forgetPrinter } = useReceiptPrinter()
 
 const state = reactive({
     isGeneratingPdf: false,
+    isPrinting: false,
     error: '',
     escposData: '' as string,
 })
@@ -105,6 +123,12 @@ watch(() => props.show, async (show) => {
         // Print button will just show its own error if clicked with nothing loaded.
     }
 }, { immediate: true })
+
+const printButtonLabel = computed(() => {
+    if (!state.escposData) return 'Preparing…'
+    if (state.isPrinting) return 'Printing…'
+    return printMethod.value === 'rawbt' ? 'Print via RawBT' : 'Print via Bluetooth'
+})
 
 const branchName = computed(() => props.order?.shift?.branch?.name || '')
 const formattedDate = computed(() => props.order?.created_at ? moment(props.order.created_at).format('YYYY-MM-DD HH:mm') : '')
@@ -168,21 +192,24 @@ function money(value: number | string) {
     return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(value || 0))
 }
 
-// See composables/receiptPrinter.ts for why this goes through RawBT's
-// "intent:" URL scheme. Critically, sendToRawBt() must run synchronously
-// inside the click itself — no `await` before it. Android/Chrome only
-// honors an app-intent handoff as part of a real user gesture, and that
-// gesture is considered "spent" the moment an async microtask (like an
-// awaited fetch) runs first, so the intent silently gets dropped. That's
-// why the ESC/POS bytes are fetched ahead of time (see the `show` watcher
-// above) instead of on click.
-function printReceipt() {
+// See composables/receiptPrinter.ts. Nothing may be awaited before
+// sendToPrinter() starts: Android only honors the RawBT intent, and iOS only
+// opens the Bluetooth printer picker, inside a real user gesture — which is
+// why the ESC/POS bytes are fetched ahead of time (the `show` watcher above).
+async function printReceipt() {
     if (!state.escposData) {
         state.error = 'Still preparing the receipt — wait a moment and try again.'
         return
     }
     state.error = ''
-    sendToRawBt(state.escposData)
+    state.isPrinting = true
+    try {
+        await sendToPrinter(state.escposData)
+    } catch (error: any) {
+        state.error = error?.message || 'Could not print the receipt.'
+    } finally {
+        state.isPrinting = false
+    }
 }
 
 async function downloadPdf() {
