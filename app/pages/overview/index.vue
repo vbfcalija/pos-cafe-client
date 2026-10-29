@@ -30,160 +30,6 @@
                         </div>
                     </section>
 
-                    <!-- Restock needed -->
-                    <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        <div class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
-                            <div class="flex min-w-0 items-start gap-3">
-                                <span class="flex size-10 shrink-0 items-center justify-center rounded-xl"
-                                    :class="restockTotals.out ? 'bg-red-50 text-red-600' : restockTotals.low ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700'">
-                                    <Icon :name="restockTotals.out || restockTotals.low ? 'ph:warning' : 'ph:package'"
-                                        class="size-5" />
-                                </span>
-                                <div class="min-w-0">
-                                    <h3 class="font-semibold text-gray-900">Restock needed</h3>
-                                    <p class="text-xs text-gray-500">
-                                        From each item's latest ending count, up to
-                                        {{ state.selectedDate ?
-                                            formatShortDate(state.selectedDate) :
-                                            'today'
-                                        }}
-                                    </p>
-                                </div>
-                            </div>
-                            <NuxtLink to="/daily-inventories"
-                                class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                                Daily inventory
-                                <Icon name="ph:arrow-right" class="size-4" />
-                            </NuxtLink>
-                        </div>
-
-                        <div class="flex flex-wrap gap-2 border-t border-gray-100 px-5 py-3 text-xs">
-                            <span
-                                class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 font-semibold text-red-700 ring-1 ring-inset ring-red-600/20">
-                                <span class="size-1.5 rounded-full bg-red-600" /> {{ restockTotals.out }} out of stock
-                            </span>
-                            <span
-                                class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 font-semibold text-amber-800 ring-1 ring-inset ring-amber-600/20">
-                                <span class="size-1.5 rounded-full bg-amber-500" /> {{ restockTotals.low }} low
-                            </span>
-                            <span
-                                class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 font-semibold text-green-700 ring-1 ring-inset ring-green-600/20">
-                                <span class="size-1.5 rounded-full bg-green-600" /> {{ restockTotals.ok }} stocked
-                            </span>
-                            <span v-if="restockTotals.untracked"
-                                class="inline-flex items-center rounded-full bg-gray-50 px-2.5 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-500/20">
-                                {{ restockTotals.untracked }} without a low stock level
-                            </span>
-                            <span v-if="restockTotals.not_counted"
-                                class="inline-flex items-center rounded-full bg-gray-50 px-2.5 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-500/20">
-                                {{ restockTotals.not_counted }} not counted yet
-                            </span>
-                        </div>
-
-                        <div v-if="state.inventoryError"
-                            class="border-t border-gray-100 px-5 py-6 text-sm text-red-700">
-                            {{ state.inventoryError }}
-                        </div>
-                        <div v-else-if="state.isInventoryLoading && !state.inventory.length"
-                            class="space-y-3 border-t border-gray-100 px-5 py-5">
-                            <div class="skeleton h-4 w-2/3"></div>
-                            <div class="skeleton h-4 w-1/2"></div>
-                        </div>
-                        <template v-else>
-                            <div v-for="branch in restockBranches" :key="branch.branch.uuid"
-                                class="border-t border-gray-100">
-                                <div v-if="restockBranches.length > 1"
-                                    class="flex items-center justify-between bg-gray-50 px-5 py-2 text-xs">
-                                    <span class="font-semibold uppercase tracking-wide text-gray-600">
-                                        {{ branch.branch.name }}
-                                    </span>
-                                    <span class="text-gray-500">
-                                        {{
-                                            branch.last_counted_on ?
-                                                `Last counted ${formatShortDate(branch.last_counted_on)}` :
-                                                'Not counted yet'
-                                        }}
-                                    </span>
-                                </div>
-                                <ul v-if="branch.restock.length" class="divide-y divide-gray-100">
-                                    <li v-for="item in visibleRestock(branch)" :key="item.item_uuid"
-                                        class="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3">
-                                        <span class="w-14 shrink-0">
-                                            <span v-if="item.status === 'out'"
-                                                class="inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-700 ring-1 ring-inset ring-red-600/20">Out</span>
-                                            <span v-else
-                                                class="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 ring-1 ring-inset ring-amber-600/20">Low</span>
-                                        </span>
-                                        <span class="min-w-0 flex-1 basis-40 text-sm font-medium text-gray-900">{{
-                                            item.name }}</span>
-                                        <span class="text-sm tabular-nums text-gray-700">
-                                            <span class="font-semibold"
-                                                :class="item.status === 'out' ? 'text-red-700' : 'text-gray-900'">
-                                                {{ formatQuantity(item.ending) }}
-                                            </span>
-                                            {{ item.unit }} left
-                                            <template v-if="item.low_stock_threshold !== null">
-                                                <span class="text-gray-400">
-                                                    · low at
-                                                    {{ formatQuantity(item.low_stock_threshold) }}
-                                                </span>
-                                            </template>
-                                        </span>
-                                        <span class="w-full text-xs sm:w-28 sm:text-right"
-                                            :class="item.counted_on === state.selectedDate ? 'text-gray-500' : 'text-amber-700'">
-                                            {{ countedLabel(item.counted_on) }}
-                                        </span>
-                                    </li>
-                                </ul>
-                                <div v-if="branch.restock.length > restockPreviewSize" class="px-5 pb-3">
-                                    <button type="button" class="text-sm font-medium text-primary hover:underline"
-                                        @click="toggleRestock(branch.branch.uuid)">
-                                        {{
-                                            state.expandedRestock.includes(branch.branch.uuid) ?
-                                                'Show fewer' :
-                                                `Show all ${branch.restock.length}`
-                                        }}
-                                    </button>
-                                </div>
-                                <div v-if="!branch.restock.length" class="flex items-start gap-3 px-5 py-5 text-sm">
-                                    <template v-if="!branch.last_counted_on">
-                                        <Icon name="ph:clipboard-text" class="mt-0.5 size-5 shrink-0 text-gray-300" />
-                                        <p class="text-gray-500">
-                                            No stock counted yet. Enter today's ending counts in
-                                            <NuxtLink to="/daily-inventories"
-                                                class="font-medium text-primary hover:underline">Daily inventory
-                                            </NuxtLink>.
-                                        </p>
-                                    </template>
-                                    <template v-else>
-                                        <Icon name="ph:check-circle" class="mt-0.5 size-5 shrink-0 text-green-600" />
-                                        <p class="text-gray-600">
-                                            Nothing needs restocking.
-                                            <template v-if="branch.totals.untracked">
-                                                {{ branch.totals.untracked }} counted item
-                                                {{
-                                                    branch.totals.untracked === 1 ?
-                                                        ' has' : 's have'
-                                                }} no low stock level, so
-                                                {{
-                                                    branch.totals.untracked === 1 ?
-                                                        'it' : 'they'
-                                                }} only show up here when out. Set levels in
-                                                <NuxtLink to="/inventory-items"
-                                                    class="font-medium text-primary hover:underline">Inventory items
-                                                </NuxtLink>.
-                                            </template>
-                                        </p>
-                                    </template>
-                                </div>
-                            </div>
-                            <div v-if="!restockBranches.length"
-                                class="border-t border-gray-100 px-5 py-5 text-sm text-gray-500">
-                                No active branches.
-                            </div>
-                        </template>
-                    </section>
-
                     <div class="overview-primary-grid grid gap-4">
                         <section
                             class="relative overflow-hidden rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -580,6 +426,160 @@
                                 No transactions for this date.
                             </p>
                         </div>
+                    </section>
+
+                    <!-- Restock needed -->
+                    <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                        <div class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div class="flex min-w-0 items-start gap-3">
+                                <span class="flex size-10 shrink-0 items-center justify-center rounded-xl"
+                                    :class="restockTotals.out ? 'bg-red-50 text-red-600' : restockTotals.low ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700'">
+                                    <Icon :name="restockTotals.out || restockTotals.low ? 'ph:warning' : 'ph:package'"
+                                        class="size-5" />
+                                </span>
+                                <div class="min-w-0">
+                                    <h3 class="font-semibold text-gray-900">Restock needed</h3>
+                                    <p class="text-xs text-gray-500">
+                                        From each item's latest ending count, up to
+                                        {{ state.selectedDate ?
+                                            formatShortDate(state.selectedDate) :
+                                            'today'
+                                        }}
+                                    </p>
+                                </div>
+                            </div>
+                            <NuxtLink to="/daily-inventories"
+                                class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                                Daily inventory
+                                <Icon name="ph:arrow-right" class="size-4" />
+                            </NuxtLink>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 border-t border-gray-100 px-5 py-3 text-xs">
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 font-semibold text-red-700 ring-1 ring-inset ring-red-600/20">
+                                <span class="size-1.5 rounded-full bg-red-600" /> {{ restockTotals.out }} out of stock
+                            </span>
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 font-semibold text-amber-800 ring-1 ring-inset ring-amber-600/20">
+                                <span class="size-1.5 rounded-full bg-amber-500" /> {{ restockTotals.low }} low
+                            </span>
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 font-semibold text-green-700 ring-1 ring-inset ring-green-600/20">
+                                <span class="size-1.5 rounded-full bg-green-600" /> {{ restockTotals.ok }} stocked
+                            </span>
+                            <span v-if="restockTotals.untracked"
+                                class="inline-flex items-center rounded-full bg-gray-50 px-2.5 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-500/20">
+                                {{ restockTotals.untracked }} without a low stock level
+                            </span>
+                            <span v-if="restockTotals.not_counted"
+                                class="inline-flex items-center rounded-full bg-gray-50 px-2.5 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-500/20">
+                                {{ restockTotals.not_counted }} not counted yet
+                            </span>
+                        </div>
+
+                        <div v-if="state.inventoryError"
+                            class="border-t border-gray-100 px-5 py-6 text-sm text-red-700">
+                            {{ state.inventoryError }}
+                        </div>
+                        <div v-else-if="state.isInventoryLoading && !state.inventory.length"
+                            class="space-y-3 border-t border-gray-100 px-5 py-5">
+                            <div class="skeleton h-4 w-2/3"></div>
+                            <div class="skeleton h-4 w-1/2"></div>
+                        </div>
+                        <template v-else>
+                            <div v-for="branch in restockBranches" :key="branch.branch.uuid"
+                                class="border-t border-gray-100">
+                                <div v-if="restockBranches.length > 1"
+                                    class="flex items-center justify-between bg-gray-50 px-5 py-2 text-xs">
+                                    <span class="font-semibold uppercase tracking-wide text-gray-600">
+                                        {{ branch.branch.name }}
+                                    </span>
+                                    <span class="text-gray-500">
+                                        {{
+                                            branch.last_counted_on ?
+                                                `Last counted ${formatShortDate(branch.last_counted_on)}` :
+                                                'Not counted yet'
+                                        }}
+                                    </span>
+                                </div>
+                                <ul v-if="branch.restock.length" class="divide-y divide-gray-100">
+                                    <li v-for="item in visibleRestock(branch)" :key="item.item_uuid"
+                                        class="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3">
+                                        <span class="w-14 shrink-0">
+                                            <span v-if="item.status === 'out'"
+                                                class="inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-700 ring-1 ring-inset ring-red-600/20">Out</span>
+                                            <span v-else
+                                                class="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 ring-1 ring-inset ring-amber-600/20">Low</span>
+                                        </span>
+                                        <span class="min-w-0 flex-1 basis-40 text-sm font-medium text-gray-900">{{
+                                            item.name }}</span>
+                                        <span class="text-sm tabular-nums text-gray-700">
+                                            <span class="font-semibold"
+                                                :class="item.status === 'out' ? 'text-red-700' : 'text-gray-900'">
+                                                {{ formatQuantity(item.ending) }}
+                                            </span>
+                                            {{ item.unit }} left
+                                            <template v-if="item.low_stock_threshold !== null">
+                                                <span class="text-gray-400">
+                                                    · low at
+                                                    {{ formatQuantity(item.low_stock_threshold) }}
+                                                </span>
+                                            </template>
+                                        </span>
+                                        <span class="w-full text-xs sm:w-28 sm:text-right"
+                                            :class="item.counted_on === state.selectedDate ? 'text-gray-500' : 'text-amber-700'">
+                                            {{ countedLabel(item.counted_on) }}
+                                        </span>
+                                    </li>
+                                </ul>
+                                <div v-if="branch.restock.length > restockPreviewSize" class="px-5 pb-3">
+                                    <button type="button" class="text-sm font-medium text-primary hover:underline"
+                                        @click="toggleRestock(branch.branch.uuid)">
+                                        {{
+                                            state.expandedRestock.includes(branch.branch.uuid) ?
+                                                'Show fewer' :
+                                                `Show all ${branch.restock.length}`
+                                        }}
+                                    </button>
+                                </div>
+                                <div v-if="!branch.restock.length" class="flex items-start gap-3 px-5 py-5 text-sm">
+                                    <template v-if="!branch.last_counted_on">
+                                        <Icon name="ph:clipboard-text" class="mt-0.5 size-5 shrink-0 text-gray-300" />
+                                        <p class="text-gray-500">
+                                            No stock counted yet. Enter today's ending counts in
+                                            <NuxtLink to="/daily-inventories"
+                                                class="font-medium text-primary hover:underline">Daily inventory
+                                            </NuxtLink>.
+                                        </p>
+                                    </template>
+                                    <template v-else>
+                                        <Icon name="ph:check-circle" class="mt-0.5 size-5 shrink-0 text-green-600" />
+                                        <p class="text-gray-600">
+                                            Nothing needs restocking.
+                                            <template v-if="branch.totals.untracked">
+                                                {{ branch.totals.untracked }} counted item
+                                                {{
+                                                    branch.totals.untracked === 1 ?
+                                                        ' has' : 's have'
+                                                }} no low stock level, so
+                                                {{
+                                                    branch.totals.untracked === 1 ?
+                                                        'it' : 'they'
+                                                }} only show up here when out. Set levels in
+                                                <NuxtLink to="/inventory-items"
+                                                    class="font-medium text-primary hover:underline">Inventory items
+                                                </NuxtLink>.
+                                            </template>
+                                        </p>
+                                    </template>
+                                </div>
+                            </div>
+                            <div v-if="!restockBranches.length"
+                                class="border-t border-gray-100 px-5 py-5 text-sm text-gray-500">
+                                No active branches.
+                            </div>
+                        </template>
                     </section>
                 </div>
             </LoadingSpinner>
