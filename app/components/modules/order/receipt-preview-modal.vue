@@ -6,6 +6,10 @@
                     class="w-[280px] rounded-md border border-dashed border-gray-300 bg-white p-4 font-mono text-[11px] leading-relaxed shadow-sm">
                     <p class="text-center font-bold">{{ runtimeConfig?.public?.appName }}</p>
                     <p v-if="branchName" class="text-center">{{ branchName }}</p>
+                    <p v-if="isRefunded"
+                        class="mt-2 border border-red-600 py-0.5 text-center text-sm font-bold tracking-widest text-red-600">
+                        REFUNDED
+                    </p>
                     <hr class="my-2 border-t border-dashed border-gray-400">
                     <p>Order #: {{ props.order?.order_no }}</p>
                     <p>Date: {{ formattedDate }}</p>
@@ -38,6 +42,14 @@
                     </div>
                     <hr class="my-2 border-t border-dashed border-gray-400">
                     <p>Payment: {{ paymentMethods }}</p>
+                    <template v-if="isRefunded">
+                        <hr class="my-2 border-t border-dashed border-gray-400">
+                        <div class="flex justify-between font-bold text-red-600">
+                            <span>REFUNDED</span><span>-{{ money(orderTotal) }}</span>
+                        </div>
+                        <p>Refunded: {{ formattedRefundDate }}</p>
+                        <p v-if="props.order?.refunded_by">Refunded by: {{ fullName(props.order.refunded_by) }}</p>
+                    </template>
                     <p class="mt-3 text-center font-bold">Thank you!</p>
                     <p class="text-center">Please come again.</p>
                 </div>
@@ -129,6 +141,9 @@ const printButtonLabel = computed(() => {
     if (state.isPrinting) return 'Printing…'
     return printMethod.value === 'rawbt' ? 'Print via RawBT' : 'Print via Bluetooth'
 })
+
+const isRefunded = computed(() => !!props.order?.refunded_at)
+const formattedRefundDate = computed(() => props.order?.refunded_at ? moment(props.order.refunded_at).format('YYYY-MM-DD HH:mm') : '')
 
 const branchName = computed(() => props.order?.shift?.branch?.name || '')
 const formattedDate = computed(() => props.order?.created_at ? moment(props.order.created_at).format('YYYY-MM-DD HH:mm') : '')
