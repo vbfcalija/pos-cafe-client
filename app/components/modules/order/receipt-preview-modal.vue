@@ -50,6 +50,10 @@
                         <p>Refunded: {{ formattedRefundDate }}</p>
                         <p v-if="props.order?.refunded_by">Refunded by: {{ fullName(props.order.refunded_by) }}</p>
                     </template>
+                    <hr class="my-2 border-t border-dashed border-gray-400">
+                    <p class="text-center">THIS DOCUMENT IS NOT VALID FOR CLAIM OF INPUT TAX</p>
+                    <p class="mt-2 text-center">This is a request for payment. This is not a Sales Invoice.</p>
+                    <p class="mt-2 text-center">Please ask for your Sales Invoice.</p>
                     <p class="mt-3 text-center font-bold">Thank you!</p>
                     <p class="text-center">Please come again.</p>
                 </div>
