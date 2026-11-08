@@ -17,9 +17,14 @@
                             <option v-for="length in pageLengths" :key="length" :value="length">{{ length }}</option>
                         </select>
                     </div>
-                    <FormButton buttonStyle="action" @click="navigateTo('/inventory-items/new')">
-                        <Icon name="ph:plus" class="h-4 w-4" aria-hidden="true" /> New item
-                    </FormButton>
+                    <div class="flex items-center gap-2">
+                        <FormButton buttonStyle="secondary" @click="state.isReorderOpen = true">
+                            <Icon name="ph:arrows-down-up" class="h-4 w-4" aria-hidden="true" /> Arrange order
+                        </FormButton>
+                        <FormButton buttonStyle="action" @click="navigateTo('/inventory-items/new')">
+                            <Icon name="ph:plus" class="h-4 w-4" aria-hidden="true" /> New item
+                        </FormButton>
+                    </div>
                 </div>
                 <div class="space-y-5">
                     <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_14rem] lg:items-end">
@@ -31,15 +36,20 @@
                         </div>
                     </div>
                     <p class="text-xs text-gray-500">
-                        Items appear on each day's inventory sheet in the order they were added. To stop counting an
-                        item, untick “Count this item each day” instead of deleting it.
+                        Items appear on each day's inventory sheet by their Order number, lowest first. Use “Arrange
+                        order” to drag
+                        them
+                        into place. To stop counting an item, untick “Count this item each day” instead of deleting it.
                     </p>
                     <div class="table-responsive">
                         <Table :columnHeaders="state.columnHeaders" :data="state.items"
                             :isLoading="state.isTableLoading" :sortData="itemStore.getSortData" @sort="sort">
                             <template #body v-if="!(state.isTableLoading || state.items?.data?.length === 0)">
                                 <tr v-for="item in state.items?.data" :key="item.uuid">
-                                    <td width="40%">
+                                    <td width="8%">
+                                        <p class="tabular-nums text-gray-600">{{ item.sort_order }}</p>
+                                    </td>
+                                    <td width="32%">
                                         <p class="font-medium text-gray-900">{{ item.name }}</p>
                                     </td>
                                     <td width="15%">
@@ -79,6 +89,8 @@
                     <Pagination :data="state.items" @previous="previous" @next="next" />
                 </div>
             </div>
+            <ModulesInventoryItemReorderModal :show="state.isReorderOpen" @close="state.isReorderOpen = false"
+                @saved="onReordered" />
             <DialogConfirmation :isModalOpen="state.isDeleteOpen"
                 message="Delete this item? An item that's already on a past inventory sheet can't be deleted; untick “Count this item each day” instead."
                 @close="state.isDeleteOpen = false" @confirm="deleteItem" />
@@ -106,6 +118,7 @@ const statusOptions = [
 const state = reactive({
     items: [] as any,
     columnHeaders: [
+        { name: 'Order', sorter: true, key: 'sort_order' },
         { name: 'Item', sorter: true, key: 'name' },
         { name: 'Unit', sorter: true, key: 'unit' },
         { name: 'Low stock at', sorter: true, key: 'low_stock_threshold' },
@@ -117,6 +130,7 @@ const state = reactive({
     error: {} as Error,
     isTableLoading: false,
     isDeleteOpen: false,
+    isReorderOpen: false,
     selectedItem: {} as any,
 })
 
@@ -150,6 +164,12 @@ async function fetchItems() {
 
 function formatNumber(value: number) {
     return new Intl.NumberFormat('en-PH', { maximumFractionDigits: 2 }).format(value)
+}
+
+function onReordered() {
+    itemStore.setCurrentPageNumber(1)
+    itemStore.setSortData('sort_order', 'ascend')
+    fetchItems()
 }
 
 function previous() {

@@ -6,7 +6,7 @@ export const useInventoryItemStore = defineStore('inventoryItemStore', {
         currentPageLength: 50,
         currentPageNumber: 1,
         sortData: {
-            sortField: 'id',
+            sortField: 'sort_order',
             sortOrder: 'ascend',
         },
     }),

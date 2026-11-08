@@ -17,6 +17,10 @@ class InventoryItemService extends BaseAPIService {
         return await this.request(`/user/inventory-items/${inventoryItemUuid}`, 'PUT', params)
     }
 
+    async reorderInventoryItems(uuids: string[]): Promise<any> {
+        return await this.request(`/user/inventory-items/reorder`, 'PUT', { uuids })
+    }
+
     async deleteInventoryItem(inventoryItemUuid: any): Promise<any> {
         return await this.request(`/user/inventory-items/${inventoryItemUuid}`, 'DELETE')
     }
