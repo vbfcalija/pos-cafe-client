@@ -25,10 +25,19 @@
                                         open
                                     </span>
                                 </div>
-                                <p class="truncate text-xs text-gray-500">
-                                    <Icon name="ph:user-circle" class="mr-1 inline size-4 text-primary-400" />
-                                    {{ fullName(userStore.getUser) }}
-                                </p>
+                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                                    <p class="truncate">
+                                        <Icon name="ph:wallet" class="mr-1 inline size-4 text-primary-400" />
+                                        Starting cash
+                                        <span class="font-semibold text-gray-900">
+                                            {{ money(currentShift?.starting_cash) }}
+                                        </span>
+                                    </p>
+                                    <p class="truncate">
+                                        <Icon name="ph:user-circle" class="mr-1 inline size-4 text-primary-400" />
+                                        {{ fullName(userStore.getUser) }}
+                                    </p>
+                                </div>
                             </div>
                             <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                                 <div class="min-w-0">

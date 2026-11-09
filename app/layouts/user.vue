@@ -363,7 +363,6 @@ import {
     TransitionChild,
     TransitionRoot,
 } from '@headlessui/vue'
-import { authService } from '@/components/api/user/AuthService'
 import { useUserStore } from '@/store/user'
 import type { SidebarNavigationItem } from '~/types'
 
@@ -591,17 +590,5 @@ const handleMobileNavigation = async (href: string) => {
     await navigateTo(href)
 }
 
-const handleSignOut = async () => {
-    try {
-        await authService.logout()
-    } catch (error) {
-        // Session is revoked client-side regardless of whether the request
-        // reaches the server (e.g. the token already expired server-side).
-    }
-
-    localStorage.removeItem('_token')
-    userStore.resetUser()
-
-    await navigateTo('/login')
-}
+const { signOut: handleSignOut } = useSignOut()
 </script>

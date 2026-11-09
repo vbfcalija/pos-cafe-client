@@ -8,11 +8,19 @@
                         'Create a shift before starting a POS transaction.'
                 }}
             </p>
-            <button type="button"
-                class="mt-1 text-sm font-medium text-primary hover:text-primary-700 hover:underline"
-                @click="navigateTo('/overview')">
-                Go to Overview instead
-            </button>
+            <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
+                <button type="button"
+                    class="text-sm font-medium text-primary hover:text-primary-700 hover:underline"
+                    @click="navigateTo('/overview')">
+                    Go to Overview instead
+                </button>
+                <button type="button"
+                    class="inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-red-600 hover:underline"
+                    @click="signOut">
+                    <Icon name="ph:sign-out" class="size-4" aria-hidden="true" />
+                    Log out
+                </button>
+            </div>
             <ModulesShiftForm formType="create" :selectedShift="state.formShift" :error="state.error"
                 :showCancel="false" submitLabel="Start shift"
                 @isPageLoading="(value: boolean) => state.isPageLoading = value" @submitForm="saveShift" />
@@ -23,6 +31,7 @@
 <script setup lang="ts">
 import { shiftService } from '@/components/api/user/ShiftService'
 import { useDatetimeFormatter } from '@/composables/datetimeFormatter'
+import { useSignOut } from '@/composables/signOut'
 import { useBranchStore } from '@/store/branch'
 import { useUserStore } from '@/store/user'
 import type { Error } from '@/types'
@@ -46,6 +55,7 @@ const emit = defineEmits(['created', 'close'])
 const branchStore = useBranchStore() as any
 const userStore = useUserStore() as any
 const { formatDateToReadable } = useDatetimeFormatter()
+const { signOut } = useSignOut()
 
 const state = reactive({
     error: {} as Error,
