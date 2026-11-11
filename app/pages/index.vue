@@ -5,7 +5,7 @@
             <Title>Brthrs Cafe — Coffee, comfort, and good company</Title>
 
             <Meta name="description"
-                content="Brthrs Cafe in Bo. Obrero, Davao City. Open every day from 11 AM to midnight." />
+                content="Brthrs Cafe in Bo. Obrero, Davao City. Open Monday to Saturday 11 AM to midnight, Sunday 3 PM to midnight." />
 
             <Link rel="preconnect" href="https://fonts.googleapis.com" />
 
@@ -90,7 +90,7 @@
                                     {{ fact.label }}
                                 </small>
 
-                                <strong class="mt-1 text-[13px]">
+                                <strong class="mt-1 whitespace-pre text-[13px]">
                                     {{ fact.value }}
                                 </strong>
                             </span>
@@ -280,7 +280,20 @@
                                 {{ detail.label }}
                             </small>
 
-                            <strong class="whitespace-pre-line text-xl leading-7">
+                            <dl v-if="detail.schedule" class="divide-y divide-white/10">
+                                <div v-for="row in detail.schedule" :key="row.days"
+                                    class="flex flex-col gap-1 py-3.5 first:pt-0 last:pb-0">
+                                    <dt class="text-sm text-emerald-100/60">
+                                        {{ row.days }}
+                                    </dt>
+
+                                    <dd class="whitespace-nowrap text-xl font-bold leading-7">
+                                        {{ row.hours }}
+                                    </dd>
+                                </div>
+                            </dl>
+
+                            <strong v-else class="whitespace-pre-line text-xl leading-7">
                                 {{ detail.value }}
                             </strong>
 
@@ -345,8 +358,8 @@ const navigation = [
 
 const quickFacts = [
     {
-        label: 'Open every day',
-        value: '11 AM — 12 Midnight',
+        label: 'Business hours',
+        value: 'Mon – Sat, 11 AM — 12 Midnight\nSunday, 3 PM — 12 Midnight',
         icon: 'ph:clock'
     },
     {
@@ -389,7 +402,10 @@ const visitDetails = [
     },
     {
         label: 'BUSINESS HOURS',
-        value: 'Every day\n11 AM — 12 Midnight',
+        schedule: [
+            { days: 'Monday to Saturday', hours: '11 AM — 12 Midnight' },
+            { days: 'Sunday', hours: '3 PM — 12 Midnight' }
+        ],
         note: "Yes, we're open late.",
         icon: 'ph:clock'
     }
