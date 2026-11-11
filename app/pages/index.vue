@@ -421,6 +421,11 @@ const socials = [
         label: 'TikTok',
         href: 'https://www.tiktok.com/@brthrscafe',
         icon: 'ph:tiktok-logo'
+    },
+    {
+        label: 'Facebook',
+        href: 'https://web.facebook.com/profile.php?id=61593106716185',
+        icon: 'ph:facebook-logo'
     }
 ]
 </script>
