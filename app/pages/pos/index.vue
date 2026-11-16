@@ -799,7 +799,22 @@ function variantSize(variant: any) {
 
 function variantDisplayName(variant: any) {
     const size = variantSize(variant)
-    return size ? variant.name.replace(size, '').trim() : variant.name
+    if (!size) return variant.name
+
+    // Taking the size out of "Regular (350ml)" leaves "Regular ()": drop the
+    // emptied brackets and any separator the size was sitting next to.
+    const name = variant.name
+        .replace(size, '')
+        .replace(/([(\[])\s*[,/\-–·]\s*/g, '$1')
+        .replace(/\s*[,/\-–·]\s*([)\]])/g, '$1')
+        .replace(/\(\s*\)|\[\s*\]/g, '')
+        .replace(/([(\[])\s+/g, '$1')
+        .replace(/\s+([)\]])/g, '$1')
+        .replace(/^[\s,/\-–·]+|[\s,/\-–·]+$/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+
+    return name || variant.name
 }
 
 function addSelectedProduct(product: any) {
